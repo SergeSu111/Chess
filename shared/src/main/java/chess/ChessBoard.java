@@ -7,7 +7,9 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessBoard {
-
+    /*
+    * 创建了array of array, 8行8列, 用squares reference*/
+    private ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
         
     }
@@ -19,7 +21,9 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        /*
+        * call ChessPosition和ChessPiece里的方法来得到放置的行和列. 让piece放到这个位置*/
+        squares[position.getRow()][position.getColumn()] = piece;
     }
 
     /**
