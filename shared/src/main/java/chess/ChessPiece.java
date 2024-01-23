@@ -10,12 +10,20 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    private ChessGame.TeamColor pieceColor;
+    private PieceType type;
+    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type)
+    {
+        this.pieceColor = pieceColor;
+        this.type = type;
+
     }
 
     /**
      * The various different chess piece options
      */
+
+    // 这是一个enum类型的数据类型叫做PieceType, 是public的, 所以在其他class里也可以使用PieceType.
     public enum PieceType {
         KING,
         QUEEN,
@@ -47,6 +55,7 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        // 要call get piece 和gettype 来得到这个piece的信息.
+        // 做一个switch来匹配对应的type 来做逻辑.
     }
 }

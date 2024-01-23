@@ -8,10 +8,11 @@ package chess;
  */
 public class ChessBoard {
     /*
-    * 创建了array of array, 8行8列, 用squares reference*/
+    * 创建了array of array, 8行8列
+    * */
     private ChessPiece[][] squares = new ChessPiece[8][8];
-    public ChessBoard() {
-        
+    public ChessBoard(ChessPiece[][] squares) {
+        this.squares = squares;
     }
 
     /**
@@ -33,8 +34,13 @@ public class ChessBoard {
      * @return Either the piece at the position, or null if no piece is at that
      * position
      */
-    public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+    public ChessPiece getPiece(ChessPosition position)
+    {
+        if (this.squares[position.getRow()][position.getColumn()] == null)
+        {
+            return null;
+        }
+        return this.squares[position.getRow()][position.getColumn()];
     }
 
     /**
@@ -42,6 +48,8 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        /*
+        * 将board清空到最开始的时候. 是有一个固定的放置模式. 根据这个模式来写*/
+
     }
 }
