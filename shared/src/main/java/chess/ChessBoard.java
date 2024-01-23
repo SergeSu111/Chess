@@ -49,7 +49,50 @@ public class ChessBoard {
      */
     public void resetBoard() {
         /*
-        * 将board清空到最开始的时候. 是有一个固定的放置模式. 根据这个模式来写*/
+        * 将board清空到最开始的时候. 是有一个固定的放置模式. 根据这个模式来写
+        * 其实就是把square重新改一下, 根据固定放置模式. 因为Square是ChessPiece类型数组.
+        * 所以每一个元素都是一个Piece, Piece又有两个参数, color 和type.
+        * 上黑:
+        *  ROOK KNIGHT BISHOP QUEEN KING BISHOP KNIGHT ROOK
+        *  PAWN PAWN   PAWN   PAWN  PAWN PAWN   PAWN   PAWN
+        *
+        * 下白:
+        * ROOK KNIGHT BISHOP QUEEN KING BISHOP KNIGHT ROOK
+        * PAWN PAWN   PAWN   PAWN  PAWN PAWN   PAWN   PAWN
+        *
+        * */
+        this.squares = new ChessPiece[8][8];
+        // the last row
+        this.squares[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+        this.squares[0][1] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+        this.squares[0][2] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+        this.squares[0][3] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
+        this.squares[0][4] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
+        this.squares[0][5] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+        this.squares[0][6] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+        this.squares[0][7] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
 
+
+        //  the last Second row, all pawns
+       for (int i = 0; i < 8; i++)
+       {
+           this.squares[1][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+       }
+
+       // the second row, all black pawns.
+       for (int i = 0; i < 8; i++)
+       {
+           this.squares[7][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+       }
+
+       // The last row, all black pieces.
+        this.squares[7][0] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+        this.squares[7][1] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+        this.squares[7][2] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        this.squares[7][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
+        this.squares[7][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
+        this.squares[7][5] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        this.squares[7][6] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+        this.squares[7][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
     }
 }

@@ -1,6 +1,8 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents a single chess piece
@@ -16,7 +18,6 @@ public class ChessPiece {
     {
         this.pieceColor = pieceColor;
         this.type = type;
-
     }
 
     /**
@@ -37,7 +38,7 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+
     }
 
     /**
@@ -57,5 +58,8 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         // 要call get piece 和gettype 来得到这个piece的信息.
         // 做一个switch来匹配对应的type 来做逻辑.
+
+        Map<String, String> my_map = new HashMap<>();
+
     }
 }
