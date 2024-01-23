@@ -37,7 +37,6 @@ public class ChessPiece {
      */
     public ChessGame.TeamColor getTeamColor() {
         return this.pieceColor;
-
     }
 
     /**
@@ -62,12 +61,13 @@ public class ChessPiece {
         ChessGame.TeamColor current_color  = piece_now.pieceColor;
 
 
+
         // get the location of current piece
         int column = myPosition.getColumn();
         int row = myPosition.getRow();
 
 
-        // 2. 创建一个空的chess_move ArrayList, 根据这个piece 的type来选择switch的branch, 然后把the way of movement 放到这个ListArray中
+        // 2. 创建一个空的chess_move ArrayList, 根据这个piece 的type来选择switch的branch, 然后把the ways of movement 放到这个ListArray中
         ArrayList<ChessMove> my_movements = new ArrayList<>();
         // Switch
         switch(piece_now.type)
@@ -88,9 +88,6 @@ public class ChessPiece {
             case PAWN:
                 break;
         }
-
-
-
 
         // Each type piece's end positions. if pawn, add all 4 moves to my_movements. Same position, different types.
         //my_movements.add(new ChessMove(myPosition, new ChessPosition(1,4), null));
@@ -116,7 +113,7 @@ public class ChessPiece {
         {
             // 要么遇到同颜色的棋子, 停止了 要么遇到不同颜色棋子, 把它吃了 吸收了它的位置，然后停止
             // 如果move_check 为false. 那么就没有条件能走 直接到下一个循环条件, i和j都会更新.
-            if (move_check(board, my_color, my_color, start_position, moves, row, column))
+            if (move_check(board, my_color, start_position, moves, row, column))
             {
                 break;
             }
@@ -132,15 +129,36 @@ public class ChessPiece {
         for (int i = row - 1, j = column - 1; i >= 1 && j >= 1; i--, j--)
         {
             // if 在left-down的情况下, 当前的下一个路径有障碍. 那么if 是true. 就直接break.
+            if (move_check(board, my_color, start_position, moves, row, column ))
+            {
+                break;
+            }
             // 或者当前的我的type走到了king把它吃掉了, 则也结束.
+
+            if (my_type == PieceType.KING)
+            {
+                break;
+            }
+
             // 否则move-check返回false, 证明还能继续走, 那么就回到for循环往下迭代到下一个i j 位置继续走.
+
+
         }
 
         // right up
         for (int i = row + 1, j = column + 1; i <= 8 && j <= 8; j++, i++)
         {
             // if 在right-up的情况下, 当前的下一个路径有障碍. 那么if 是true. 就直接break.
+            if( move_check(board, my_color, start_position, moves, row, column))
+            {
+                break;
+            }
             // 或者当前的我的type走到了king把它吃掉了, 则也结束.
+            if (my_type == PieceType.KING)
+            {
+                break;
+            }
+
             // 否则move-check返回false, 证明还能继续走, 那么就回到for循环往下迭代到下一个i j 位置继续走.
 
         }
@@ -149,7 +167,15 @@ public class ChessPiece {
         for (int i = row + 1, j = column - 1; i <= 8 && j >= 1; i++, j--)
         {
             // if 在left-up的情况下, 当前的下一个路径有障碍. 那么if 是true. 就直接break.
+            if (move_check(board, my_color, start_position, moves, row, column))
+            {
+                break;
+            }
             // 或者当前的我的type走到了king把它吃掉了, 则也结束.
+            if (my_type == PieceType.KING)
+            {
+                break;
+            }
             // 否则move-check返回false, 证明还能继续走, 那么就回到for循环往下迭代到下一个i j 位置继续走.
 
         }
@@ -160,25 +186,97 @@ public class ChessPiece {
 
     }
 
+
+    public static ArrayList<ChessMove> straight (ChessBoard board, ChessGame.TeamColor this_color, PieceType type, int row, int column)
+    {
+        // 根据当前传进来的row 和column来得到当前棋子的起始位置.
+        // 在当前函数中也创建一个局部的moves ArrayList来存放能够走到的所有走法的ChessMove.
+
+        // up
+        // for 循环 根据move_check检查是否有障碍, 有障碍break 检查是否会吃掉KING, break;
+
+
+        // down
+        // for 循环 根据move_check检查是否有障碍, 有障碍break 检查是否会吃掉KING, break;
+
+
+
+        // left
+        // for 循环 根据move_check检查是否有障碍, 有障碍break 检查是否会吃掉KING, break;
+
+        // right
+        // for 循环 根据move_check检查是否有障碍, 有障碍break 检查是否会吃掉KING, break;
+
+        // 返回被存储好的 MOVES.
+    }
+
     /*
     * move_check function 检查每走一步是否有障碍, 如果障碍是别人的棋子, 则直接吃掉, 把对方棋子的位置也加到moves里. 因为我的棋子要往下走.
     * 如果是自己的棋子,则停止移动.
     * */
-    public static Boolean move_check(ChessBoard board, ChessGame.TeamColor this_color, ChessGame.TeamColor this_type, ChessPosition start_position, List<ChessMove> validMoves, int j, int i)
+    public static Boolean move_check(ChessBoard board, ChessGame.TeamColor this_color, ChessPosition start_position, List<ChessMove> validMoves, int row, int column)
     {
         //  创建下一个observed piece. 位置根据当前的i 和j 来 因为i 和j 都是起始位置的下一个位置
+        ChessPiece next_piece = board.getPiece(new ChessPosition(row, column));
 
         // if observed piece 不为空. 证明遇到了阻碍,
             // 观察这个observed piece的颜色, 如果和当前棋子颜色相同.
                 // 么返回true.结束行走.  到此位置
             // 如果颜色不相同, 证明遇到了对方棋子, 那么需要吃掉对方棋子, 把对方棋子的位置(i,j) 也放入moves里.
             // 然后再返回true 结束行走 到此位置.
-
         // if observed piece 为空, 证明没有遇到阻碍.那么就继续往前走, 当前走过的路都要当作一个ChessPosition来放到
         // moves里. 因为有可能会在这一步停下.
         // return false;
 
     }
+
+    /*
+    * Knight走法, 和会有多少种走法.
+    * Knight可以先向前或左右走一格或者两格 然后再向90°角走相关的一格或者两格.
+    * 取决于Knight一开始走的方向和格数.
+    * */
+    public static ArrayList<ChessMove> knightMove(ChessBoard board, int row, int column, ChessGame.TeamColor this_color, PieceType this_type)
+    {
+        // 得到当前棋子的起始位置.
+        // 创建一个临时的局部ArrayList moves 用来存储Knight可以走的走法.
+
+        // 声明nextRow
+        // 声明nextCol
+
+        // 先上两格 再 左一格
+        // 根据每种情况 更新nextRow 和NextCol
+        // 如果继续走还在界内的话
+            // 则继续move_check来判断是否遇到了阻碍. 如果没遇到阻碍就把当前的位置加到moves里去
+
+        // 先上两格 再 右一格
+        // 后面都和上面是一样的
+
+        // 先上一格 再 左两格
+
+        // 先上一格 再 右两格
+
+        // 先下两格 再 左一格
+
+        // 先下两格 再 右一格
+
+        // 先下一格 再 左两格
+
+        // 先下一格 再 右两格
+
+
+        // return moves.
+    }
+
+
+    /*
+    * 判断当前的位置是否还在界内 如果在 返回true 不在返回false*/
+    public static boolean inbounds(int row, int col)
+    {
+
+    }
+
+
+
 
 
     @Override
