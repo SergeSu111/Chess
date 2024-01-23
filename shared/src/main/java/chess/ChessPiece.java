@@ -249,33 +249,84 @@ public class ChessPiece {
     public static ArrayList<ChessMove> knightMove(ChessBoard board, int row, int column, ChessGame.TeamColor this_color, PieceType this_type)
     {
         // 得到当前棋子的起始位置.
+        ChessPosition start_position = new ChessPosition(row, column);
         // 创建一个临时的局部ArrayList moves 用来存储Knight可以走的走法.
+        ArrayList<ChessMove> moves = new ArrayList<>();
 
-        // 声明nextRow
-        // 声明nextCol
+        //声明nexRow 没有赋值的原因是你此时还不确定Knight到底先走哪个方向.
+        int next_row;
+        // 声明nextCol 没有赋值的原因是你此时还不确定Knight到底先走哪个方向.
+        int next_column;
 
         // 先上两格 再 左一格
-        // 根据每种情况 更新nextRow 和NextCol
-        // 如果继续走还在界内的话
-            // 则继续move_check来判断是否遇到了阻碍. 如果没遇到阻碍就把当前的位置加到moves里去
+            // 根据每种情况 更新nextRow 和NextCol
+        next_row = row + 2;
+        next_column = column - 1;
+        if (inbounds(next_row, next_column))   // 如果继续走还在界内的话
+            {
+                // 则继续move_check来判断是否遇到了阻碍. 如果没遇到阻碍就把当前的位置加到moves里去
+                move_check(board, this_color, start_position, moves, next_row, next_column); // 如果为true 则遇到了阻碍.
+            }
 
         // 先上两格 再 右一格
-        // 后面都和上面是一样的
+        next_row = row + 2;
+        next_column = column + 1;
+        if (inbounds (next_row, next_column))
+        {
+            move_check(board, this_color, start_position, moves, next_row, next_column); // 如果为true 则遇到了阻碍.
+        }
+
 
         // 先上一格 再 左两格
+        next_row = row + 1;
+        next_column = column - 2;
+        if (inbounds (next_row, next_column))
+        {
+            move_check(board, this_color, start_position, moves, next_row, next_column); // 如果为true 则遇到了阻碍.
+        }
 
         // 先上一格 再 右两格
+        next_row = row + 1;
+        next_column = column + 2;
+        if (inbounds(next_row, next_column))  // 为True证明没有出界
+        {
+            move_check(board, this_color, start_position, moves, next_row, next_column); // 如果为true 则遇到了阻碍.
+        }
 
         // 先下两格 再 左一格
+        next_row = row - 2;
+        next_column = column - 1;
+        if (inbounds(next_row, next_column)) // 为True证明没有出界
+        {
+            move_check(board, this_color, start_position, moves, next_row, next_column); // 如果为true 则遇到了阻碍.
+        }
 
         // 先下两格 再 右一格
+        next_row = row - 2;
+        next_column = column + 1;
+        if (inbounds(next_row, next_column))
+        {
+            move_check(board, this_color, start_position, moves, next_row, next_column); // 如果为true 则遇到了阻碍.
+        }
 
         // 先下一格 再 左两格
+        next_row = row - 1;
+        next_column = column - 2;
+        if (inbounds(next_row, next_column))
+        {
+            move_check(board, this_color, start_position, moves, next_row, next_column); // 如果为true 则遇到了阻碍.
+        }
 
         // 先下一格 再 右两格
+        next_row = row - 1;
+        next_column = column + 2;
+        if (inbounds(next_row, next_column))
+        {
+            move_check(board, this_color, start_position, moves, next_row, next_column); // 如果为true 则遇到了阻碍.
+        }
 
-
-        // return moves.
+        return moves;
+        // 因为每一次调用move_check的时候 只要不遇到障碍, 或者遇到的障碍是敌方的都会把当前的位置更新到moves里. 最后返回就可以了
     }
 
 
@@ -283,7 +334,11 @@ public class ChessPiece {
     * 判断当前的位置是否还在界内 如果在 返回true 不在返回false*/
     public static boolean inbounds(int row, int col)
     {
-
+        if (row <= 8 && row >= 1 && col >= 1 && col <= 8)
+        {
+            return true; // 代表在界内
+        }
+        return false; // 代表在界外
     }
 
 
