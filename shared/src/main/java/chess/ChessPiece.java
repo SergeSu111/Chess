@@ -1,5 +1,6 @@
 package chess;
 
+import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -61,6 +62,7 @@ public class ChessPiece {
         ChessPiece piece_now = board.getPiece(myPosition);
         ChessGame.TeamColor current_color  = piece_now.pieceColor;
 
+        // get the location of current piece
         int column = myPosition.getColumn();
         int row = myPosition.getRow();
 
@@ -74,8 +76,8 @@ public class ChessPiece {
 
                 break;
             case BISHOP:
-
-                my_movements.add();
+                // 因为diagonal返回的是一个ArrayList, 最后让返回的ArrayList 复制给my_movement就可以了
+                my_movements = diagonal(board, column, row, current_color, piece_now.type);
                 break;
             case QUEEN:
                 break;
@@ -91,13 +93,35 @@ public class ChessPiece {
 
 
         // Each type piece's end positions. if pawn, add all 4 moves to my_movements. Same position, different types.
-        my_movements.add(new ChessMove(myPosition, new ChessPosition(1,4), null));
+        //my_movements.add(new ChessMove(myPosition, new ChessPosition(1,4), null));
         return  my_movements;
 
     }
 
-    public static ArrayList<ChessMove> diagonal()
+    /*
+    *  Diagonal function 接受一个board, 当前piece的行和列, 以及当前piece的color和当前Piece的Type.
+    *  它会返回Bishop斜着走的每一种走法. 得到每一种走法的起点和终点位置. 
+    * */
+    public static ArrayList<ChessMove> diagonal(ChessBoard board, int column, int row, ChessGame.TeamColor my_color, PieceType my_type)
     {
+
+        // create the current position of this piece
+        ChessPosition start_position = new ChessPosition(row, column);
+
+        // initialize the empty ArrayList for storing the movement ways of piece type
+        ArrayList<ChessMove> moves  = new ArrayList<>();
+
+        // right-down
+        for (int i = row - 1, j = column + 1; i >= 1 && j <= 8; i--, j++) {
+            moves.add(new ChessMove(start_position, new ChessPosition(i, j), null));
+
+
+        }
+
+
+
+
+        return moves;
 
     }
 

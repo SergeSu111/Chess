@@ -13,6 +13,7 @@ public class ChessBoard {
     * 创建了array of array, 8行8列
     * */
     private ChessPiece[][] squares = new ChessPiece[8][8];
+    public ChessBoard(){}
     public ChessBoard(ChessPiece[][] squares) {
         this.squares = squares;
     }
