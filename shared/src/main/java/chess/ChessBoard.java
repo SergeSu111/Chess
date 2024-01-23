@@ -39,11 +39,11 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position)
     {
-        if (this.squares[position.getRow()][position.getColumn()] == null)
+        if (this.squares[position.getRow()-1][position.getColumn()-1] == null)
         {
             return null;
         }
-        return this.squares[position.getRow()][position.getColumn()];
+        return this.squares[position.getRow()-1][position.getColumn()-1];
     }
 
     /**

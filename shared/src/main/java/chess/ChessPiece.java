@@ -74,17 +74,24 @@ public class ChessPiece {
         switch(piece_now.type)
         {
             case KING:
-
+                // 因为KING 既可以直线走 也可以斜着走.
+                my_movements.addAll(diagonal(board, column, row, current_color, piece_now.type));
+                my_movements.addAll(straight(board, current_color, piece_now.type, row, column));
                 break;
             case BISHOP:
                 // 因为diagonal返回的是一个ArrayList, 最后让返回的ArrayList 复制给my_movement就可以了
                 my_movements = diagonal(board, column, row, current_color, piece_now.type);
                 break;
             case QUEEN:
+                // 因为QUEEN 既可以直线走 也可以斜着走.
+                my_movements.addAll(diagonal(board, column, row, current_color, piece_now.type));
+                my_movements.addAll(straight(board, current_color, piece_now.type, row, column));
                 break;
             case KNIGHT:
+                my_movements = knightMove(board,column, row, current_color, piece_now.type);
                 break;
             case ROOK:
+                my_movements = straight(board, current_color, piece_now.type, row, column);
                 break;
             case PAWN:
                 break;
@@ -114,15 +121,15 @@ public class ChessPiece {
         {
             // 要么遇到同颜色的棋子, 停止了 要么遇到不同颜色棋子, 把它吃了 吸收了它的位置，然后停止
             // 如果move_check 为false. 那么就没有条件能走 直接到下一个循环条件, i和j都会更新.
-            if (move_check(board, my_color, start_position, moves, row, column))
+            if (move_check(board, my_color, start_position, moves, i, j))
             {
                 break;
             }
-
             // 如果我把对面King吃掉了.
             if (my_type == PieceType.KING)
             {
-                break; // 那游戏直接结束了
+                break;
+                // 那游戏直接结束了
             }
         }
 
@@ -130,7 +137,7 @@ public class ChessPiece {
         for (int i = row - 1, j = column - 1; i >= 1 && j >= 1; i--, j--)
         {
             // if 在left-down的情况下, 当前的下一个路径有障碍. 那么if 是true. 就直接break.
-            if (move_check(board, my_color, start_position, moves, row, column ))
+            if (move_check(board, my_color, start_position, moves, i, j ))
             {
                 break;
             }
@@ -150,7 +157,7 @@ public class ChessPiece {
         for (int i = row + 1, j = column + 1; i <= 8 && j <= 8; j++, i++)
         {
             // if 在right-up的情况下, 当前的下一个路径有障碍. 那么if 是true. 就直接break.
-            if( move_check(board, my_color, start_position, moves, row, column))
+            if( move_check(board, my_color, start_position, moves, i, j))
             {
                 break;
             }
@@ -168,7 +175,7 @@ public class ChessPiece {
         for (int i = row + 1, j = column - 1; i <= 8 && j >= 1; i++, j--)
         {
             // if 在left-up的情况下, 当前的下一个路径有障碍. 那么if 是true. 就直接break.
-            if (move_check(board, my_color, start_position, moves, row, column))
+            if (move_check(board, my_color, start_position, moves, i, j))
             {
                 break;
             }
@@ -364,7 +371,29 @@ public class ChessPiece {
 
 
 
+    public static ArrayList<ChessMove> pawn_moves (ChessBoard board, int row, int column, ChessGame.TeamColor my_color, PieceType my_type)
+    {
+        // 得到当前pawn的起始位置根据Position
+        ChessPosition start_position = new ChessPosition(row, column);
+        // 创建局部临时moves来存储pawns的走法.
+        ArrayList<ChessMove> moves = new ArrayList<>();
 
+        // 声明起始的row;
+        int start_row;
+        // 声明pawn到底往下走还是往上走.
+
+        // 如果pawn的颜色是白色.
+            // 则起始的row是第二行, 且是往上走的. 所以up_down 是1.
+        // 否则 pawn的颜色是黑色的话
+            // 则起始的row在第七行, 且是往下走的. 所以up_down 是-1, 这样每次加up_down的时候行都会-1.
+        //得到nextRow 的行数.
+
+        // 加下来要看pawn走的每一步是否需要升级，如果走到了对方的最底线或对方走到了自己的最底线, pawn就可以申请成任意的rook knight bishop 或queen
+        // 然后把步数加到moves里.
+        // 否则的话, 就不需要升级. 但还是要把pawn加进去.
+        return moves;
+
+    }
 
     @Override
     public boolean equals(Object o) {
