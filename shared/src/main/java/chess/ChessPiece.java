@@ -214,19 +214,30 @@ public class ChessPiece {
     * move_check function 检查每走一步是否有障碍, 如果障碍是别人的棋子, 则直接吃掉, 把对方棋子的位置也加到moves里. 因为我的棋子要往下走.
     * 如果是自己的棋子,则停止移动.
     * */
-    public static Boolean move_check(ChessBoard board, ChessGame.TeamColor this_color, ChessPosition start_position, List<ChessMove> validMoves, int row, int column)
+    public static Boolean move_check(ChessBoard board, ChessGame.TeamColor this_color, ChessPosition start_position, List<ChessMove> moves, int row, int column)
     {
         //  创建下一个observed piece. 位置根据当前的i 和j 来 因为i 和j 都是起始位置的下一个位置
         ChessPiece next_piece = board.getPiece(new ChessPosition(row, column));
 
         // if observed piece 不为空. 证明遇到了阻碍,
+        if(next_piece != null)
+        {
             // 观察这个observed piece的颜色, 如果和当前棋子颜色相同.
-                // 么返回true.结束行走.  到此位置
+            if(next_piece.pieceColor == this_color)
+            {
+                // 么返回true.结束行走.  到此位置. 走不了了 遇到了障碍.
+                return true;
+            }
             // 如果颜色不相同, 证明遇到了对方棋子, 那么需要吃掉对方棋子, 把对方棋子的位置(i,j) 也放入moves里.
-            // 然后再返回true 结束行走 到此位置.
+            // 因为i, j就是当前下一步要走的位置.
+            moves.add(new ChessMove(start_position, new ChessPosition(row, column), null));
+            // 然后再返回true 结束行走 到此位置. 因为也遇到了障碍.
+            return true;
+        }
         // if observed piece 为空, 证明没有遇到阻碍.那么就继续往前走, 当前走过的路都要当作一个ChessPosition来放到
         // moves里. 因为有可能会在这一步停下.
-        // return false;
+        moves.add(new ChessMove(start_position, new ChessPosition(row, column), null));
+        return false;
 
     }
 
