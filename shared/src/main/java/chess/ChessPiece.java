@@ -100,7 +100,7 @@ public class ChessPiece {
 
     /*
     *  Diagonal function 接受一个board, 当前piece的行和列, 以及当前piece的color和当前Piece的Type.
-    *  它会返回Bishop斜着走的每一种走法. 得到每一种走法的起点和终点位置. 
+    *  它会返回斜着走的每一种走法. 得到每一种走法的起点和终点位置. 以及是否会升级. 最后把每一种走法都放到moves ArrayList里然后返回.
     * */
     public static ArrayList<ChessMove> diagonal(ChessBoard board, int column, int row, ChessGame.TeamColor my_color, PieceType my_type)
     {
@@ -113,17 +113,26 @@ public class ChessPiece {
 
         // right-down
         for (int i = row - 1, j = column + 1; i >= 1 && j <= 8; i--, j++) {
+
             moves.add(new ChessMove(start_position, new ChessPosition(i, j), null));
 
 
         }
 
 
-
-
         return moves;
 
     }
+
+    /*
+    * move_check function 检查每走一步是否有障碍, 如果障碍是别人的棋子, 则直接吃掉, 把对方棋子的位置也加到moves里. 因为我的棋子要往下走.
+    * 如果是自己的棋子,则停止移动.
+    * */
+    public static Boolean move_check(ChessBoard board, ChessGame.TeamColor this_color, PieceType this_type, int column, int row)
+    {
+
+    }
+
 
     @Override
     public boolean equals(Object o) {
