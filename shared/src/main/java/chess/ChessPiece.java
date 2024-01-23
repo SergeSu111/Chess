@@ -59,10 +59,15 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        // 要call get piece 和gettype 来得到这个piece的信息.
-        // 做一个switch来匹配对应的type 来做逻辑.
 
-        Map<String, String> my_map = new HashMap<>();
+        // 2. 创建一个空的chess_move ArrayList, 根据这个piece 的type来选择switch的branch, 然后把the way of movement 放到这个ListArray中
+
+        // 1. 创建一个current Position的piece.  根据这个piece来得到color.
+        ChessPiece piece_now = board.getPiece(myPosition);
+        ChessGame.TeamColor current_color  = piece_now.pieceColor;
+
+
+
 
     }
 

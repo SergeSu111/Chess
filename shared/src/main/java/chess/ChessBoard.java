@@ -26,7 +26,7 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
         /*
         * call ChessPosition和ChessPiece里的方法来得到放置的行和列. 让piece放到这个位置*/
-        squares[position.getRow()][position.getColumn()] = piece;
+        squares[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
     /**
