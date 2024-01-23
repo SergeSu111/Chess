@@ -18,6 +18,16 @@ public class ChessMove {
     private ChessPosition startPosition;
     private ChessPosition endPosition;
     private ChessPiece.PieceType promotionPiece;
+
+    @Override
+    public String toString() {
+        return "CM{" +
+                "sP=" + startPosition +
+                ", eP=" + endPosition +
+                ", pP=" + promotionPiece +
+                '}' + '\n';
+    }
+
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece)
     {
         this.startPosition = startPosition;

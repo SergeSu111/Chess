@@ -84,11 +84,11 @@ public class ChessPiece {
                 break;
             case QUEEN:
                 // 因为QUEEN 既可以直线走 也可以斜着走.
-                my_movements.addAll(diagonal(board, column, row, current_color, piece_now.type));
+                my_movements.addAll(diagonal(board, row, column, current_color, piece_now.type));
                 my_movements.addAll(straight(board, current_color, piece_now.type, row, column));
                 break;
             case KNIGHT:
-                my_movements = knightMove(board,column, row, current_color, piece_now.type);
+                my_movements = knightMove(board,row, column, current_color, piece_now.type);
                 break;
             case ROOK:
                 my_movements = straight(board, current_color, piece_now.type, row, column);
@@ -97,8 +97,7 @@ public class ChessPiece {
                 break;
         }
 
-        // Each type piece's end positions. if pawn, add all 4 moves to my_movements. Same position, different types.
-        //my_movements.add(new ChessMove(myPosition, new ChessPosition(1,4), null));
+
         return  my_movements;
 
     }
@@ -362,11 +361,8 @@ public class ChessPiece {
     * 判断当前的位置是否还在界内 如果在 返回true 不在返回false*/
     public static boolean inbounds(int row, int col)
     {
-        if (row <= 8 && row >= 1 && col >= 1 && col <= 8)
-        {
-            return true; // 代表在界内
-        }
-        return false; // 代表在界外
+        return row <= 8 && row >= 1 && col >= 1 && col <= 8; // 代表在界内
+// 代表在界外
     }
 
 
@@ -381,14 +377,28 @@ public class ChessPiece {
         // 声明起始的row;
         int start_row;
         // 声明pawn到底往下走还是往上走.
+        int up_down;
 
         // 如果pawn的颜色是白色.
+        if (my_color == ChessGame.TeamColor.WHITE)
+        {
             // 则起始的row是第二行, 且是往上走的. 所以up_down 是1.
-        // 否则 pawn的颜色是黑色的话
+            start_row = 2;
+            up_down = 1;
+        }
+        else
+        {
+            // 否则 pawn的颜色是黑色的话
             // 则起始的row在第七行, 且是往下走的. 所以up_down 是-1, 这样每次加up_down的时候行都会-1.
+            start_row = 7;
+            up_down = -1;
+        }
+
+
         //得到nextRow 的行数.
 
         // 加下来要看pawn走的每一步是否需要升级，如果走到了对方的最底线或对方走到了自己的最底线, pawn就可以申请成任意的rook knight bishop 或queen
+        // Each type piece's end positions. if pawn, add all 4 moves to my_movements. Same position, different types.
         // 然后把步数加到moves里.
         // 否则的话, 就不需要升级. 但还是要把pawn加进去.
         return moves;
