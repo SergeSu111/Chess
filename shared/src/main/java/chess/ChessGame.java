@@ -105,7 +105,9 @@ public class ChessGame {
      *
      * @return the chessboard
      */
-    public ChessBoard getBoard() {
+    public ChessBoard getBoard()
+    {
         throw new RuntimeException("Not implemented");
     }
+
 }
