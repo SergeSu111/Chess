@@ -1,9 +1,6 @@
 package chess;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Represents a single chess piece
@@ -60,14 +57,47 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
 
-        // 2. 创建一个空的chess_move ArrayList, 根据这个piece 的type来选择switch的branch, 然后把the way of movement 放到这个ListArray中
-
         // 1. 创建一个current Position的piece.  根据这个piece来得到color.
         ChessPiece piece_now = board.getPiece(myPosition);
         ChessGame.TeamColor current_color  = piece_now.pieceColor;
 
+        int column = myPosition.getColumn();
+        int row = myPosition.getRow();
 
 
+        // 2. 创建一个空的chess_move ArrayList, 根据这个piece 的type来选择switch的branch, 然后把the way of movement 放到这个ListArray中
+        ArrayList<ChessMove> my_movements = new ArrayList<>();
+        // Switch
+        switch(piece_now.type)
+        {
+            case KING:
+
+                break;
+            case BISHOP:
+
+                my_movements.add();
+                break;
+            case QUEEN:
+                break;
+            case KNIGHT:
+                break;
+            case ROOK:
+                break;
+            case PAWN:
+                break;
+        }
+
+
+
+
+        // Each type piece's end positions. if pawn, add all 4 moves to my_movements. Same position, different types.
+        my_movements.add(new ChessMove(myPosition, new ChessPosition(1,4), null));
+        return  my_movements;
+
+    }
+
+    public static ArrayList<ChessMove> diagonal()
+    {
 
     }
 
