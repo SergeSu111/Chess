@@ -1,5 +1,6 @@
 package chess;
 
+import java.awt.font.FontRenderContext;
 import java.util.*;
 
 /**
@@ -190,24 +191,44 @@ public class ChessPiece {
     public static ArrayList<ChessMove> straight (ChessBoard board, ChessGame.TeamColor this_color, PieceType type, int row, int column)
     {
         // 根据当前传进来的row 和column来得到当前棋子的起始位置.
+        ChessPosition start_position = new ChessPosition(row, column);
         // 在当前函数中也创建一个局部的moves ArrayList来存放能够走到的所有走法的ChessMove.
+        ArrayList<ChessMove> moves = new ArrayList<>();
 
         // up
         // for 循环 根据move_check检查是否有障碍, 有障碍break 检查是否会吃掉KING, break;
+        for (int i = row + 1; i <= 8; i++)  // row往上加. 最少走一格 最多走到小于等于8 否则出界了
+        {
+            move_check(board, this_color, start_position, moves, i, column);
+            // 检查往上走的每一步是否有障碍 没障碍会把当前的步数加到moves里, 或者如果吃掉对方棋子, 也会加上去.
+        }
 
 
         // down
         // for 循环 根据move_check检查是否有障碍, 有障碍break 检查是否会吃掉KING, break;
-
+        for (int i = row - 1; i >= 1; i--)  // row往下减， 最好减一格，最多减到不低于1. 否则出界了
+        {
+            move_check(board, this_color, start_position, moves, i, column);
+            // 检查往下走的每一步是否有障碍, 没障碍的话会把当前步数更新到moves里, 或者吃掉对方的棋子, 也会加上去.
+        }
 
 
         // left
         // for 循环 根据move_check检查是否有障碍, 有障碍break 检查是否会吃掉KING, break;
+        for (int j = column -1; j >= 1; j--)  // column 会往做移 最少移动一位, 最多不能低于1 因为会出界
+        {
+            move_check(board, this_color, start_position, moves, row, j);
+        }
 
         // right
         // for 循环 根据move_check检查是否有障碍, 有障碍break 检查是否会吃掉KING, break;
+        for (int j = column + 1; j <= 8; j++)
+        {
+            move_check(board, this_color, start_position, moves, row, j);
+        }
 
         // 返回被存储好的 MOVES.
+        return moves;
     }
 
     /*
