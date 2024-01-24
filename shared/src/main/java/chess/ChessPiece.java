@@ -96,6 +96,8 @@ public class ChessPiece {
             case PAWN:
                 my_movements = pawn_moves(board, row, column, current_color, piece_now.type);
                 break;
+            default:
+                throw new IllegalArgumentException("Unexpected value: " + piece_now.type.toString());
         }
 
 
@@ -126,11 +128,11 @@ public class ChessPiece {
                 break;
             }
             // 如果我把对面King吃掉了.
-            if (my_type == PieceType.KING)
-            {
-                break;
-                // 那游戏直接结束了
-            }
+//            if (my_type == PieceType.KING)
+//            {
+//                break;
+//                // 那游戏直接结束了
+//            }
         }
 
         // left-down
@@ -143,10 +145,10 @@ public class ChessPiece {
             }
             // 或者当前的我的type走到了king把它吃掉了, 则也结束.
 
-            if (my_type == PieceType.KING)
-            {
-                break;
-            }
+//            if (my_type == PieceType.KING)
+//            {
+//                break;
+//            }
 
             // 否则move-check返回false, 证明还能继续走, 那么就回到for循环往下迭代到下一个i j 位置继续走.
 
@@ -162,10 +164,10 @@ public class ChessPiece {
                 break;
             }
             // 或者当前的我的type走到了king把它吃掉了, 则也结束.
-            if (my_type == PieceType.KING)
-            {
-                break;
-            }
+//            if (my_type == PieceType.KING)
+//            {
+//                break;
+//            }
 
             // 否则move-check返回false, 证明还能继续走, 那么就回到for循环往下迭代到下一个i j 位置继续走.
 
@@ -180,10 +182,10 @@ public class ChessPiece {
                 break;
             }
             // 或者当前的我的type走到了king把它吃掉了, 则也结束.
-            if (my_type == PieceType.KING)
-            {
-                break;
-            }
+//            if (my_type == PieceType.KING)
+//            {
+//                break;
+//            }
             // 否则move-check返回false, 证明还能继续走, 那么就回到for循环往下迭代到下一个i j 位置继续走.
 
         }
@@ -206,7 +208,8 @@ public class ChessPiece {
         // for 循环 根据move_check检查是否有障碍, 有障碍break 检查是否会吃掉KING, break;
         for (int i = row + 1; i <= 8; i++)  // row往上加. 最少走一格 最多走到小于等于8 否则出界了
         {
-            move_check(board, this_color, start_position, moves, i, column);
+           if (move_check(board, this_color, start_position, moves, i, column)) break;
+
             // 检查往上走的每一步是否有障碍 没障碍会把当前的步数加到moves里, 或者如果吃掉对方棋子, 也会加上去.
         }
 
@@ -215,7 +218,7 @@ public class ChessPiece {
         // for 循环 根据move_check检查是否有障碍, 有障碍break 检查是否会吃掉KING, break;
         for (int i = row - 1; i >= 1; i--)  // row往下减， 最好减一格，最多减到不低于1. 否则出界了
         {
-            move_check(board, this_color, start_position, moves, i, column);
+            if (move_check(board, this_color, start_position, moves, i, column)) break;
             // 检查往下走的每一步是否有障碍, 没障碍的话会把当前步数更新到moves里, 或者吃掉对方的棋子, 也会加上去.
         }
 
@@ -224,14 +227,14 @@ public class ChessPiece {
         // for 循环 根据move_check检查是否有障碍, 有障碍break 检查是否会吃掉KING, break;
         for (int j = column -1; j >= 1; j--)  // column 会往做移 最少移动一位, 最多不能低于1 因为会出界
         {
-            move_check(board, this_color, start_position, moves, row, j);
+             if (move_check(board, this_color, start_position, moves, row, j)) break;
         }
 
         // right
         // for 循环 根据move_check检查是否有障碍, 有障碍break 检查是否会吃掉KING, break;
         for (int j = column + 1; j <= 8; j++)
         {
-            move_check(board, this_color, start_position, moves, row, j);
+            if (move_check(board, this_color, start_position, moves, row, j)) break;
         }
 
         // 返回被存储好的 MOVES.
