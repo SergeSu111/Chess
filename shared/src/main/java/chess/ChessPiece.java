@@ -75,7 +75,7 @@ public class ChessPiece {
         {
             case KING:
                 // 因为KING 既可以直线走 也可以斜着走.
-                my_movements.addAll(diagonal(board, column, row, current_color, piece_now.type));
+                my_movements.addAll(diagonal(board, row, column, current_color, piece_now.type));
                 my_movements.addAll(straight(board, current_color, piece_now.type, row, column));
                 break;
             case BISHOP:
@@ -411,7 +411,7 @@ public class ChessPiece {
             start_row = 7;
             up_down = -1;
         }
-        int next_row = start_row + up_down;  //得到nextRow 的行数.
+        int next_row = row + up_down;  //得到nextRow 的行数.
 
 
         boolean empty = false;
@@ -426,8 +426,16 @@ public class ChessPiece {
                 moves.add(new ChessMove(start_position, new ChessPosition(next_row, column), PieceType.ROOK));
             }
             // 否则的话,证明没有走到底线 就不需要升级. 但还是要把走过的路加进去.
-            moves.add(new ChessMove(start_position, new ChessPosition(next_row, column), null));
-            empty = true; // 证明下一步是空的.
+            else
+            {
+
+                moves.add(new ChessMove(start_position, new ChessPosition(next_row, column), null));
+                // check my current location is start point or not
+                // if there is anything in front of it. by two spaces.
+                // move for two spaces.
+                empty = true; // 证明下一步是空的.
+            }
+
 
             // 如果pawn的左右协方有东西可以吃, 则pawn可以去左右协防然后吃掉对方
         }
@@ -475,16 +483,22 @@ public class ChessPiece {
                 moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), PieceType.KNIGHT));
             }
             // 否则没有达到底线, 但你任然可以吃他 因为对方颜色和你不一样. 但是你不需要升级.
-            moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column),null));
+            else
+            {
+                moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column),null));
+            }
+
         }
 
 
         // 如果最开始的开始, pawn就在它自己的start point呢?
         // 如果一开始就在start point 且前面没东西. empty == true 表示前面没东西
-        if (next_row == row && empty)
+        if (start_row == row && empty)
         {
-            next_row += up_down; // depends on the color.
+            // move forward 2 for start
+            // next_row += up_down; // depends on the color.
             //如果pawn的下一行在bound 以内. 并且下一个piece为空.
+            next_row = start_row + 2;
             if (next_row >= 1 && next_row <= 8 && board.getPiece(new ChessPosition(next_row,column))== null)
             {
                 moves.add(new ChessMove(start_position, new ChessPosition(next_row, column), null));
