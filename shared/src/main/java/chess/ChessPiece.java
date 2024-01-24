@@ -80,7 +80,7 @@ public class ChessPiece {
                 break;
             case BISHOP:
                 // 因为diagonal返回的是一个ArrayList, 最后让返回的ArrayList 复制给my_movement就可以了
-                my_movements = diagonal(board, column, row, current_color, piece_now.type);
+                my_movements = diagonal(board, row, column, current_color, piece_now.type);
                 break;
             case QUEEN:
                 // 因为QUEEN 既可以直线走 也可以斜着走.
@@ -109,7 +109,7 @@ public class ChessPiece {
     *  Diagonal function 接受一个board, 当前piece的行和列, 以及当前piece的color和当前Piece的Type.
     *  它会返回斜着走的每一种走法. 得到每一种走法的起点和终点位置. 以及是否会升级. 最后把每一种走法都放到moves ArrayList里然后返回.
     * */
-    public static ArrayList<ChessMove> diagonal(ChessBoard board, int column, int row, ChessGame.TeamColor my_color, PieceType my_type) {
+    public static ArrayList<ChessMove> diagonal(ChessBoard board, int row, int column, ChessGame.TeamColor my_color, PieceType my_type) {
 
         // create the current position of this piece
         ChessPosition start_position = new ChessPosition(row, column);
@@ -127,12 +127,12 @@ public class ChessPiece {
             {
                 break;
             }
-            // 如果我把对面King吃掉了.
-//            if (my_type == PieceType.KING)
-//            {
-//                break;
-//                // 那游戏直接结束了
-//            }
+             // 如果我把对面King吃掉了.
+            if (my_type == PieceType.KING)
+            {
+                break;
+                // 那游戏直接结束了
+            }
         }
 
         // left-down
@@ -145,10 +145,10 @@ public class ChessPiece {
             }
             // 或者当前的我的type走到了king把它吃掉了, 则也结束.
 
-//            if (my_type == PieceType.KING)
-//            {
-//                break;
-//            }
+            if (my_type == PieceType.KING)
+            {
+                break;
+            }
 
             // 否则move-check返回false, 证明还能继续走, 那么就回到for循环往下迭代到下一个i j 位置继续走.
 
@@ -164,10 +164,10 @@ public class ChessPiece {
                 break;
             }
             // 或者当前的我的type走到了king把它吃掉了, 则也结束.
-//            if (my_type == PieceType.KING)
-//            {
-//                break;
-//            }
+            if (my_type == PieceType.KING)
+            {
+                break;
+            }
 
             // 否则move-check返回false, 证明还能继续走, 那么就回到for循环往下迭代到下一个i j 位置继续走.
 
@@ -182,10 +182,10 @@ public class ChessPiece {
                 break;
             }
             // 或者当前的我的type走到了king把它吃掉了, 则也结束.
-//            if (my_type == PieceType.KING)
-//            {
-//                break;
-//            }
+            if (my_type == PieceType.KING)
+            {
+                break;
+            }
             // 否则move-check返回false, 证明还能继续走, 那么就回到for循环往下迭代到下一个i j 位置继续走.
 
         }
@@ -211,6 +211,10 @@ public class ChessPiece {
            if (move_check(board, this_color, start_position, moves, i, column)) break;
 
             // 检查往上走的每一步是否有障碍 没障碍会把当前的步数加到moves里, 或者如果吃掉对方棋子, 也会加上去.
+            if (type == PieceType.KING)
+            {
+                break;
+            }
         }
 
 
@@ -220,6 +224,11 @@ public class ChessPiece {
         {
             if (move_check(board, this_color, start_position, moves, i, column)) break;
             // 检查往下走的每一步是否有障碍, 没障碍的话会把当前步数更新到moves里, 或者吃掉对方的棋子, 也会加上去.
+            if (type == PieceType.KING)
+            {
+                break;
+            }
+
         }
 
 
@@ -228,6 +237,10 @@ public class ChessPiece {
         for (int j = column -1; j >= 1; j--)  // column 会往做移 最少移动一位, 最多不能低于1 因为会出界
         {
              if (move_check(board, this_color, start_position, moves, row, j)) break;
+            if (type == PieceType.KING)
+            {
+                break;
+            }
         }
 
         // right
@@ -235,6 +248,10 @@ public class ChessPiece {
         for (int j = column + 1; j <= 8; j++)
         {
             if (move_check(board, this_color, start_position, moves, row, j)) break;
+            if (type == PieceType.KING)
+            {
+                break;
+            }
         }
 
         // 返回被存储好的 MOVES.
