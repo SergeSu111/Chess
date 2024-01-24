@@ -79,13 +79,13 @@ public class ChessBoard {
         //  the last Second row, all pawns
        for (int i = 0; i < 8; i++)
        {
-           this.squares[1][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+           this.squares[1][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
        }
 
        // the second row, all black pawns.
        for (int i = 0; i < 8; i++)
        {
-           this.squares[7][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+           this.squares[6][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
        }
 
        // The last row, all black pieces.

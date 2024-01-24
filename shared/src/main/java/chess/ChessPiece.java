@@ -428,10 +428,13 @@ public class ChessPiece {
             // 否则的话,证明没有走到底线 就不需要升级. 但还是要把走过的路加进去.
             else
             {
-
                 moves.add(new ChessMove(start_position, new ChessPosition(next_row, column), null));
                 // check my current location is start point or not
                 // if there is anything in front of it. by two spaces.
+//                if (board.getPiece(new ChessPosition(next_row + 1, column)) == null)
+//                {
+//                    moves.add(new ChessMove(start_position, new ChessPosition(next_row +1, column), null));
+//                }
                 // move for two spaces.
                 empty = true; // 证明下一步是空的.
             }
@@ -496,15 +499,14 @@ public class ChessPiece {
         if (start_row == row && empty)
         {
             // move forward 2 for start
-            // next_row += up_down; // depends on the color.
+            next_row += up_down; // depends on the color.  // 因为已经在在前面加一个位置; 这里再加up_down就完成了2格前进的操作
             //如果pawn的下一行在bound 以内. 并且下一个piece为空.
-            next_row = start_row + 2;
-            if (next_row >= 1 && next_row <= 8 && board.getPiece(new ChessPosition(next_row,column))== null)
+            if (board.getPiece(new ChessPosition(next_row, column)) == null)
             {
                 moves.add(new ChessMove(start_position, new ChessPosition(next_row, column), null));
             }
         }
-        return moves;
+       return moves;
 
     }
 
