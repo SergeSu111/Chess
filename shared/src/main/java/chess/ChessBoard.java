@@ -43,7 +43,9 @@ public class ChessBoard {
         {
             return null;
         }
-        return this.squares[position.getRow()-1][position.getColumn()-1];
+        else{
+            return this.squares[position.getRow()-1][position.getColumn()-1];
+        }
     }
 
     /**
@@ -60,11 +62,12 @@ public class ChessBoard {
         *  PAWN PAWN   PAWN   PAWN  PAWN PAWN   PAWN   PAWN
         *
         * 下白:
-        * ROOK KNIGHT BISHOP QUEEN KING BISHOP KNIGHT ROOK
+        *
         * PAWN PAWN   PAWN   PAWN  PAWN PAWN   PAWN   PAWN
+        * ROOK KNIGHT BISHOP QUEEN KING BISHOP KNIGHT ROOK
         *
         * */
-        this.squares = new ChessPiece[8][8];
+        // this.squares = new ChessPiece[8][8];
         // the last row
         this.squares[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
         this.squares[0][1] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
@@ -76,13 +79,13 @@ public class ChessBoard {
         this.squares[0][7] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
 
 
-        //  the last Second row, all pawns
+        //  the Second row, all pawns
        for (int i = 0; i < 8; i++)
        {
            this.squares[1][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
        }
 
-       // the second row, all black pawns.
+       // the six row, all black pawns.
        for (int i = 0; i < 8; i++)
        {
            this.squares[6][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
@@ -104,6 +107,7 @@ public class ChessBoard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessBoard that = (ChessBoard) o;
+
         return Arrays.deepEquals(squares, that.squares);
     }
 

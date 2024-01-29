@@ -13,7 +13,7 @@ public class ChessPiece {
 
     private ChessGame.TeamColor pieceColor;
     private PieceType type;
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type)
+    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type)
     {
         this.pieceColor = pieceColor;
         this.type = type;
@@ -36,7 +36,8 @@ public class ChessPiece {
     /**
      * @return Which team this chess piece belongs to
      */
-    public ChessGame.TeamColor getTeamColor() {
+    public ChessGame.TeamColor getTeamColor()
+    {
         return this.pieceColor;
     }
 
@@ -60,7 +61,6 @@ public class ChessPiece {
         // 1. 创建一个current Position的piece.  根据这个piece来得到color.
         ChessPiece piece_now = board.getPiece(myPosition);
         ChessGame.TeamColor current_color  = piece_now.pieceColor;
-
 
 
         // get the location of current piece
@@ -97,7 +97,7 @@ public class ChessPiece {
                 my_movements = pawn_moves(board, row, column, current_color, piece_now.type);
                 break;
             default:
-                throw new IllegalArgumentException("Unexpected value: " + piece_now.type.toString());
+                // throw new IllegalArgumentException("Unexpected value: " + piece_now.type.toString());
         }
 
 
@@ -262,7 +262,7 @@ public class ChessPiece {
     * move_check function 检查每走一步是否有障碍, 如果障碍是别人的棋子, 则直接吃掉, 把对方棋子的位置也加到moves里. 因为我的棋子要往下走.
     * 如果是自己的棋子,则停止移动.
     * */
-    public static Boolean move_check(ChessBoard board, ChessGame.TeamColor this_color, ChessPosition start_position, List<ChessMove> moves, int row, int column)
+    public static Boolean move_check(ChessBoard board, ChessGame.TeamColor original_color, ChessPosition start_position, List<ChessMove> moves, int row, int column)
     {
         //  创建下一个observed piece. 位置根据当前的i 和j 来 因为i 和j 都是起始位置的下一个位置
         ChessPiece next_piece = board.getPiece(new ChessPosition(row, column));
@@ -271,7 +271,7 @@ public class ChessPiece {
         if(next_piece != null)
         {
             // 观察这个observed piece的颜色, 如果和当前棋子颜色相同.
-            if(next_piece.pieceColor == this_color)
+            if(next_piece.pieceColor == original_color)
             {
                 // 么返回true.结束行走.  到此位置. 走不了了 遇到了障碍.
                 return true;
@@ -424,6 +424,7 @@ public class ChessPiece {
                 moves.add(new ChessMove(start_position, new ChessPosition(next_row, column), PieceType.QUEEN));
                 moves.add(new ChessMove(start_position, new ChessPosition(next_row, column), PieceType.KNIGHT));
                 moves.add(new ChessMove(start_position, new ChessPosition(next_row, column), PieceType.ROOK));
+                empty = true;
             }
             // 否则的话,证明没有走到底线 就不需要升级. 但还是要把走过的路加进去.
             else
@@ -496,7 +497,7 @@ public class ChessPiece {
 
         // 如果最开始的开始, pawn就在它自己的start point呢?
         // 如果一开始就在start point 且前面没东西. empty == true 表示前面没东西
-        if (start_row == row && empty)
+        if (row == start_row && empty)   // 因为start_row 本来就是7 或者2 如果row等于start_row 证明pawn本来就在原位
         {
             // move forward 2 for start
             next_row += up_down; // depends on the color.  // 因为已经在在前面加一个位置; 这里再加up_down就完成了2格前进的操作
