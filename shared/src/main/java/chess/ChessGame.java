@@ -55,6 +55,7 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition)
     {
+        // 创建return的moves
         ChessPiece current_piece = board.getPiece(startPosition);
         if (current_piece == null)
         {
@@ -62,6 +63,25 @@ public class ChessGame {
         }
         else
         {
+            ArrayList<ChessMove> curr_moves = (ArrayList<ChessMove>) current_piece.pieceMoves(board, startPosition);
+            // SET一下初始的board
+            ChessBoard original_board = this.board;
+            // loop curr_moves里的每一个小步
+            for (ChessMove move : curr_moves)
+            {
+                // 将当前start position的piece 从board 里删掉
+                board.removePiece(startPosition);
+                // 把他加到endposition离去
+                board.addPiece(move.getEndPosition(), current_piece);
+                // call is_In_Check
+                if (!isInCheck(current_piece.getTeamColor()))  // 如果为false 则不会被check 则加到moves 里
+                {
+                    curr_moves.add(move);
+                }
+                this.board = original_board;
+                // 把board 改回baseboard.
+            }
+            return curr_moves;
 
         }
     }
@@ -187,6 +207,24 @@ public class ChessGame {
         return this.board;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessGame chessGame = (ChessGame) o;
+        return Objects.equals(board, chessGame.board) && turn == chessGame.turn;
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(board, turn);
+    }
 
+    @Override
+    public String toString() {
+        return "ChessGame{" +
+                "board=" + board +
+                ", turn=" + turn +
+                '}' + "/n";
+    }
 }
