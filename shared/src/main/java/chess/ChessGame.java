@@ -51,10 +51,19 @@ public class ChessGame {
      * @param startPosition the piece to get valid moves for
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
+     *  Takes as input a position on the chessboard and returns all moves the piece there can legally make. If there is no piece at that location, this method returns null.
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition)
     {
-        ;
+        ChessPiece current_piece = board.getPiece(startPosition);
+        if (current_piece == null)
+        {
+            return null;
+        }
+        else
+        {
+
+        }
     }
 
     /**
@@ -76,8 +85,6 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor)
     {
-
-        ChessPiece current_piece = board.getPiece(new ChessPosition(1, 1));  // 先得到棋盘上每一个棋子.
         ChessPiece King_piece = null;
         ArrayList<ChessPiece> enemy_piece = new ArrayList<>();
         ArrayList<ChessPosition> enemy_position = new ArrayList<>();
@@ -87,12 +94,15 @@ public class ChessGame {
         {
             for (int j = 0; j < 8; j++)
             {
-                if (current_piece.getPieceType() == ChessPiece.PieceType.KING)
+                ChessPiece current_piece = board.getPiece(new ChessPosition(i + 1, j + 1));
+                if (current_piece != null)
                 {
+                    if (current_piece.getPieceType() == ChessPiece.PieceType.KING)
+                    {
                         if (current_piece.getTeamColor() == teamColor)   // 因为我要确定这个King是我的King. 根据颜色确定
                         {
                             King_piece = current_piece;
-                           king_position = new ChessPosition(i + 1, j + 1);
+                            king_position = new ChessPosition(i + 1, j + 1); // 得到king的position
 
                         }
                         else  // 是一个敌人的king 可以把他放到not_King里
@@ -101,25 +111,24 @@ public class ChessGame {
                             enemy_position.add(new ChessPosition(i + 1, j + 1));
 
                         }
-                }
-                else   // means the current_piece is not king
-                {
-                    if (current_piece.getTeamColor() != teamColor)
+                    }
+                    else   // means the current_piece is not king
                     {
-
-                        enemy_piece.add(current_piece);
-                        enemy_position.add(new ChessPosition(i + 1, j + 1));
+                        if (current_piece.getTeamColor() != teamColor)
+                        {
+                            enemy_piece.add(current_piece);
+                            enemy_position.add(new ChessPosition(i + 1, j + 1));
+                        }
 
                     }
-
                 }
+
             }
         }
         if (King_piece == null)  // 如果King_piece 还是null 证明前面都没做 证明真的没有我要的King.
         {
             return false;
         }
-
         for (int i = 0; i <enemy_piece.size(); i++)
         {
 
@@ -127,15 +136,13 @@ public class ChessGame {
             for (int index = 0; index < current_moves.size(); index++)
             {
                 ChessPosition curr_end_position = current_moves.get(index).getEndPosition(); // get the end position of the current ChessMove
-                if (king_position == curr_end_position)
+                if (king_position.getRow() == curr_end_position.getRow() && king_position.getColumn() == curr_end_position.getColumn())
                 {
                     return true;
                 }
             }
         }
         return false;
-
-
     }
 
     /**
@@ -155,7 +162,8 @@ public class ChessGame {
      * @param teamColor which team to check for stalemate
      * @return True if the specified team is in stalemate, otherwise false
      */
-    public boolean isInStalemate(TeamColor teamColor) {
+    public boolean isInStalemate(TeamColor teamColor)
+    {
         throw new RuntimeException("Not implemented");
     }
 
@@ -164,8 +172,9 @@ public class ChessGame {
      *
      * @param board the new board to use
      */
-    public void setBoard(ChessBoard board) {
-
+    public void setBoard(ChessBoard board)
+    {
+        this.board = board;
     }
 
     /**
@@ -175,7 +184,9 @@ public class ChessGame {
      */
     public ChessBoard getBoard()
     {
-
+        return this.board;
     }
+
+
 
 }
