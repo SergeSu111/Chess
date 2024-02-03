@@ -52,8 +52,9 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
-    public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+    public Collection<ChessMove> validMoves(ChessPosition startPosition)
+    {
+        ;
     }
 
     /**
@@ -75,11 +76,13 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor)
     {
-        List<ChessPiece> not_myking = new ArrayList<>();  // 存储不是我家King的所有棋子.
+
         ChessPiece current_piece = board.getPiece(new ChessPosition(1, 1));  // 先得到棋盘上每一个棋子.
         ChessPiece King_piece = null;
-        Map<Integer, Integer> row_col = new HashMap<>();
-        Map<Integer, Integer> for_king = new HashMap<>();
+        ArrayList<ChessPiece> enemy_piece = new ArrayList<>();
+        ArrayList<ChessPosition> enemy_position = new ArrayList<>();
+        ChessPosition king_position  = null;
+
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
@@ -89,52 +92,50 @@ public class ChessGame {
                         if (current_piece.getTeamColor() == teamColor)   // 因为我要确定这个King是我的King. 根据颜色确定
                         {
                             King_piece = current_piece;
-                            for_king.put(i, j);
+                           king_position = new ChessPosition(i + 1, j + 1);
+
                         }
                         else  // 是一个敌人的king 可以把他放到not_King里
                         {
-                            not_myking.add(current_piece);
-                            row_col.put(i,j); // 既然
+                            enemy_piece.add(current_piece);
+                            enemy_position.add(new ChessPosition(i + 1, j + 1));
 
                         }
                 }
                 else   // means the current_piece is not king
                 {
-                    not_myking.add(current_piece);
+                    if (current_piece.getTeamColor() != teamColor)
+                    {
+
+                        enemy_piece.add(current_piece);
+                        enemy_position.add(new ChessPosition(i + 1, j + 1));
+
+                    }
+
                 }
             }
         }
-
-        for (int i = 0; i < not_myking.size(); i++)
+        if (King_piece == null)  // 如果King_piece 还是null 证明前面都没做 证明真的没有我要的King.
         {
-            ChessPiece enemyPiece = not_myking.get(i);
-            if (enemyPiece.getTeamColor() != teamColor)  // if the current piece's color is different with King's
+            return false;
+        }
+
+        for (int i = 0; i <enemy_piece.size(); i++)
+        {
+
+            ArrayList<ChessMove> current_moves = (ArrayList<ChessMove>) enemy_piece.get(i).pieceMoves(board, enemy_position.get(i)); // get all the moves this current can go
+            for (int index = 0; index < current_moves.size(); index++)
             {
-                ArrayList<ChessMove> current_moves = (ArrayList<ChessMove>) not_myking.get(i).pieceMoves(board, new ChessPosition(,row_col.get(i))); // get all the moves this current can go
-                for (int index = 0; index < current_moves.size(); index++)
+                ChessPosition curr_end_position = current_moves.get(index).getEndPosition(); // get the end position of the current ChessMove
+                if (king_position == curr_end_position)
                 {
-                    ChessPosition curr_end_position = current_moves.get(index).getEndPosition(); // get the end position of the current ChessMove
-                    Set<Integer> row = for_king.keySet();
-                    ChessPosition King_position = new ChessPosition(1,1);
-                    for (int key: row)
-                    {
-                        King_position = new ChessPosition(key, for_king.get(key));  // 得到了国王的位置
-                    }
-
-                    if (curr_end_position == King_position) {
-                        return true;
-                    }
+                    return true;
                 }
-
             }
         }
         return false;
 
 
-        if (King_piece == null)  // 如果King_piece 还是null 证明前面都没做 证明真的没有我要的King.
-        {
-            return false;
-        }
     }
 
     /**
@@ -164,7 +165,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+
     }
 
     /**
@@ -174,7 +175,7 @@ public class ChessGame {
      */
     public ChessBoard getBoard()
     {
-        throw new RuntimeException("Not implemented");
+
     }
 
 }
