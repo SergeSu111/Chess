@@ -193,13 +193,42 @@ public class ChessGame {
 
     public boolean not_valid_move(TeamColor teamColor)
     {
+        ArrayList<ChessMove> result = new ArrayList<>();
+        for(int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (this.board.getPiece(new ChessPosition(i+1, j+1)) != null)
+                {
+                    if (this.board.getPiece(new ChessPosition(i+1, j+1)).getTeamColor() == teamColor)
+                    {
+                        result.addAll(validMoves(new ChessPosition(i + 1, j +1)));
+                    }
+                }
 
+            }
+        }
+        if (result.isEmpty())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public boolean isInCheckmate(TeamColor teamColor)
     {
 
-        if (isInCheck(teamColor) && );
+        if (isInCheck(teamColor) && not_valid_move(teamColor))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /**
@@ -211,7 +240,14 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor)
     {
-        throw new RuntimeException("Not implemented");
+        if (!isInCheck(teamColor) && not_valid_move(teamColor))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /**
