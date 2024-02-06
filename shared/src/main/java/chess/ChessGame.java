@@ -100,20 +100,43 @@ public class ChessGame {
      */
     // 此函数要做的是传进来一个move 看看这个move里有哪些步是合法能走的. 然后就走过去 否则就抛出异常
     public void makeMove(ChessMove move) throws InvalidMoveException {
-       ArrayList<ChessMove> result_move = (ArrayList<ChessMove>) validMoves(move.getStartPosition());  // 得到了这个move的piece能走的合法的所有走法
-        for (ChessMove step_move: result_move)   //  循环里面的每一个move.
-        {
-            if(step_move.getEndPosition().equals(move.getEndPosition()))  // 如果我当前这一步的走法和move里的终点一样 证明是可以走的 合法的
-            {
-                // 接下来要实行走过去的政策. 那么就是原来的end position 是现在的start position. 原来的 start position 变成了null.
-                ChessPiece curr = this.board.getPiece(move.getStartPosition());
-                this.board.addPiece(move.getEndPosition(), curr);
-                this.board.removePiece(move.getStartPosition());
-                return;
-            }
+        ArrayList<ChessMove> result_move = (ArrayList<ChessMove>) validMoves(move.getStartPosition());  // 得到了这个move的piece能走的合法的所有走法
+        if (!result_move.contains(move)) {
+            throw new InvalidMoveException("It is illegal.");
         }
-        throw new InvalidMoveException("It is illegal.");
+        ChessPiece temp = this.board.getPiece(move.getStartPosition());
+        if (!temp.getTeamColor().equals(this.turn)) {
+            throw new InvalidMoveException("It is illegal.");
+        }
+
+        this.board.removePiece(move.getStartPosition());
+        ChessPiece removed_piece = this.board.getPiece(move.getEndPosition());
+
+        ChessPiece promotion_piece = null;
+        if (move.getPromotionPiece() != null) {
+            promotion_piece = new ChessPiece(temp.getTeamColor(), move.getPromotionPiece());
+            this.board.addPiece(move.getEndPosition(), promotion_piece);
+        }
+        else
+        {
+            this.board.addPiece(move.getEndPosition(), temp);
+        }
+
+        if (isInCheck(temp.getTeamColor())) {
+            this.board.addPiece(move.getStartPosition(), temp);
+            this.board.addPiece(move.getEndPosition(), removed_piece);
+            throw new InvalidMoveException("Its illegal");
+        }
+        if (this.turn == TeamColor.WHITE) {
+            this.turn = TeamColor.BLACK;
+        } else {
+            this.turn = TeamColor.WHITE;
+        }
     }
+
+
+
+
 
     /**
      * Determines if the given team is in check

@@ -447,52 +447,61 @@ public class ChessPiece {
             // 右斜方的话pawn的下一个column肯定会+1
         int next_column = column + 1;
         // 然后搞出来右斜方的piece. 因为next_row 前面已经加了
-        ChessPiece next_piece = board.getPiece(new ChessPosition(next_row, next_column));
+
 
         // 接下来开始判断这个右斜方的piece是否为空.
         // 如果右斜方piece不为空且颜色跟当前颜色不等. 证明我们可以吃他.
-        if (next_piece != null && my_color != next_piece.pieceColor)
+        if (inbounds(next_row, next_column))
         {
-            // 且还是要判断我们到了右斜方是不是会到达底线
-            if (next_row == 1 || next_row == 8)
+            ChessPiece next_piece = board.getPiece(new ChessPosition(next_row, next_column));
+            if (next_piece != null && my_color != next_piece.pieceColor)
             {
-                // 如果到达了底线 则需要把四种可能的升级类型都加进去, 且需要加这个路线进moves.
-                moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), PieceType.BISHOP));
-                moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), PieceType.ROOK));
-                moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), PieceType.KNIGHT));
-                moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), PieceType.QUEEN));
-            }
-            else
-            {
-                // 否则如果没有到达底线. 而且可以吃它, 那么就直接也他它吃掉然后把它的location加进moves里
-                moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), null));
+                // 且还是要判断我们到了右斜方是不是会到达底线
+                if (next_row == 1 || next_row == 8)
+                {
+                    // 如果到达了底线 则需要把四种可能的升级类型都加进去, 且需要加这个路线进moves.
+                    moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), PieceType.BISHOP));
+                    moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), PieceType.ROOK));
+                    moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), PieceType.KNIGHT));
+                    moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), PieceType.QUEEN));
+                }
+                else
+                {
+                    // 否则如果没有到达底线. 而且可以吃它, 那么就直接也他它吃掉然后把它的location加进moves里
+                    moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), null));
+                }
             }
         }
+
 
 
         // 左斜方
         next_column -= 2; // 因为前面已经走了右斜方, 所以想回到左斜方需要将列-2;
-        next_piece = board.getPiece(new ChessPosition(next_row, next_column));  // 得到了当前的左斜方piece
 
-        // 如果左斜方piece不为空且颜色和当前颜色不等，证明我们可以吃他
-        if (next_piece != null && my_color != next_piece.pieceColor)
+        if (inbounds(next_row, next_column))
         {
-            // 且还要判断往右协方走会不会到底线.
-            if (next_row == 1 || next_row == 8)
+            ChessPiece next_piece = board.getPiece(new ChessPosition(next_row, next_column));  // 得到了当前的左斜方piece
+            // 如果左斜方piece不为空且颜色和当前颜色不等，证明我们可以吃他
+            if (next_piece != null && my_color != next_piece.pieceColor)
             {
-                // 如果到了最底线. 我们既可以吃了它, pawn也可以升级. 则我们可以把他们放到moves里.
-                moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), PieceType.BISHOP));
-                moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), PieceType.QUEEN));
-                moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), PieceType.ROOK));
-                moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), PieceType.KNIGHT));
-            }
-            // 否则没有达到底线, 但你任然可以吃他 因为对方颜色和你不一样. 但是你不需要升级.
-            else
-            {
-                moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column),null));
-            }
+                // 且还要判断往右协方走会不会到底线.
+                if (next_row == 1 || next_row == 8)
+                {
+                    // 如果到了最底线. 我们既可以吃了它, pawn也可以升级. 则我们可以把他们放到moves里.
+                    moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), PieceType.BISHOP));
+                    moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), PieceType.QUEEN));
+                    moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), PieceType.ROOK));
+                    moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column), PieceType.KNIGHT));
+                }
+                // 否则没有达到底线, 但你任然可以吃他 因为对方颜色和你不一样. 但是你不需要升级.
+                else
+                {
+                    moves.add(new ChessMove(start_position, new ChessPosition(next_row, next_column),null));
+                }
 
+            }
         }
+
 
 
         // 如果最开始的开始, pawn就在它自己的start point呢?
