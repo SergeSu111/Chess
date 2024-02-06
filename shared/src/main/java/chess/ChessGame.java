@@ -63,26 +63,29 @@ public class ChessGame {
         }
         else
         {
-            ArrayList<ChessMove> curr_moves = (ArrayList<ChessMove>) current_piece.pieceMoves(board, startPosition);
-            // SET一下初始的board
-            ChessBoard original_board = this.board;
+            ArrayList<ChessMove> curr_moves = new ArrayList<ChessMove>();
+            Collection<ChessMove> moves = current_piece.pieceMoves(this.board, startPosition);
+            ChessPiece removed = null; // for update
+
             // loop curr_moves里的每一个小步
-            for (ChessMove move : curr_moves)
+            for (ChessMove move : moves)
             {
                 // 将当前start position的piece 从board 里删掉
-                board.removePiece(startPosition);
+                removed = this.board.getPiece(move.getEndPosition());
+                this.board.removePiece(startPosition);
                 // 把他加到endposition离去
-                board.addPiece(move.getEndPosition(), current_piece);
+                this.board.addPiece(move.getEndPosition(), current_piece);
                 // call is_In_Check
                 if (!isInCheck(current_piece.getTeamColor()))  // 如果为false 则不会被check 则加到moves 里
                 {
                     curr_moves.add(move);
                 }
-                this.board = original_board;
+                this.board.addPiece(startPosition, current_piece);
+                this.board.addPiece(move.getEndPosition(), removed);
+
                 // 把board 改回baseboard.
             }
             return curr_moves;
-
         }
     }
 
@@ -91,9 +94,25 @@ public class ChessGame {
      *
      * @param move chess move to preform
      * @throws InvalidMoveException if move is invalid
+     * Receives a given move and executes it, provided it is a legal move. If the move is illegal,
+     * it throws an InvalidMoveException. A move is illegal if the chess piece cannot move there,
+     * if the move leaves the team’s king in danger, or if it’s not the corresponding team's turn.
      */
+    // 此函数要做的是传进来一个move 看看这个move里有哪些步是合法能走的. 然后就走过去 否则就抛出异常
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+       ArrayList<ChessMove> result_move = (ArrayList<ChessMove>) validMoves(move.getStartPosition());  // 得到了这个move的piece能走的合法的所有走法
+        for (ChessMove step_move: result_move)   //  循环里面的每一个move.
+        {
+            if(step_move.getEndPosition().equals(move.getEndPosition()))  // 如果我当前这一步的走法和move里的终点一样 证明是可以走的 合法的
+            {
+                // 接下来要实行走过去的政策. 那么就是原来的end position 是现在的start position. 原来的 start position 变成了null.
+                ChessPiece curr = this.board.getPiece(move.getStartPosition());
+                this.board.addPiece(move.getEndPosition(), curr);
+                this.board.removePiece(move.getStartPosition());
+                return;
+            }
+        }
+        throw new InvalidMoveException("It is illegal.");
     }
 
     /**
@@ -171,8 +190,16 @@ public class ChessGame {
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
-    public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+
+    public boolean not_valid_move(TeamColor teamColor)
+    {
+
+    }
+
+    public boolean isInCheckmate(TeamColor teamColor)
+    {
+
+        if (isInCheck(teamColor) && );
     }
 
     /**
