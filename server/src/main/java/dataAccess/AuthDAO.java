@@ -3,11 +3,11 @@ package dataAccess;
 import model.AuthData;
 
 public interface AuthDAO {
-    public void clear() throws DataAccessException;  // 万一没有东西clear 就throw exception
+    boolean clear() throws DataAccessException;  // 万一没有东西clear 就throw exception
 
-    public void createAuth() throws DataAccessException;
+    String createAuth(String username) throws DataAccessException; // authToken应该是个String
 
-    public AuthData getAuth() throws DataAccessException;
+    AuthData getAuth(String authToken) throws DataAccessException;
 
-    public void deleteAuth() throws DataAccessException;
+    boolean  deleteAuth(String authToken) throws DataAccessException;
 }
