@@ -17,7 +17,7 @@ public class Server {
         // 使用spark.delete方法来request delete方式的http请求. 参数1是请求的url. db是clear的url. 然后使用匿名函数,
         // 传入spark里的request 和response 返回一个返回给用户的http RESPONSE. 一般是json的形式.
         Spark.delete("/db", ((request, response) -> new ClearOperation(request, response).clear()));
-
+        Spark.post("/user", ((request, response) -> new AuthHandle(request, response).register()));
         Spark.awaitInitialization();  // 这行代码会等待服务器初始化完成.  js promise
         return Spark.port(); // 返回实际使用的端口
     }
