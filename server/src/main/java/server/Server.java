@@ -16,7 +16,7 @@ public class Server {
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", this::clear); // spark.http method(url path, function)  注册了delete请求处理器. 当路径为/db
         //的时候, 就调用Server里的clear function. this::clear 代表引用Server类的clear函数
-        Spark.post("/user", this::register);
+        Spark.post("/user", this::register);  // call register endpoint
 
         Spark.awaitInitialization();  // 这行代码会等待服务器初始化完成.  js promise
         return Spark.port(); // 返回实际使用的端口

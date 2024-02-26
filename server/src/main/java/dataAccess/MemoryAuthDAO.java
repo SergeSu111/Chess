@@ -17,12 +17,12 @@ public class MemoryAuthDAO implements AuthDAO
     @Override
     public void createAuth() throws DataAccessException
     {
-        authSet.add()
+       
     }
 
     @Override
-    public void getAuth() throws DataAccessException {
-
+    public AuthData getAuth() throws DataAccessException {
+        return null;
     }
 
     @Override
