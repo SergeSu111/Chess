@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import request.LoginRequest;
 import request.RegisterRequest;
 import spark.Request;
 import spark.Response;
@@ -17,12 +18,18 @@ public class AuthHandle extends ServiceHandle
     {
         // make the json request from ServiceHandle change into RegisterRequest class,
         // and give it to request object.
-        RegisterRequest request = get_body(this.request, RegisterRequest.class);
-        return new Gson().toJson(7);
+        RegisterRequest register_request = get_body(this.request, RegisterRequest.class);
+        return new Gson().toJson("Serge");
     }
 
+    public Object login()
+    {
+        LoginRequest login_request = get_body(this.request, LoginRequest.class);
+        return new Gson().toJson("Serge");
+    }
 
-
-
-
+    public Object logout()
+    {
+        return new Gson().toJson("Serge");
+    }
 }
