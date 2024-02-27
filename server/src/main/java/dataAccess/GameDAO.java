@@ -9,7 +9,7 @@ public interface GameDAO {
     int createGame(ChessGame game) throws DataAccessException;
     GameData getGame(int gameID) throws DataAccessException;
     List<GameData> listGames() throws DataAccessException;
-    boolean updateGame(int gameID, ChessGame game) throws DataAccessException;  // game参数是ChessGame吗?
+    void updateGame(int gameID, ChessGame game) throws DataAccessException;  // game参数是ChessGame吗?
 
-    boolean clear();
+    void clear();
 }
