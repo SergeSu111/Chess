@@ -2,5 +2,8 @@ package result;
 
 import chess.ChessGame;
 
-public record ListGameResult(ChessGame game) {
+import java.util.ArrayList;
+import java.util.Collection;
+
+public record ListGameResult(ArrayList<ListGameInformation> all_games) {
 }
