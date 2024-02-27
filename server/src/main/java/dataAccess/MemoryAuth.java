@@ -20,12 +20,18 @@ public class MemoryAuth implements AuthDAO{
     }
 
     @Override
-    public AuthData getAuth(String authToken, String auth) throws DataAccessException, IllegalAccessException {
+    public AuthData getAuth(String authToken) throws DataAccessException, IllegalAccessException {
         return dBoperation.getAuth("authToken", new AuthData(authToken, null)); // 因为只用authToken搜索. 所以username 是null
     }
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException, IllegalAccessException {
         dBoperation.delete_auth("authToken", new AuthData(authToken, null));
+    }
+
+    /*调用getAuth来看这个authToken是不是在数据库里 在返回true 不在返回false*/
+    @Override
+    public boolean auth_is_stored(String authToken) throws DataAccessException, IllegalAccessException {
+        return getAuth(authToken) != null;
     }
 }

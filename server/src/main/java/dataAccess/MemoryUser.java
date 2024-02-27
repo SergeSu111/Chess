@@ -30,4 +30,17 @@ public class MemoryUser implements UserDAO{
             return true;
         }
     }
+
+    @Override
+    public boolean password_match(String testUsername, String password) throws DataAccessException, IllegalAccessException {
+        UserData the_user = get_user(testUsername);
+        if (the_user != null)
+        {
+            return password.equals(the_user.password());
+        }
+        else
+        {
+            return false;
+        }
+    }
 }

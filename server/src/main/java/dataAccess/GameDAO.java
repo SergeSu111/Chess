@@ -6,7 +6,7 @@ import model.GameData;
 import java.util.List;
 
 public interface GameDAO {
-    int createGame(ChessGame game) throws DataAccessException;
+    int createGame(String game_name) throws DataAccessException;
     GameData getGame(int gameID) throws DataAccessException;
     List<GameData> listGames() throws DataAccessException;
     void updateGame(int gameID, ChessGame game) throws DataAccessException;  // game参数是ChessGame吗?

@@ -9,5 +9,5 @@ public interface UserDAO {
 
     boolean user_is_stored(String username) throws DataAccessException, IllegalAccessException;
 
-    //boolean password_match(String testUsername, String password);
+    boolean password_match(String testUsername, String password) throws DataAccessException, IllegalAccessException;
 }
