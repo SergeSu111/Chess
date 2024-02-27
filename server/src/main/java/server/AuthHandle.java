@@ -27,10 +27,11 @@ public class AuthHandle extends ServiceHandle
         try
         {
             RegisterResult register_response = this.authService.register(register_request); // call service and call Dataacess
-            result_back = new Gson().toJson(RegisterResult);
+            result_back = new Gson().toJson(register_response);
             this.response.status(200);
-        } catch (DataAccessException e) {
-            result_back = new Gson().toJson()
+        }
+        catch (DataAccessException e) {
+            result_back = new Gson().toJson(new )
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
