@@ -11,6 +11,8 @@ import service.AuthService;
 import spark.Request;
 import spark.Response;
 
+import java.util.Objects;
+
 // handle endpoints for register , login , logout
 public class AuthHandle extends ServiceHandle
 {
@@ -34,9 +36,18 @@ public class AuthHandle extends ServiceHandle
         }
         catch (DataAccessException e) {
             result_back = new Gson().toJson(new ServerResult(e.getMessage())); // 如果上面返回的json哪一步有问题 就把异常打出来放入ServerResult 然后给json
-            this.response.status (403);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            if (Objects.equals(e.getMessage(), "Error: bad request"))
+            {
+                this.response.status(400);
+            }
+            else if (Objects.equals(e.getMessage(), "Error: already taken"))
+            {
+                this.response.status(403);
+            }
+            else
+            {
+                this.response.status(418);
+            }
         }
         catch (Exception ex)
         {

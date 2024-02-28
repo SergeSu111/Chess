@@ -12,4 +12,6 @@ public interface AuthDAO {
     void  deleteAuth(String authToken) throws DataAccessException, IllegalAccessException;
 
     boolean auth_is_stored(String authToken) throws DataAccessException, IllegalAccessException;
+
+    String get_user_name(String authToken) throws IllegalAccessException;
 }

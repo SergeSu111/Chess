@@ -5,6 +5,7 @@ import dataAccess.DataAccessException;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
 import request.ListGameRequest;
+import result.CreateGameResult;
 import result.ListGameResult;
 import result.ServerResult;
 import service.GameService;
@@ -22,8 +23,27 @@ public class GameHandle extends ServiceHandle{
 
     public Object createGame()
     {
+        String result_back;
+        String authToken = this.request.headers().toString();
         CreateGameRequest create_game_request = get_body(this.request, CreateGameRequest.class);
-        return new Gson().toJson(create_game_request);
+        try
+        {
+            CreateGameResult createGameResult = this.gameService.createGame(create_game_request, authToken);
+            result_back = new Gson().toJson(createGameResult);
+            this.response.status(200);
+        }
+        catch (DataAccessException e)
+        {
+            result_back = new Gson().toJson(new ServerResult(e.getMessage()));
+            this.response.status(401);
+        }
+        catch (Exception ex)
+        {
+            result_back = new Gson().toJson(new ServerResult(ex.getMessage()));
+            this.response.status(500);
+        }
+        this.response.type("application/json");
+        return result_back;
     }
 
     public Object listGame()

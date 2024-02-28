@@ -34,4 +34,18 @@ public class MemoryAuth implements AuthDAO{
     public boolean auth_is_stored(String authToken) throws DataAccessException, IllegalAccessException {
         return getAuth(authToken) != null;
     }
+
+    public String get_user_name(String authToken) throws IllegalAccessException {
+        try
+        {
+            AuthData my_auth = getAuth(authToken);
+            return my_auth.username();
+        }
+        catch (Exception e)
+        {
+            throw new IllegalAccessException("Error: unauthorized");
+        }
+
+    }
+
 }
