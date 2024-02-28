@@ -12,6 +12,8 @@ import service.GameService;
 import spark.Request;
 import spark.Response;
 
+import java.util.Objects;
+
 // listGames, createGame, joinGame,
 public class GameHandle extends ServiceHandle{
 
@@ -70,10 +72,32 @@ public class GameHandle extends ServiceHandle{
 
     }
 
-    public Object joinGame()
-    {
+    public Object joinGame() {
+        String result_back;
+        String authToken = this.request.headers("authorization");
         JoinGameRequest join_game_request = get_body(this.request, JoinGameRequest.class);
-        return new Gson().toJson(join_game_request);
+        try {
+            this.gameService.join_game(join_game_request, authToken);
+            result_back = new Gson().toJson(new ServerResult(""));
+            this.response.status(200);
+        } catch (DataAccessException | IllegalAccessException ex) {
+            result_back = new Gson().toJson(new ServerResult(ex.getMessage()));
+            if (Objects.equals(ex.getMessage(), "Error: bad request")) {
+                this.response.status(400);
+            } else if (Objects.equals(ex.getMessage(), "Error: unauthorized")) {
+                this.response.status(401);
+            } else if (Objects.equals(ex.getMessage(), "Error: already taken")) {
+                this.response.status(403);
+            } else {
+                this.response.status(418);
+            }
+        } catch (Exception e)
+        {
+            result_back = new Gson().toJson(new ServerResult(e.getMessage()));
+            this.response.status(500);
+        }
+        this.response.type("application/json");
+        return result_back;
     }
 
 

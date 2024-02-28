@@ -56,7 +56,7 @@ public class GameService {
                 {
                     try
                     {
-                        gameDAO.join_game((join_game_request.GameId(), username, join_game_request.GameColor());
+                        gameDAO.join_game(join_game_request.GameId(), username, join_game_request.GameColor());
                     }
                     catch (IllegalArgumentException e)
                     {
