@@ -3,12 +3,13 @@ package dataAccess;
 import chess.ChessGame;
 import model.GameData;
 
+import java.util.HashSet;
 import java.util.List;
 
 public interface GameDAO {
     int createGame(String game_name);
     GameData getGame(int gameID) throws IllegalAccessException;
-    List<GameData> listGames();
+    HashSet<GameData> listGames();
 
     void updateGame(int gameID, String game) throws DataAccessException, IllegalAccessException;
 

@@ -11,6 +11,7 @@ import result.ListGameResult;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 public class GameService {
     private final GameDAO gameDAO = new MemoryGame();
@@ -21,7 +22,7 @@ public class GameService {
         if (authDAO.auth_is_stored(authToken))
         {
             ArrayList<ListGameInformation> all_games = new ArrayList<>();
-            ArrayList<GameData> gameList = (ArrayList<GameData>) gameDAO.listGames();
+            HashSet<GameData> gameList = gameDAO.listGames();
             for (GameData game : gameList)
             {
                 // 将每一个游戏都放入游戏信息里
@@ -52,11 +53,11 @@ public class GameService {
             String username = authDAO.get_user_name(authToken);
             if (gameDAO.game_exists(join_game_request.gameID()))
             {
-                if (!(join_game_request.PlayerColor() == null))
+                if (!(join_game_request.playerColor() == null))
                 {
                     try
                     {
-                        gameDAO.join_game(join_game_request.gameID(), username, join_game_request.PlayerColor());
+                        gameDAO.join_game(join_game_request.gameID(), username, join_game_request.playerColor());
                     }
                     catch (IllegalArgumentException e)
                     {
@@ -68,12 +69,11 @@ public class GameService {
             {
                 throw new DataAccessException("Error: bad request");
             }
+
         }
         else
         {
             throw new DataAccessException("Error: unauthorized");
         }
     }
-
-
 }

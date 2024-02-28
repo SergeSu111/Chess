@@ -2,6 +2,8 @@ package dataAccess;
 
 import model.GameData;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class MemoryGame  implements GameDAO{
@@ -22,8 +24,8 @@ public class MemoryGame  implements GameDAO{
     }
 
     @Override
-    public List<GameData> listGames() {
-        return (List<GameData>) dBoperation.show_all_games();
+    public HashSet<GameData> listGames() {
+        return dBoperation.show_all_games();
     }
 
     @Override
@@ -60,7 +62,7 @@ public class MemoryGame  implements GameDAO{
             }
             else if (the_color.equals("BLACK"))
             {
-                dBoperation.create_game(for_update.gameID(), username, for_update.whiteUsername(), for_update.gameName(),for_update.game());
+                dBoperation.create_game(for_update.gameID(), for_update.whiteUsername(), username, for_update.gameName(),for_update.game());
             }
             else
             {

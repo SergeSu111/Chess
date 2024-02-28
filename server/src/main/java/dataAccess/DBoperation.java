@@ -13,9 +13,9 @@ import java.util.Objects;
 // 这个class其实是多余的 这个其实就是Data Access 操作数据库的函数定义 只不过把所有的数据操作方法都写到一个class里然后调用罢了
 // 创建一个能够操作数据库所有服务的东西 这样其他的服务直接call这个class就可以了
 public class DBoperation {
-    private static final HashSet<AuthData> authData = new HashSet<>();  // for Auth data
-    private static final HashSet<GameData> gameData = new HashSet<>(); // for game data
-    private static final HashSet<UserData> userData = new HashSet<>(); // for user data
+    private static  HashSet<AuthData> authData = new HashSet<>();  // for Auth data
+    private static  HashSet<GameData> gameData = new HashSet<>(); // for game data
+    private static HashSet<UserData> userData = new HashSet<>(); // for user data
 
     private static int my_next_id = 100;
 
@@ -119,11 +119,11 @@ public class DBoperation {
 
     public int get_new_game_id() {
         my_next_id = my_next_id + 1;
-        return my_next_id - 1;
+        return my_next_id;
     }
 
-    public Collection<GameData> show_all_games() {
-        return new ArrayList<>(gameData);
+    public HashSet <GameData> show_all_games() {
+        return (gameData);
     }
 
     public void create_game(int game_id, String white_username, String black_username, String game_name, String game) {
