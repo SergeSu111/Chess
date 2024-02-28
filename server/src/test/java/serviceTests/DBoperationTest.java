@@ -14,9 +14,8 @@ import service.ClearService;
 import service.GameService;
 
 import dataAccess.DataAccessException;
-
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class AuthTest {
+class DBoperationTest {
     private final AuthService auth_service = new AuthService();
 
     private final ClearService do_service = new ClearService();
@@ -48,49 +47,10 @@ class AuthTest {
 
     @Test
     @Order(1)
-    @DisplayName("register (+)")
-    void register_positive() throws DataAccessException, IllegalAccessException {
-        String tylerAuth = this.auth_service.register(new RegisterRequest(
-                "Su", "lala", "Sulala@GG.com")).authToken();
-        this.auth_service.logout(tylerAuth);
-    }
-
-    @Test
-    @Order(2)
-    @DisplayName("register (-)")
-    void register_negative() {
-        DataAccessException exception = assertThrows(DataAccessException.class, () -> this.auth_service.register(new RegisterRequest("Su", null, "Sulala@GG.com")));
-        assertEquals("Error: bad request", exception.getMessage());
-    }
-
-    @Test
-    @Order(3)
-    @DisplayName("login (+)")
-    void login_positive() throws DataAccessException, IllegalAccessException {
-        String newAuth = this.auth_service.login(new LoginRequest("serge999", "111213")).authToken();
-        this.auth_service.logout(newAuth);
-    }
-
-    @Test
-    @Order(4)
-    @DisplayName("login (-)")
-    void login_negative() {
-        DataAccessException exception = assertThrows(DataAccessException.class, () -> this.auth_service.login(new LoginRequest("serge", "111213")));
-        assertEquals("Error: unauthorized", exception.getMessage());
-    }
-
-    @Test
-    @Order(5)
-    @DisplayName("logout (+)")
-    void logout_positive() throws DataAccessException, IllegalAccessException {
-        this.auth_service.logout(this.third_Auth);
-    }
-
-    @Test
-    @Order(6)
-    @DisplayName("logout (-)")
-    void logout_negative() {
-        DataAccessException exception = assertThrows(DataAccessException.class, () -> this.auth_service.logout(UUID.randomUUID().toString()));
+    @DisplayName("clear (+)")
+    void clear_positive() throws DataAccessException {
+        this.do_service.clear();
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> this.auth_service.logout(this.third_Auth));
         assertEquals("Error: unauthorized", exception.getMessage());
     }
 }
