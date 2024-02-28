@@ -173,6 +173,7 @@ public class StandardAPITests {
 
 
         TestModels.TestCreateResult createResult = serverFacade.createGame(createRequest, existingAuth);
+
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
                 "Server response code was not 200 OK");
         Assertions.assertFalse(

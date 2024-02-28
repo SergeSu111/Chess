@@ -4,7 +4,7 @@ import model.UserData;
 
 public class MemoryUser implements UserDAO{
 
-    DBoperation dBoperation = new DBoperation();
+    private final DBoperation dBoperation = new DBoperation();
     @Override
     public void clear() {
         dBoperation.clear_user();
@@ -12,7 +12,15 @@ public class MemoryUser implements UserDAO{
 
     @Override
     public void create_user(String username, String password, String email) throws DataAccessException {
-        dBoperation.create_user(username, password, email);
+        if (!(username == null || password == null || email == null ))
+        {
+            dBoperation.create_user(username, password, email);
+        }
+        else
+        {
+            throw new DataAccessException("Error: bad request");
+        }
+
     }
 
     @Override
@@ -22,13 +30,7 @@ public class MemoryUser implements UserDAO{
 
     @Override
     public boolean user_is_stored(String username) throws DataAccessException, IllegalAccessException {
-        if (get_user(username) == null) {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        return get_user(username) != null;
     }
 
     @Override

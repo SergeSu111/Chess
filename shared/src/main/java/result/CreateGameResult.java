@@ -1,6 +1,6 @@
 package result;
 
-public record CreateGameResult(Integer gameId)
+public record CreateGameResult(Integer gameID)
 {
 
 }

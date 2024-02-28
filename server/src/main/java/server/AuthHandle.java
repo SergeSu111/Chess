@@ -76,6 +76,7 @@ public class AuthHandle extends ServiceHandle
         {
             result_back = new Gson().toJson(new ServerResult(ex.getMessage()));
             this.response.status(500);
+
         }
         this.response.type("application/json");
         return result_back;
@@ -85,7 +86,7 @@ public class AuthHandle extends ServiceHandle
     public Object logout()
     {
         String result_back;
-        String auth_token = this.request.headers().toString(); //把在header里的auth_token拿过来
+        String auth_token = this.request.headers("authorization"); //把在header里的auth_token拿过来
         try
         {
             this.authService.logout(auth_token);

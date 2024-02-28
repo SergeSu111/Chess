@@ -6,23 +6,23 @@ import java.util.List;
 
 public class MemoryGame  implements GameDAO{
 
-    private DBoperation dBoperation = new DBoperation(); // create the object of DB operation
+    private final DBoperation dBoperation = new DBoperation(); // create the object of DB operation
 
 
     @Override
-    public int createGame(String game_name) throws DataAccessException {
+    public int createGame(String game_name) {
         int the_game_id = dBoperation.get_new_game_id();
         dBoperation.create_game(the_game_id, null, null, game_name, null);
         return the_game_id;
     }
 
     @Override
-    public GameData getGame(int gameID) throws DataAccessException, IllegalAccessException {
+    public GameData getGame(int gameID) throws IllegalAccessException {
         return dBoperation.getGame("gameID", new GameData(gameID, null, null, null,null));
     }
 
     @Override
-    public List<GameData> listGames() throws DataAccessException {
+    public List<GameData> listGames() {
         return (List<GameData>) dBoperation.show_all_games();
     }
 
@@ -42,7 +42,7 @@ public class MemoryGame  implements GameDAO{
     }
 
     @Override
-    public boolean game_exists(int game_id) throws DataAccessException, IllegalAccessException {
+    public boolean game_exists(int game_id) throws IllegalAccessException {
         return getGame(game_id) != null;
     }
 
@@ -77,7 +77,7 @@ public class MemoryGame  implements GameDAO{
         {
             color_good = color_free(the_color, gameID); // if got error
         }
-        catch (IllegalAccessException E)
+        catch (IllegalAccessException e)
         {
             throw new DataAccessException("Error: bad request");
         }

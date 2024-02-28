@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import dataAccess.DataAccessException;
 import service.ClearService;
 import spark.*;
 
@@ -16,11 +17,11 @@ public class ClearOperation extends ServiceHandle
         // 继承了ServiceHandle来的得到request的属性.
     }
 
-    public Object clear ()
-    {
+    public Object clear () throws DataAccessException {
+        my_clear_service.clear();
+
         this.response.status(200); // 200 表面http request成功了
-        this.response.type("application/json"); // 表示反馈给客户的请求是json的类
-        return new Gson().toJson("{}"); // 返回给用户json反馈是200
+        return "{}";
     }
 
 }

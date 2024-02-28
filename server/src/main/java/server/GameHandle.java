@@ -17,7 +17,7 @@ import java.util.Objects;
 // listGames, createGame, joinGame,
 public class GameHandle extends ServiceHandle{
 
-    private GameService gameService = new GameService(); // 把gameService拿过来
+    private final GameService gameService = new GameService(); // 把gameService拿过来
     public GameHandle(Request request, Response response)
     {
         super(request, response);
@@ -26,7 +26,7 @@ public class GameHandle extends ServiceHandle{
     public Object createGame()
     {
         String result_back;
-        String authToken = this.request.headers().toString();
+        String authToken = this.request.headers("authorization");
         CreateGameRequest create_game_request = get_body(this.request, CreateGameRequest.class);
         try
         {
@@ -51,7 +51,7 @@ public class GameHandle extends ServiceHandle{
     public Object listGame()
     {
         String result_back;
-        String auth_Token = this.request.headers().toString();
+        String auth_Token = this.request.headers("authorization");
         try {
             ListGameResult listGameResult = this.gameService.listGame(auth_Token);
             result_back = new Gson().toJson(listGameResult);
@@ -69,7 +69,6 @@ public class GameHandle extends ServiceHandle{
         }
         this.response.type("application/json");
         return result_back;
-
     }
 
     public Object joinGame() {

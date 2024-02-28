@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public class MemoryAuth implements AuthDAO{
 
-    DBoperation dBoperation = new DBoperation();
+    private final DBoperation dBoperation = new DBoperation();
     @Override
     public void clear() throws DataAccessException {
         dBoperation.clear_auth();

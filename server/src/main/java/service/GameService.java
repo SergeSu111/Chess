@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class GameService {
-    private GameDAO gameDAO = new MemoryGame();
+    private final GameDAO gameDAO = new MemoryGame();
 
-    private AuthDAO authDAO = new MemoryAuth();
+    private final AuthDAO authDAO = new MemoryAuth();
 
     public ListGameResult listGame(String authToken) throws DataAccessException, IllegalAccessException {
         if (authDAO.auth_is_stored(authToken))
@@ -50,13 +50,13 @@ public class GameService {
         if (authDAO.auth_is_stored(authToken))
         {
             String username = authDAO.get_user_name(authToken);
-            if (gameDAO.game_exists(join_game_request.GameId()))
+            if (gameDAO.game_exists(join_game_request.gameID()))
             {
-                if (!(join_game_request.GameColor() == null))
+                if (!(join_game_request.PlayerColor() == null))
                 {
                     try
                     {
-                        gameDAO.join_game(join_game_request.GameId(), username, join_game_request.GameColor());
+                        gameDAO.join_game(join_game_request.gameID(), username, join_game_request.PlayerColor());
                     }
                     catch (IllegalArgumentException e)
                     {

@@ -13,9 +13,9 @@ import java.util.Objects;
 // 这个class其实是多余的 这个其实就是Data Access 操作数据库的函数定义 只不过把所有的数据操作方法都写到一个class里然后调用罢了
 // 创建一个能够操作数据库所有服务的东西 这样其他的服务直接call这个class就可以了
 public class DBoperation {
-    private static HashSet<AuthData> authData = new HashSet<>();  // for Auth data
-    private static HashSet<GameData> gameData = new HashSet<>(); // for game data
-    private static HashSet<UserData> userData = new HashSet<>(); // for user data
+    private static final HashSet<AuthData> authData = new HashSet<>();  // for Auth data
+    private static final HashSet<GameData> gameData = new HashSet<>(); // for game data
+    private static final HashSet<UserData> userData = new HashSet<>(); // for user data
 
     private static int my_next_id = 100;
 
@@ -93,7 +93,7 @@ public class DBoperation {
             }
             case "all" -> {
                 for (AuthData curr : authData) {
-                    if (search == curr) {
+                    if (search.equals(curr)) {
                         return curr;
                     }
                 }
@@ -109,12 +109,17 @@ public class DBoperation {
 
     public void delete_auth(String argument, AuthData search) throws IllegalAccessException {
         AuthData remove_one = getAuth(argument, search);
-        authData.remove(remove_one);
+        while (remove_one != null)
+        {
+            authData.remove(remove_one);
+            remove_one = getAuth(argument, search);
+        }
+
     }
 
     public int get_new_game_id() {
-        my_next_id++;
-        return my_next_id--;
+        my_next_id = my_next_id + 1;
+        return my_next_id - 1;
     }
 
     public Collection<GameData> show_all_games() {
@@ -173,12 +178,22 @@ public class DBoperation {
     public void delGame (String arguments, GameData search) throws IllegalAccessException
     {
         GameData removed = getGame(arguments, search);
-        gameData.remove(removed);
+        while (removed != null)
+        {
+            gameData.remove(removed);
+            removed = getGame(arguments, search);
+        }
+
     }
 
     public void delUser(String argument, UserData search) throws IllegalAccessException {
         UserData removed = getUser(argument, search);
-        userData.remove(removed);
+        while(removed != null)
+        {
+            userData.remove(removed);
+            removed = getUser(argument, search);
+        }
+
 
     }
 
