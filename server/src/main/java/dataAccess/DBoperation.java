@@ -17,17 +17,17 @@ public class DBoperation {
     private static  HashSet<GameData> gameData = new HashSet<>(); // for game data
     private static HashSet<UserData> userData = new HashSet<>(); // for user data
 
-    private static int my_next_id = 100;
+    private static int myNextId = 100;
 
-    public void clear_auth() {
+    public void clearAuth() {
         authData.clear(); // 将auth data 清空 clear是HashSet自己的function
     }
 
-    public void clear_user() {
+    public void clearUser() {
         userData.clear(); // 将 user data 数据清空 clear是HashSet自己的function
     }
 
-    public void clear_game() {
+    public void clearGame() {
         gameData.clear(); // 将 game data 数据清空 clear 是HashSet自己的function
     }
 
@@ -69,7 +69,7 @@ public class DBoperation {
         return null;
     }
 
-    public void create_user(String username, String password, String email) {
+    public void createUser(String username, String password, String email) {
         userData.add(new UserData(username, password, email));
     }
 
@@ -103,30 +103,30 @@ public class DBoperation {
         return null;
     }
 
-    public void create_auth(String auth_token, String username) {
+    public void createAuth(String auth_token, String username) {
         authData.add(new AuthData(auth_token, username));
     }
 
-    public void delete_auth(String argument, AuthData search) throws IllegalAccessException {
-        AuthData remove_one = getAuth(argument, search);
-        while (remove_one != null)
+    public void deleteAuth(String argument, AuthData search) throws IllegalAccessException {
+        AuthData removeOne = getAuth(argument, search);
+        while (removeOne != null)
         {
-            authData.remove(remove_one);
-            remove_one = getAuth(argument, search);
+            authData.remove(removeOne);
+            removeOne = getAuth(argument, search);
         }
 
     }
 
-    public int get_new_game_id() {
-        my_next_id = my_next_id + 1;
-        return my_next_id;
+    public int getNewGameId() {
+        myNextId = myNextId + 1;
+        return myNextId;
     }
 
-    public HashSet <GameData> show_all_games() {
+    public HashSet <GameData> showAllGames() {
         return (gameData);
     }
 
-    public void create_game(int game_id, String white_username, String black_username, String game_name, String game) {
+    public void createGame(int game_id, String white_username, String black_username, String game_name, String game) {
         gameData.add(new GameData(game_id, white_username, black_username, game_name, game));
     }
 

@@ -9,7 +9,7 @@ import spark.*;
 /*This class is for the service of processing clear endpoints*/
 public class ClearOperation extends ServiceHandle
 {
-    ClearService my_clear_service = new ClearService();
+    ClearService myClearService = new ClearService();
     public ClearOperation(Request request, Response response)
     {
         super(request, response);
@@ -18,7 +18,7 @@ public class ClearOperation extends ServiceHandle
     }
 
     public Object clear () throws DataAccessException {
-        my_clear_service.clear();
+        myClearService.clear();
 
         this.response.status(200); // 200 表面http request成功了
         return "{}";

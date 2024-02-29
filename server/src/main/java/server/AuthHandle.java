@@ -26,16 +26,16 @@ public class AuthHandle extends ServiceHandle
     {
         // make the json request from ServiceHandle change into RegisterRequest class,
         // and give it to request object.
-        String result_back;  // 放入json 转回给用户的
-        RegisterRequest register_request = get_body(this.request, RegisterRequest.class);
+        String resultBack;  // 放入json 转回给用户的
+        RegisterRequest registerRequest = getBody(this.request, RegisterRequest.class);
         try
         {
-            RegisterResult register_response = this.authService.register(register_request); // call service and call Dataacess
-            result_back = new Gson().toJson(register_response);
+            RegisterResult registerResponse = this.authService.register(registerRequest); // call service and call Dataacess
+            resultBack = new Gson().toJson(registerResponse);
             this.response.status(200);
         }
         catch (DataAccessException e) {
-            result_back = new Gson().toJson(new ServerResult(e.getMessage())); // 如果上面返回的json哪一步有问题 就把异常打出来放入ServerResult 然后给json
+            resultBack = new Gson().toJson(new ServerResult(e.getMessage())); // 如果上面返回的json哪一步有问题 就把异常打出来放入ServerResult 然后给json
             if (Objects.equals(e.getMessage(), "Error: bad request"))
             {
                 this.response.status(400);
@@ -51,59 +51,59 @@ public class AuthHandle extends ServiceHandle
         }
         catch (Exception ex)
         {
-            result_back = new Gson().toJson(new ServerResult(ex.getMessage()));
+            resultBack = new Gson().toJson(new ServerResult(ex.getMessage()));
             this.response.status(500);
         }
         this.response.type("application/json");
-        return result_back;
+        return resultBack;
     }
 
     public Object login() throws DataAccessException, IllegalAccessException {
-        String result_back;
-        LoginRequest login_request = get_body(this.request, LoginRequest.class);
+        String resultBack;
+        LoginRequest loginRequest = getBody(this.request, LoginRequest.class);
         try
         {
-            LoginResult login_result = this.authService.login(login_request);
-            result_back = new Gson().toJson(login_result);
+            LoginResult loginResult = this.authService.login(loginRequest);
+            resultBack = new Gson().toJson(loginResult);
             this.response.status(200);
         }
         catch (DataAccessException e)
         {
-            result_back = new Gson().toJson(new ServerResult(e.getMessage()));
+            resultBack = new Gson().toJson(new ServerResult(e.getMessage()));
             this.response.status(401);
         }
         catch (Exception ex)
         {
-            result_back = new Gson().toJson(new ServerResult(ex.getMessage()));
+            resultBack = new Gson().toJson(new ServerResult(ex.getMessage()));
             this.response.status(500);
 
         }
         this.response.type("application/json");
-        return result_back;
+        return resultBack;
 
     }
 
     public Object logout()
     {
-        String result_back;
-        String auth_token = this.request.headers("authorization"); //把在header里的auth_token拿过来
+        String resultBack;
+        String authToken = this.request.headers("authorization"); //把在header里的auth_token拿过来
         try
         {
-            this.authService.logout(auth_token);
-            result_back = new Gson().toJson(new ServerResult("")); // logout只是删除 所以ServerResult啥都没有
+            this.authService.logout(authToken);
+            resultBack = new Gson().toJson(new ServerResult("")); // logout只是删除 所以ServerResult啥都没有
             this.response.status(200);
         }
         catch (DataAccessException | IllegalAccessException e)
         {
-            result_back = new Gson().toJson(new ServerResult(e.getMessage()));
+            resultBack = new Gson().toJson(new ServerResult(e.getMessage()));
             this.response.status(401);
         }
         catch(Exception ex)
         {
-            result_back = new Gson().toJson(new ServerResult(ex.getMessage()));
+            resultBack = new Gson().toJson(new ServerResult(ex.getMessage()));
             this.response.status(500);
         }
         this.response.type("application/json");
-        return result_back;
+        return resultBack;
     }
 }

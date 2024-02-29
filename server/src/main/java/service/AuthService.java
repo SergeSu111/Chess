@@ -12,25 +12,25 @@ public class AuthService {
     private UserDAO userDAO = new MemoryUser();
 
     public RegisterResult register(RegisterRequest request) throws DataAccessException, IllegalAccessException {
-       if (userDAO.user_is_stored(request.username()))
+       if (userDAO.userIsStored(request.username()))
        {
            throw new DataAccessException("Error: already taken");
        }
        else
        {
-           userDAO.create_user(request.username(), request.password(), request.email());
-           String new_token = authDAO.createAuth(request.username());
-           return new RegisterResult(request.username(), new_token); // 返回一个新的用户的token
+           userDAO.createUser(request.username(), request.password(), request.email());
+           String newToken = authDAO.createAuth(request.username());
+           return new RegisterResult(request.username(), newToken); // 返回一个新的用户的token
        }
     }
 
-    public LoginResult login(LoginRequest login_request) throws DataAccessException, IllegalAccessException {
-        if (userDAO.user_is_stored(login_request.username()))
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException, IllegalAccessException {
+        if (userDAO.userIsStored(loginRequest.username()))
         {
-            if (userDAO.password_match(login_request.username(), login_request.password()))
+            if (userDAO.passwordMatch(loginRequest.username(), loginRequest.password()))
             {
-                String the_auth_token = authDAO.createAuth(login_request.username()); // 创建一个login的token
-                return new LoginResult(login_request.username(), the_auth_token); // 返回这个result
+                String theAuthToken = authDAO.createAuth(loginRequest.username()); // 创建一个login的token
+                return new LoginResult(loginRequest.username(), theAuthToken); // 返回这个result
             }
             else
             {
@@ -44,7 +44,7 @@ public class AuthService {
     }
 
     public void logout (String authToken) throws DataAccessException, IllegalAccessException {
-        if (authDAO.auth_is_stored(authToken))
+        if (authDAO.authIsStored(authToken))
         {
             authDAO.deleteAuth(authToken);
         }

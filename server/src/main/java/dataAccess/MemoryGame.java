@@ -13,9 +13,9 @@ public class MemoryGame  implements GameDAO{
 
     @Override
     public int createGame(String game_name) {
-        int the_game_id = dBoperation.get_new_game_id();
-        dBoperation.create_game(the_game_id, null, null, game_name, null);
-        return the_game_id;
+        int theGameId = dBoperation.getNewGameId();
+        dBoperation.createGame(theGameId, null, null, game_name, null);
+        return theGameId;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class MemoryGame  implements GameDAO{
 
     @Override
     public HashSet<GameData> listGames() {
-        return dBoperation.show_all_games();
+        return dBoperation.showAllGames();
     }
 
     @Override
@@ -34,35 +34,35 @@ public class MemoryGame  implements GameDAO{
        if (updated == null) {throw new DataAccessException("Error: bad request");}
        else {
            dBoperation.delGame("all", updated);
-           dBoperation.create_game(updated.gameID(), updated.whiteUsername(), updated.blackUsername(), updated.gameName(), game);
+           dBoperation.createGame(updated.gameID(), updated.whiteUsername(), updated.blackUsername(), updated.gameName(), game);
        }
     }
 
     @Override
     public void clear() {
-        dBoperation.clear_game();
+        dBoperation.clearGame();
     }
 
     @Override
-    public boolean game_exists(int game_id) throws IllegalAccessException {
+    public boolean gameExists(int game_id) throws IllegalAccessException {
         return getGame(game_id) != null;
     }
 
     @Override
-    public void update_players(int gameID, String username, String the_color) throws IllegalAccessException, DataAccessException
+    public void updatePlayers(int gameID, String username, String the_color) throws IllegalAccessException, DataAccessException
     {
-        GameData for_update = dBoperation.getGame("gameID", new GameData(gameID, null, null, null, null));
-        if (for_update == null) {throw new DataAccessException("Error: bad request");}
+        GameData forUpdate = dBoperation.getGame("gameID", new GameData(gameID, null, null, null, null));
+        if (forUpdate == null) {throw new DataAccessException("Error: bad request");}
         else
         {
-            dBoperation.delGame("all", for_update);
+            dBoperation.delGame("all", forUpdate);
             if (the_color.equals("WHITE"))
             {
-                dBoperation.create_game(for_update.gameID(), username, for_update.blackUsername(), for_update.gameName(), for_update.game());
+                dBoperation.createGame(forUpdate.gameID(), username, forUpdate.blackUsername(), forUpdate.gameName(), forUpdate.game());
             }
             else if (the_color.equals("BLACK"))
             {
-                dBoperation.create_game(for_update.gameID(), for_update.whiteUsername(), username, for_update.gameName(),for_update.game());
+                dBoperation.createGame(forUpdate.gameID(), forUpdate.whiteUsername(), username, forUpdate.gameName(),forUpdate.game());
             }
             else
             {
@@ -73,19 +73,19 @@ public class MemoryGame  implements GameDAO{
     }
 
     @Override
-    public void join_game(int gameID, String username, String the_color) throws DataAccessException, IllegalAccessException {
-        boolean color_good;
+    public void joinGame(int gameID, String username, String the_color) throws DataAccessException, IllegalAccessException {
+        boolean colorGood;
         try
         {
-            color_good = color_free(the_color, gameID); // if got error
+            colorGood = colorFree(the_color, gameID); // if got error
         }
         catch (IllegalAccessException e)
         {
             throw new DataAccessException("Error: bad request");
         }
-        if (color_good) // if color is available
+        if (colorGood) // if color is available
         {
-            update_players(gameID, username, the_color);
+            updatePlayers(gameID, username, the_color);
         }
         else
         {
@@ -94,11 +94,11 @@ public class MemoryGame  implements GameDAO{
     }
 
     @Override
-    public boolean color_free(String the_color, int gameID) throws DataAccessException, IllegalAccessException {
-        if (game_exists(gameID))
+    public boolean colorFree(String the_color, int gameID) throws DataAccessException, IllegalAccessException {
+        if (gameExists(gameID))
         {
-            GameData game_check = getGame(gameID);
-            return game_check.available_color(the_color);
+            GameData gameCheck = getGame(gameID);
+            return gameCheck.availableColor(the_color);
         }
         else
         {

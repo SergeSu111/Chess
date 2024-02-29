@@ -26,62 +26,62 @@ public class GameHandle extends ServiceHandle{
 
     public Object createGame()
     {
-        String result_back;
+        String resultBack;
         String authToken = this.request.headers("authorization");
-        CreateGameRequest create_game_request = get_body(this.request, CreateGameRequest.class);
+        CreateGameRequest createGameRequest = getBody(this.request, CreateGameRequest.class);
         try
         {
-            CreateGameResult createGameResult = this.gameService.createGame(create_game_request, authToken);
-            result_back = new Gson().toJson(createGameResult);
+            CreateGameResult createGameResult = this.gameService.createGame(createGameRequest, authToken);
+            resultBack = new Gson().toJson(createGameResult);
             this.response.status(200);
         }
         catch (DataAccessException e)
         {
-            result_back = new Gson().toJson(new ServerResult(e.getMessage()));
+            resultBack = new Gson().toJson(new ServerResult(e.getMessage()));
             this.response.status(401);
         }
         catch (Exception ex)
         {
-            result_back = new Gson().toJson(new ServerResult(ex.getMessage()));
+            resultBack = new Gson().toJson(new ServerResult(ex.getMessage()));
             this.response.status(500);
         }
         this.response.type("application/json");
-        return result_back;
+        return resultBack;
     }
 
     public Object listGame()
     {
-        String result_back;
-        String auth_Token = this.request.headers("authorization");
+        String resultBack;
+        String authToken = this.request.headers("authorization");
         try {
-            ListGameResult listGameResult = this.gameService.listGame(auth_Token);
-            result_back = new Gson().toJson(listGameResult);
+            ListGameResult listGameResult = this.gameService.listGame(authToken);
+            resultBack = new Gson().toJson(listGameResult);
             this.response.status(200);
         }
         catch(DataAccessException e)
         {
-            result_back = new Gson().toJson(new ServerResult(e.getMessage()));
+            resultBack = new Gson().toJson(new ServerResult(e.getMessage()));
             this.response.status(401);
         }
         catch(Exception ex)
         {
-            result_back = new Gson().toJson(new ServerResult(ex.getMessage()));
+            resultBack = new Gson().toJson(new ServerResult(ex.getMessage()));
             this.response.status(500);
         }
         this.response.type("application/json");
-        return result_back;
+        return resultBack;
     }
 
     public Object joinGame() {
-        String result_back;
+        String resultBack;
         String authToken = this.request.headers("authorization");
-        JoinGameRequest join_game_request = get_body(this.request, JoinGameRequest.class);
+        JoinGameRequest joinGameRequest = getBody(this.request, JoinGameRequest.class);
         try {
-            this.gameService.join_game(join_game_request, authToken);
-            result_back = new Gson().toJson(new ServerResult(""));
+            this.gameService.joinGame(joinGameRequest, authToken);
+            resultBack = new Gson().toJson(new ServerResult(""));
             this.response.status(200);
         } catch (DataAccessException | IllegalAccessException ex) {
-            result_back = new Gson().toJson(new ServerResult(ex.getMessage()));
+            resultBack = new Gson().toJson(new ServerResult(ex.getMessage()));
             if (Objects.equals(ex.getMessage(), "Error: bad request")) {
                 this.response.status(400);
             } else if (Objects.equals(ex.getMessage(), "Error: unauthorized")) {
@@ -93,11 +93,11 @@ public class GameHandle extends ServiceHandle{
             }
         } catch (Exception e)
         {
-            result_back = new Gson().toJson(new ServerResult(e.getMessage()));
+            resultBack = new Gson().toJson(new ServerResult(e.getMessage()));
             this.response.status(500);
         }
         this.response.type("application/json");
-        return result_back;
+        return resultBack;
     }
 
 

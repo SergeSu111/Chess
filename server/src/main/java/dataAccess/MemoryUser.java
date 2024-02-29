@@ -7,14 +7,14 @@ public class MemoryUser implements UserDAO{
     private final DBoperation dBoperation = new DBoperation();
     @Override
     public void clear() {
-        dBoperation.clear_user();
+        dBoperation.clearUser();
     }
 
     @Override
-    public void create_user(String username, String password, String email) throws DataAccessException {
+    public void createUser(String username, String password, String email) throws DataAccessException {
         if (!(username == null || password == null || email == null ))
         {
-            dBoperation.create_user(username, password, email);
+            dBoperation.createUser(username, password, email);
         }
         else
         {
@@ -24,21 +24,21 @@ public class MemoryUser implements UserDAO{
     }
 
     @Override
-    public UserData get_user(String username) throws DataAccessException, IllegalAccessException {
+    public UserData getUser(String username) throws DataAccessException, IllegalAccessException {
        return dBoperation.getUser("username", new UserData(username, null, null));
     }
 
     @Override
-    public boolean user_is_stored(String username) throws DataAccessException, IllegalAccessException {
-        return get_user(username) != null;
+    public boolean userIsStored(String username) throws DataAccessException, IllegalAccessException {
+        return getUser(username) != null;
     }
 
     @Override
-    public boolean password_match(String testUsername, String password) throws DataAccessException, IllegalAccessException {
-        UserData the_user = get_user(testUsername);
-        if (the_user != null)
+    public boolean passwordMatch(String testUsername, String password) throws DataAccessException, IllegalAccessException {
+        UserData theUser = getUser(testUsername);
+        if (theUser != null)
         {
-            return password.equals(the_user.password());
+            return password.equals(theUser.password());
         }
         else
         {

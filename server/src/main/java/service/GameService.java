@@ -19,16 +19,16 @@ public class GameService {
     private final AuthDAO authDAO = new MemoryAuth();
 
     public ListGameResult listGame(String authToken) throws DataAccessException, IllegalAccessException {
-        if (authDAO.auth_is_stored(authToken))
+        if (authDAO.authIsStored(authToken))
         {
-            ArrayList<ListGameInformation> all_games = new ArrayList<>();
+            ArrayList<ListGameInformation> allGames = new ArrayList<>();
             HashSet<GameData> gameList = gameDAO.listGames();
             for (GameData game : gameList)
             {
                 // 将每一个游戏都放入游戏信息里
-                all_games.add(new ListGameInformation(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName()));
+                allGames.add(new ListGameInformation(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName()));
             }
-            return new ListGameResult(all_games);
+            return new ListGameResult(allGames);
         }
         else
         {
@@ -36,10 +36,10 @@ public class GameService {
         }
     }
 
-    public CreateGameResult createGame(CreateGameRequest create_game_request, String auth_token) throws DataAccessException, IllegalAccessException {
-        if (authDAO.auth_is_stored(auth_token))
+    public CreateGameResult createGame(CreateGameRequest createGameRequest, String auth_token) throws DataAccessException, IllegalAccessException {
+        if (authDAO.authIsStored(auth_token))
         {
-            return new CreateGameResult(gameDAO.createGame(create_game_request.gameName()));
+            return new CreateGameResult(gameDAO.createGame(createGameRequest.gameName()));
         }
         else
         {
@@ -47,17 +47,17 @@ public class GameService {
         }
     }
 
-    public void join_game(JoinGameRequest join_game_request, String authToken) throws DataAccessException, IllegalAccessException {
-        if (authDAO.auth_is_stored(authToken))
+    public void joinGame(JoinGameRequest joinGameRequest, String authToken) throws DataAccessException, IllegalAccessException {
+        if (authDAO.authIsStored(authToken))
         {
-            String username = authDAO.get_user_name(authToken);
-            if (gameDAO.game_exists(join_game_request.gameID()))
+            String username = authDAO.getUserName(authToken);
+            if (gameDAO.gameExists(joinGameRequest.gameID()))
             {
-                if (!(join_game_request.playerColor() == null))
+                if (!(joinGameRequest.playerColor() == null))
                 {
                     try
                     {
-                        gameDAO.join_game(join_game_request.gameID(), username, join_game_request.playerColor());
+                        gameDAO.joinGame(joinGameRequest.gameID(), username, joinGameRequest.playerColor());
                     }
                     catch (IllegalArgumentException e)
                     {

@@ -83,7 +83,7 @@ class GameTest {
     @DisplayName("joinGame (+)")
     void joinGame_positive() throws DataAccessException, IllegalAccessException {
         int newGameID = this.game_service.createGame(new CreateGameRequest("lalala.org"), third_Auth).gameID();
-        this.game_service.join_game(new JoinGameRequest("BLACK", newGameID), third_Auth);
+        this.game_service.joinGame(new JoinGameRequest("BLACK", newGameID), third_Auth);
     }
 
     @Test
@@ -91,9 +91,9 @@ class GameTest {
     @DisplayName("joinGame (-)")
     void joinGame_negative() throws DataAccessException, IllegalAccessException {
         int newGameID = this.game_service.createGame(new CreateGameRequest("lalala.org"), third_Auth).gameID();
-        this.game_service.join_game(new JoinGameRequest("BLACK", newGameID), third_Auth);
+        this.game_service.joinGame(new JoinGameRequest("BLACK", newGameID), third_Auth);
         DataAccessException exception = assertThrows(DataAccessException.class, () ->
-                this.game_service.join_game(new JoinGameRequest("BLACK", newGameID), third_Auth));
+                this.game_service.joinGame(new JoinGameRequest("BLACK", newGameID), third_Auth));
         assertEquals("Error: already taken", exception.getMessage());
     }
 }

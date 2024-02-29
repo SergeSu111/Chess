@@ -56,15 +56,15 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition)
     {
         // 创建return的moves
-        ChessPiece current_piece = board.getPiece(startPosition);
-        if (current_piece == null)
+        ChessPiece currentPiece = board.getPiece(startPosition);
+        if (currentPiece == null)
         {
             return null;
         }
         else
         {
-            ArrayList<ChessMove> curr_moves = new ArrayList<ChessMove>();
-            Collection<ChessMove> moves = current_piece.pieceMoves(this.board, startPosition);
+            ArrayList<ChessMove> currMoves = new ArrayList<ChessMove>();
+            Collection<ChessMove> moves = currentPiece.pieceMoves(this.board, startPosition);
             ChessPiece removed = null; // for update
 
             // loop curr_moves里的每一个小步
@@ -74,18 +74,18 @@ public class ChessGame {
                 removed = this.board.getPiece(move.getEndPosition());
                 this.board.removePiece(startPosition);
                 // 把他加到endposition离去
-                this.board.addPiece(move.getEndPosition(), current_piece);
+                this.board.addPiece(move.getEndPosition(), currentPiece);
                 // call is_In_Check
-                if (!isInCheck(current_piece.getTeamColor()))  // 如果为false 则不会被check 则加到moves 里
+                if (!isInCheck(currentPiece.getTeamColor()))  // 如果为false 则不会被check 则加到moves 里
                 {
-                    curr_moves.add(move);
+                    currMoves.add(move);
                 }
-                this.board.addPiece(startPosition, current_piece);
+                this.board.addPiece(startPosition, currentPiece);
                 this.board.addPiece(move.getEndPosition(), removed);
 
                 // 把board 改回baseboard.
             }
-            return curr_moves;
+            return currMoves;
         }
     }
 
@@ -100,8 +100,8 @@ public class ChessGame {
      */
     // 此函数要做的是传进来一个move 看看这个move里有哪些步是合法能走的. 然后就走过去 否则就抛出异常
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        ArrayList<ChessMove> result_move = (ArrayList<ChessMove>) validMoves(move.getStartPosition());  // 得到了这个move的piece能走的合法的所有走法
-        if (!result_move.contains(move)) {
+        ArrayList<ChessMove> resultMove = (ArrayList<ChessMove>) validMoves(move.getStartPosition());  // 得到了这个move的piece能走的合法的所有走法
+        if (!resultMove.contains(move)) {
             throw new InvalidMoveException("It is illegal.");
         }
         ChessPiece temp = this.board.getPiece(move.getStartPosition());
@@ -112,10 +112,10 @@ public class ChessGame {
         this.board.removePiece(move.getStartPosition());
         ChessPiece removed_piece = this.board.getPiece(move.getEndPosition());
 
-        ChessPiece promotion_piece = null;
+        ChessPiece promotionPiece = null;
         if (move.getPromotionPiece() != null) {
-            promotion_piece = new ChessPiece(temp.getTeamColor(), move.getPromotionPiece());
-            this.board.addPiece(move.getEndPosition(), promotion_piece);
+            promotionPiece = new ChessPiece(temp.getTeamColor(), move.getPromotionPiece());
+            this.board.addPiece(move.getEndPosition(), promotionPiece);
         }
         else
         {
@@ -147,39 +147,39 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor)
     {
-        ChessPiece King_piece = null;
-        ArrayList<ChessPiece> enemy_piece = new ArrayList<>();
-        ArrayList<ChessPosition> enemy_position = new ArrayList<>();
-        ChessPosition king_position  = null;
+        ChessPiece KingPiece = null;
+        ArrayList<ChessPiece> enemyPiece = new ArrayList<>();
+        ArrayList<ChessPosition> enemyPosition = new ArrayList<>();
+        ChessPosition kingPosition  = null;
 
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                ChessPiece current_piece = board.getPiece(new ChessPosition(i + 1, j + 1));
-                if (current_piece != null)
+                ChessPiece currentPiece = board.getPiece(new ChessPosition(i + 1, j + 1));
+                if (currentPiece != null)
                 {
-                    if (current_piece.getPieceType() == ChessPiece.PieceType.KING)
+                    if (currentPiece.getPieceType() == ChessPiece.PieceType.KING)
                     {
-                        if (current_piece.getTeamColor() == teamColor)   // 因为我要确定这个King是我的King. 根据颜色确定
+                        if (currentPiece.getTeamColor() == teamColor)   // 因为我要确定这个King是我的King. 根据颜色确定
                         {
-                            King_piece = current_piece;
-                            king_position = new ChessPosition(i + 1, j + 1); // 得到king的position
+                            KingPiece = currentPiece;
+                            kingPosition = new ChessPosition(i + 1, j + 1); // 得到king的position
 
                         }
                         else  // 是一个敌人的king 可以把他放到not_King里
                         {
-                            enemy_piece.add(current_piece);
-                            enemy_position.add(new ChessPosition(i + 1, j + 1));
+                            enemyPiece.add(currentPiece);
+                            enemyPosition.add(new ChessPosition(i + 1, j + 1));
 
                         }
                     }
                     else   // means the current_piece is not king
                     {
-                        if (current_piece.getTeamColor() != teamColor)
+                        if (currentPiece.getTeamColor() != teamColor)
                         {
-                            enemy_piece.add(current_piece);
-                            enemy_position.add(new ChessPosition(i + 1, j + 1));
+                            enemyPiece.add(currentPiece);
+                            enemyPosition.add(new ChessPosition(i + 1, j + 1));
                         }
 
                     }
@@ -187,18 +187,18 @@ public class ChessGame {
 
             }
         }
-        if (King_piece == null)  // 如果King_piece 还是null 证明前面都没做 证明真的没有我要的King.
+        if (KingPiece == null)  // 如果King_piece 还是null 证明前面都没做 证明真的没有我要的King.
         {
             return false;
         }
-        for (int i = 0; i <enemy_piece.size(); i++)
+        for (int i = 0; i <enemyPiece.size(); i++)
         {
 
-            ArrayList<ChessMove> current_moves = (ArrayList<ChessMove>) enemy_piece.get(i).pieceMoves(board, enemy_position.get(i)); // get all the moves this current can go
-            for (int index = 0; index < current_moves.size(); index++)
+            ArrayList<ChessMove> currentMoves = (ArrayList<ChessMove>) enemyPiece.get(i).pieceMoves(board, enemyPosition.get(i)); // get all the moves this current can go
+            for (int index = 0; index < currentMoves.size(); index++)
             {
-                ChessPosition curr_end_position = current_moves.get(index).getEndPosition(); // get the end position of the current ChessMove
-                if (king_position.getRow() == curr_end_position.getRow() && king_position.getColumn() == curr_end_position.getColumn())
+                ChessPosition currEndPosition = currentMoves.get(index).getEndPosition(); // get the end position of the current ChessMove
+                if (kingPosition.getRow() == currEndPosition.getRow() && kingPosition.getColumn() == currEndPosition.getColumn())
                 {
                     return true;
                 }
