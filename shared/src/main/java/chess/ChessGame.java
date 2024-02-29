@@ -110,7 +110,7 @@ public class ChessGame {
         }
 
         this.board.removePiece(move.getStartPosition());
-        ChessPiece removed_piece = this.board.getPiece(move.getEndPosition());
+        ChessPiece removedPiece = this.board.getPiece(move.getEndPosition());
 
         ChessPiece promotionPiece = null;
         if (move.getPromotionPiece() != null) {
@@ -124,7 +124,7 @@ public class ChessGame {
 
         if (isInCheck(temp.getTeamColor())) {
             this.board.addPiece(move.getStartPosition(), temp);
-            this.board.addPiece(move.getEndPosition(), removed_piece);
+            this.board.addPiece(move.getEndPosition(), removedPiece);
             throw new InvalidMoveException("Its illegal");
         }
         if (this.turn == TeamColor.WHITE) {
@@ -147,7 +147,7 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor)
     {
-        ChessPiece KingPiece = null;
+        ChessPiece kingPiece = null;
         ArrayList<ChessPiece> enemyPiece = new ArrayList<>();
         ArrayList<ChessPosition> enemyPosition = new ArrayList<>();
         ChessPosition kingPosition  = null;
@@ -163,7 +163,7 @@ public class ChessGame {
                     {
                         if (currentPiece.getTeamColor() == teamColor)   // 因为我要确定这个King是我的King. 根据颜色确定
                         {
-                            KingPiece = currentPiece;
+                            kingPiece = currentPiece;
                             kingPosition = new ChessPosition(i + 1, j + 1); // 得到king的position
 
                         }
@@ -187,7 +187,7 @@ public class ChessGame {
 
             }
         }
-        if (KingPiece == null)  // 如果King_piece 还是null 证明前面都没做 证明真的没有我要的King.
+        if (kingPiece == null)  // 如果King_piece 还是null 证明前面都没做 证明真的没有我要的King.
         {
             return false;
         }
@@ -214,7 +214,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
 
-    public boolean not_valid_move(TeamColor teamColor)
+    public boolean notValidMove(TeamColor teamColor)
     {
         ArrayList<ChessMove> result = new ArrayList<>();
         for(int i = 0; i < 8; i++)
@@ -244,7 +244,7 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor)
     {
 
-        if (isInCheck(teamColor) && not_valid_move(teamColor))
+        if (isInCheck(teamColor) && notValidMove(teamColor))
         {
             return true;
         }
@@ -263,7 +263,7 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor)
     {
-        if (!isInCheck(teamColor) && not_valid_move(teamColor))
+        if (!isInCheck(teamColor) && notValidMove(teamColor))
         {
             return true;
         }

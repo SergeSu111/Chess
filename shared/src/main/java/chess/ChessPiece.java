@@ -178,10 +178,10 @@ public class ChessPiece {
 
     }
 
-    public static ArrayList<ChessMove> straight (ChessBoard board, ChessGame.TeamColor this_color, PieceType type, int row, int column)
+    public static ArrayList<ChessMove> straight (ChessBoard board, ChessGame.TeamColor thisColor, PieceType type, int row, int column)
     {
         // 根据当前传进来的row 和column来得到当前棋子的起始位置.
-        ChessPosition start_position = new ChessPosition(row, column);
+        ChessPosition startPosition = new ChessPosition(row, column);
         // 在当前函数中也创建一个局部的moves ArrayList来存放能够走到的所有走法的ChessMove.
         ArrayList<ChessMove> moves = new ArrayList<>();
 
@@ -189,7 +189,7 @@ public class ChessPiece {
         // for 循环 根据move_check检查是否有障碍, 有障碍break 检查是否会吃掉KING, break;
         for (int i = row + 1; i <= 8; i++)  // row往上加. 最少走一格 最多走到小于等于8 否则出界了
         {
-           if (moveCheck(board, this_color, start_position, moves, i, column)) break;
+           if (moveCheck(board, thisColor, startPosition, moves, i, column)) break;
             // 检查往上走的每一步是否有障碍 没障碍会把当前的步数加到moves里, 或者如果吃掉对方棋子, 也会加上去.
             if (type == PieceType.KING)
             {
@@ -200,7 +200,7 @@ public class ChessPiece {
         // for 循环 根据move_check检查是否有障碍, 有障碍break 检查是否会吃掉KING, break;
         for (int i = row - 1; i >= 1; i--)  // row往下减， 最好减一格，最多减到不低于1. 否则出界了
         {
-            if (moveCheck(board, this_color, start_position, moves, i, column)) break;
+            if (moveCheck(board, thisColor, startPosition, moves, i, column)) break;
             // 检查往下走的每一步是否有障碍, 没障碍的话会把当前步数更新到moves里, 或者吃掉对方的棋子, 也会加上去.
             if (type == PieceType.KING)
             {
@@ -212,7 +212,7 @@ public class ChessPiece {
         // for 循环 根据move_check检查是否有障碍, 有障碍break 检查是否会吃掉KING, break;
         for (int j = column -1; j >= 1; j--)  // column 会往做移 最少移动一位, 最多不能低于1 因为会出界
         {
-             if (moveCheck(board, this_color, start_position, moves, row, j)) break;
+             if (moveCheck(board, thisColor, startPosition, moves, row, j)) break;
             if (type == PieceType.KING)
             {
                 break;
@@ -223,7 +223,7 @@ public class ChessPiece {
         // for 循环 根据move_check检查是否有障碍, 有障碍break 检查是否会吃掉KING, break;
         for (int j = column + 1; j <= 8; j++)
         {
-            if (moveCheck(board, this_color, start_position, moves, row, j)) break;
+            if (moveCheck(board, thisColor, startPosition, moves, row, j)) break;
             if (type == PieceType.KING)
             {
                 break;
@@ -236,7 +236,7 @@ public class ChessPiece {
     * move_check function 检查每走一步是否有障碍, 如果障碍是别人的棋子, 则直接吃掉, 把对方棋子的位置也加到moves里. 因为我的棋子要往下走.
     * 如果是自己的棋子,则停止移动.
     * */
-    public static Boolean moveCheck(ChessBoard board, ChessGame.TeamColor original_color, ChessPosition start_position, List<ChessMove> moves, int row, int column)
+    public static Boolean moveCheck(ChessBoard board, ChessGame.TeamColor originalColor, ChessPosition startPosition, List<ChessMove> moves, int row, int column)
     {
         //  创建下一个observed piece. 位置根据当前的i 和j 来 因为i 和j 都是起始位置的下一个位置
         ChessPiece nextPiece = board.getPiece(new ChessPosition(row, column));
@@ -244,20 +244,20 @@ public class ChessPiece {
         if(nextPiece != null)
         {
             // 观察这个observed piece的颜色, 如果和当前棋子颜色相同.
-            if(nextPiece.pieceColor == original_color)
+            if(nextPiece.pieceColor == originalColor)
             {
                 // 么返回true.结束行走.  到此位置. 走不了了 遇到了障碍.
                 return true;
             }
             // 如果颜色不相同, 证明遇到了对方棋子, 那么需要吃掉对方棋子, 把对方棋子的位置(i,j) 也放入moves里.
             // 因为i, j就是当前下一步要走的位置.
-            moves.add(new ChessMove(start_position, new ChessPosition(row, column), null));
+            moves.add(new ChessMove(startPosition, new ChessPosition(row, column), null));
             // 然后再返回true 结束行走 到此位置. 因为也遇到了障碍.
             return true;
         }
         // if observed piece 为空, 证明没有遇到阻碍.那么就继续往前走, 当前走过的路都要当作一个ChessPosition来放到
         // moves里. 因为有可能会在这一步停下.
-        moves.add(new ChessMove(start_position, new ChessPosition(row, column), null));
+        moves.add(new ChessMove(startPosition, new ChessPosition(row, column), null));
         return false;
     }
     /*
@@ -265,7 +265,7 @@ public class ChessPiece {
     * Knight可以先向前或左右走一格或者两格 然后再向90°角走相关的一格或者两格.
     * 取决于Knight一开始走的方向和格数.
     * */
-    public static ArrayList<ChessMove> knightMove(ChessBoard board, int row, int column, ChessGame.TeamColor this_color, PieceType this_type)
+    public static ArrayList<ChessMove> knightMove(ChessBoard board, int row, int column, ChessGame.TeamColor thisColor, PieceType thisType)
     {
         // 得到当前棋子的起始位置.
         ChessPosition startPosition = new ChessPosition(row, column);
@@ -284,7 +284,7 @@ public class ChessPiece {
         if (inbounds(nextRow, nextColumn))   // 如果继续走还在界内的话
             {
                 // 则继续move_check来判断是否遇到了阻碍. 如果没遇到阻碍就把当前的位置加到moves里去
-                moveCheck(board, this_color, startPosition, moves, nextRow, nextColumn); // 如果为true 则遇到了阻碍.
+                moveCheck(board, thisColor, startPosition, moves, nextRow, nextColumn); // 如果为true 则遇到了阻碍.
             }
 
         // 先上两格 再 右一格
@@ -292,7 +292,7 @@ public class ChessPiece {
         nextColumn = column + 1;
         if (inbounds (nextRow, nextColumn))
         {
-            moveCheck(board, this_color, startPosition, moves, nextRow, nextColumn); // 如果为true 则遇到了阻碍.
+            moveCheck(board, thisColor, startPosition, moves, nextRow, nextColumn); // 如果为true 则遇到了阻碍.
         }
 
         // 先上一格 再 左两格
@@ -300,7 +300,7 @@ public class ChessPiece {
         nextColumn = column - 2;
         if (inbounds (nextRow, nextColumn))
         {
-            moveCheck(board, this_color, startPosition, moves, nextRow, nextColumn); // 如果为true 则遇到了阻碍.
+            moveCheck(board, thisColor, startPosition, moves, nextRow, nextColumn); // 如果为true 则遇到了阻碍.
         }
 
         // 先上一格 再 右两格
@@ -308,7 +308,7 @@ public class ChessPiece {
         nextColumn = column + 2;
         if (inbounds(nextRow, nextColumn))  // 为True证明没有出界
         {
-            moveCheck(board, this_color, startPosition, moves, nextRow, nextColumn); // 如果为true 则遇到了阻碍.
+            moveCheck(board, thisColor, startPosition, moves, nextRow, nextColumn); // 如果为true 则遇到了阻碍.
         }
 
         // 先下两格 再 左一格
@@ -316,7 +316,7 @@ public class ChessPiece {
         nextColumn = column - 1;
         if (inbounds(nextRow, nextColumn)) // 为True证明没有出界
         {
-            moveCheck(board, this_color, startPosition, moves, nextRow, nextColumn); // 如果为true 则遇到了阻碍.
+            moveCheck(board, thisColor, startPosition, moves, nextRow, nextColumn); // 如果为true 则遇到了阻碍.
         }
 
         // 先下两格 再 右一格
@@ -324,7 +324,7 @@ public class ChessPiece {
         nextColumn = column + 1;
         if (inbounds(nextRow, nextColumn))
         {
-            moveCheck(board, this_color, startPosition, moves, nextRow, nextColumn); // 如果为true 则遇到了阻碍.
+            moveCheck(board, thisColor, startPosition, moves, nextRow, nextColumn); // 如果为true 则遇到了阻碍.
         }
 
         // 先下一格 再 左两格
@@ -332,7 +332,7 @@ public class ChessPiece {
         nextColumn = column - 2;
         if (inbounds(nextRow, nextColumn))
         {
-            moveCheck(board, this_color, startPosition, moves, nextRow, nextColumn); // 如果为true 则遇到了阻碍.
+            moveCheck(board, thisColor, startPosition, moves, nextRow, nextColumn); // 如果为true 则遇到了阻碍.
         }
 
         // 先下一格 再 右两格
@@ -340,7 +340,7 @@ public class ChessPiece {
         nextColumn = column + 2;
         if (inbounds(nextRow, nextColumn))
         {
-            moveCheck(board, this_color, startPosition, moves, nextRow, nextColumn); // 如果为true 则遇到了阻碍.
+            moveCheck(board, thisColor, startPosition, moves, nextRow, nextColumn); // 如果为true 则遇到了阻碍.
         }
 
         return moves;

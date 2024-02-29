@@ -15,11 +15,11 @@ public interface GameDAO {
 
     void clear();
 
-    boolean gameExists(int game_id) throws IllegalAccessException;
+    boolean gameExists(int gameId) throws IllegalAccessException;
 
-    void updatePlayers(int gameID, String username, String the_color) throws IllegalAccessException, DataAccessException;
+    void updatePlayers(int gameID, String username, String theColor) throws IllegalAccessException, DataAccessException;
 
-    void joinGame(int gameID, String username, String the_color) throws DataAccessException, IllegalAccessException;
+    void joinGame(int gameID, String username, String theColor) throws DataAccessException, IllegalAccessException;
 
-    boolean colorFree(String the_color, int gameID) throws DataAccessException, IllegalAccessException;
+    boolean colorFree(String theColor, int gameID) throws DataAccessException, IllegalAccessException;
 }

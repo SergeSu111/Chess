@@ -36,8 +36,8 @@ public class GameService {
         }
     }
 
-    public CreateGameResult createGame(CreateGameRequest createGameRequest, String auth_token) throws DataAccessException, IllegalAccessException {
-        if (authDAO.authIsStored(auth_token))
+    public CreateGameResult createGame(CreateGameRequest createGameRequest, String authToken) throws DataAccessException, IllegalAccessException {
+        if (authDAO.authIsStored(authToken))
         {
             return new CreateGameResult(gameDAO.createGame(createGameRequest.gameName()));
         }

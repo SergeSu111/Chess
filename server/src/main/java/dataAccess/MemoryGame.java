@@ -12,9 +12,9 @@ public class MemoryGame  implements GameDAO{
 
 
     @Override
-    public int createGame(String game_name) {
+    public int createGame(String gameName) {
         int theGameId = dBoperation.getNewGameId();
-        dBoperation.createGame(theGameId, null, null, game_name, null);
+        dBoperation.createGame(theGameId, null, null, gameName, null);
         return theGameId;
     }
 
@@ -44,23 +44,23 @@ public class MemoryGame  implements GameDAO{
     }
 
     @Override
-    public boolean gameExists(int game_id) throws IllegalAccessException {
-        return getGame(game_id) != null;
+    public boolean gameExists(int gameId) throws IllegalAccessException {
+        return getGame(gameId) != null;
     }
 
     @Override
-    public void updatePlayers(int gameID, String username, String the_color) throws IllegalAccessException, DataAccessException
+    public void updatePlayers(int gameID, String username, String theColor) throws IllegalAccessException, DataAccessException
     {
         GameData forUpdate = dBoperation.getGame("gameID", new GameData(gameID, null, null, null, null));
         if (forUpdate == null) {throw new DataAccessException("Error: bad request");}
         else
         {
             dBoperation.delGame("all", forUpdate);
-            if (the_color.equals("WHITE"))
+            if (theColor.equals("WHITE"))
             {
                 dBoperation.createGame(forUpdate.gameID(), username, forUpdate.blackUsername(), forUpdate.gameName(), forUpdate.game());
             }
-            else if (the_color.equals("BLACK"))
+            else if (theColor.equals("BLACK"))
             {
                 dBoperation.createGame(forUpdate.gameID(), forUpdate.whiteUsername(), username, forUpdate.gameName(),forUpdate.game());
             }
@@ -94,11 +94,11 @@ public class MemoryGame  implements GameDAO{
     }
 
     @Override
-    public boolean colorFree(String the_color, int gameID) throws DataAccessException, IllegalAccessException {
+    public boolean colorFree(String theColor, int gameID) throws DataAccessException, IllegalAccessException {
         if (gameExists(gameID))
         {
             GameData gameCheck = getGame(gameID);
-            return gameCheck.availableColor(the_color);
+            return gameCheck.availableColor(theColor);
         }
         else
         {

@@ -16,10 +16,10 @@ public class ServiceHandle {
 
     /*get the request body and make the json content in the request body into java class,
     * we use template */
-    protected static <T> T getBody(Request request, Class<T> my_class)
+    protected static <T> T getBody(Request request, Class<T> myClass)
     {
         // var is auto in C++. make the request body bee my_class type, and give it to body
-        var body = new Gson().fromJson(request.body(), my_class);
+        var body = new Gson().fromJson(request.body(), myClass);
         if (body == null)
         {
             throw new RuntimeException("You need to add something in your request.");

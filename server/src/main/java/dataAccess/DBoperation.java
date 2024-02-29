@@ -103,8 +103,8 @@ public class DBoperation {
         return null;
     }
 
-    public void createAuth(String auth_token, String username) {
-        authData.add(new AuthData(auth_token, username));
+    public void createAuth(String authToken, String username) {
+        authData.add(new AuthData(authToken, username));
     }
 
     public void deleteAuth(String argument, AuthData search) throws IllegalAccessException {
@@ -126,8 +126,8 @@ public class DBoperation {
         return (gameData);
     }
 
-    public void createGame(int game_id, String white_username, String black_username, String game_name, String game) {
-        gameData.add(new GameData(game_id, white_username, black_username, game_name, game));
+    public void createGame(int gameId, String whiteUsername, String blackUsername, String gameName, String game) {
+        gameData.add(new GameData(gameId, whiteUsername, blackUsername, gameName, game));
     }
 
     public GameData getGame(String arguments, GameData search) throws IllegalAccessException {
