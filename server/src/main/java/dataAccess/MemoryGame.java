@@ -28,16 +28,6 @@ public class MemoryGame  implements GameDAO{
         return dBoperation.showAllGames();
     }
 
-//    @Override
-//    public void updateGame(int gameID, String game) throws DataAccessException, IllegalAccessException {
-//       GameData updated = dBoperation.getGame("gameID", new GameData(gameID, null, null, null, null));
-//       if (updated == null) {throw new DataAccessException("Error: bad request");}
-//       else {
-//           dBoperation.delGame("all", updated);
-//           dBoperation.createGame(updated.gameID(), updated.whiteUsername(), updated.blackUsername(), updated.gameName(), game);
-//       }
-//    }
-
     @Override
     public void clear() {
         dBoperation.clearGame();

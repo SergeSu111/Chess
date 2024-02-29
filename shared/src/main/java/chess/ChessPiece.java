@@ -401,8 +401,6 @@ public class ChessPiece {
             // 右斜方的话pawn的下一个column肯定会+1
         int nextColumn = column + 1;
         // 然后搞出来右斜方的piece. 因为next_row 前面已经加了
-        // 接下来开始判断这个右斜方的piece是否为空.
-        // 如果右斜方piece不为空且颜色跟当前颜色不等. 证明我们可以吃他.
         if (inbounds(nextRow, nextColumn))
         {
             ChessPiece nextPiece = board.getPiece(new ChessPosition(nextRow, nextColumn));
@@ -424,8 +422,7 @@ public class ChessPiece {
                 }
             }
         }
-        // 左斜方
-        nextColumn -= 2; // 因为前面已经走了右斜方, 所以想回到左斜方需要将列-2;
+        nextColumn -= 2; // 因为前面已经走了右斜方, 所以想回到左斜方需要将列-2; // 左斜方
         if (inbounds(nextRow, nextColumn))
         {
             ChessPiece nextPiece = board.getPiece(new ChessPosition(nextRow, nextColumn));  // 得到了当前的左斜方piece
@@ -441,10 +438,9 @@ public class ChessPiece {
                     moves.add(new ChessMove(startPosition, new ChessPosition(nextRow, nextColumn), PieceType.ROOK));
                     moves.add(new ChessMove(startPosition, new ChessPosition(nextRow, nextColumn), PieceType.KNIGHT));
                 }
-                // 否则没有达到底线, 但你任然可以吃他 因为对方颜色和你不一样. 但是你不需要升级.
                 else
                 {
-                    moves.add(new ChessMove(startPosition, new ChessPosition(nextRow, nextColumn),null));
+                    moves.add(new ChessMove(startPosition, new ChessPosition(nextRow, nextColumn),null));   // 否则没有达到底线, 但你任然可以吃他 因为对方颜色和你不一样. 但是你不需要升级.
                 }
             }
         }

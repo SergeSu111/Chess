@@ -185,20 +185,4 @@ public class DBoperation {
         }
 
     }
-
-//    public void delUser(String argument, UserData search) throws IllegalAccessException {
-//        UserData removed = getUser(argument, search);
-//        while(removed != null)
-//        {
-//            userData.remove(removed);
-//            removed = getUser(argument, search);
-//        }
-//
-//
-//    }
-
-
-
-
-
 }
