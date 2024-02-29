@@ -68,7 +68,7 @@ public class ChessPiece {
         // Switch
         switch(pieceNow.type)
         {
-            case KING:
+            case KING, QUEEN:
                 // 因为KING 既可以直线走 也可以斜着走.
                 myMovements.addAll(diagonal(board, row, column, currentColor, pieceNow.type));
                 myMovements.addAll(straight(board, currentColor, pieceNow.type, row, column));
@@ -77,11 +77,11 @@ public class ChessPiece {
                 // 因为diagonal返回的是一个ArrayList, 最后让返回的ArrayList 复制给my_movement就可以了
                 myMovements = diagonal(board, row, column, currentColor, pieceNow.type);
                 break;
-            case QUEEN:
-                // 因为QUEEN 既可以直线走 也可以斜着走.
-                myMovements.addAll(diagonal(board, row, column, currentColor, pieceNow.type));
-                myMovements.addAll(straight(board, currentColor, pieceNow.type, row, column));
-                break;
+//            case QUEEN:
+//                // 因为QUEEN 既可以直线走 也可以斜着走.
+//                myMovements.addAll(straight(board, currentColor, pieceNow.type, row, column));
+//                myMovements.addAll(diagonal(board, row, column, currentColor, pieceNow.type));
+//                break;
             case KNIGHT:
                 myMovements = knightMove(board,row, column, currentColor, pieceNow.type);
                 break;
