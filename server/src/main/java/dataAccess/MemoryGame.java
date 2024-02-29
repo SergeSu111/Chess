@@ -28,15 +28,15 @@ public class MemoryGame  implements GameDAO{
         return dBoperation.showAllGames();
     }
 
-    @Override
-    public void updateGame(int gameID, String game) throws DataAccessException, IllegalAccessException {
-       GameData updated = dBoperation.getGame("gameID", new GameData(gameID, null, null, null, null));
-       if (updated == null) {throw new DataAccessException("Error: bad request");}
-       else {
-           dBoperation.delGame("all", updated);
-           dBoperation.createGame(updated.gameID(), updated.whiteUsername(), updated.blackUsername(), updated.gameName(), game);
-       }
-    }
+//    @Override
+//    public void updateGame(int gameID, String game) throws DataAccessException, IllegalAccessException {
+//       GameData updated = dBoperation.getGame("gameID", new GameData(gameID, null, null, null, null));
+//       if (updated == null) {throw new DataAccessException("Error: bad request");}
+//       else {
+//           dBoperation.delGame("all", updated);
+//           dBoperation.createGame(updated.gameID(), updated.whiteUsername(), updated.blackUsername(), updated.gameName(), game);
+//       }
+//    }
 
     @Override
     public void clear() {
@@ -73,11 +73,11 @@ public class MemoryGame  implements GameDAO{
     }
 
     @Override
-    public void joinGame(int gameID, String username, String the_color) throws DataAccessException, IllegalAccessException {
+    public void joinGame(int gameID, String username, String theColor) throws DataAccessException, IllegalAccessException {
         boolean colorGood;
         try
         {
-            colorGood = colorFree(the_color, gameID); // if got error
+            colorGood = colorFree(theColor, gameID); // if got error
         }
         catch (IllegalAccessException e)
         {
@@ -85,7 +85,7 @@ public class MemoryGame  implements GameDAO{
         }
         if (colorGood) // if color is available
         {
-            updatePlayers(gameID, username, the_color);
+            updatePlayers(gameID, username, theColor);
         }
         else
         {

@@ -361,12 +361,10 @@ public class ChessPiece {
         ChessPosition startPosition = new ChessPosition(row, column);
         // 创建局部临时moves来存储pawns的走法.
         ArrayList<ChessMove> moves = new ArrayList<>();
-
         // 声明起始的row;
         int startRow;
         // 声明pawn到底往下走还是往上走.
         int upDown;
-
         // 如果pawn的颜色是白色.
         if (myColor == ChessGame.TeamColor.WHITE) {
             // 则起始的row是第二行, 且是往上走的. 所以up_down 是1.
@@ -379,7 +377,6 @@ public class ChessPiece {
             upDown = -1;
         }
         int nextRow = row + upDown;  //得到nextRow 的行数.
-
         boolean empty = false;
         // 如果pawn走的下一行没有出界 并且走的下一个位置为空的话
         if (nextRow >= 1 && nextRow <= 8 && board.getPiece(new ChessPosition(nextRow, column)) == null) {
@@ -396,13 +393,6 @@ public class ChessPiece {
             else
             {
                 moves.add(new ChessMove(startPosition, new ChessPosition(nextRow, column), null));
-////                 check my current location is start point or not
-////                 if there is anything in front of it. by two spaces.
-//                if (board.getPiece(new ChessPosition(next_row + 1, column)) == null)
-//                {
-//                    moves.add(new ChessMove(start_position, new ChessPosition(next_row +1, column), null));
-//                }
-//                 move for two spaces.
                 empty = true; // 证明下一步是空的.
             }
             // 如果pawn的左右协方有东西可以吃, 则pawn可以去左右协防然后吃掉对方
@@ -411,7 +401,6 @@ public class ChessPiece {
             // 右斜方的话pawn的下一个column肯定会+1
         int nextColumn = column + 1;
         // 然后搞出来右斜方的piece. 因为next_row 前面已经加了
-
         // 接下来开始判断这个右斜方的piece是否为空.
         // 如果右斜方piece不为空且颜色跟当前颜色不等. 证明我们可以吃他.
         if (inbounds(nextRow, nextColumn))
@@ -437,7 +426,6 @@ public class ChessPiece {
         }
         // 左斜方
         nextColumn -= 2; // 因为前面已经走了右斜方, 所以想回到左斜方需要将列-2;
-
         if (inbounds(nextRow, nextColumn))
         {
             ChessPiece nextPiece = board.getPiece(new ChessPosition(nextRow, nextColumn));  // 得到了当前的左斜方piece
@@ -458,7 +446,6 @@ public class ChessPiece {
                 {
                     moves.add(new ChessMove(startPosition, new ChessPosition(nextRow, nextColumn),null));
                 }
-
             }
         }
         // 如果最开始的开始, pawn就在它自己的start point呢?

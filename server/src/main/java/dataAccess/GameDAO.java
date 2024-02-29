@@ -7,11 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 
 public interface GameDAO {
-    int createGame(String game_name);
+    int createGame(String gameName);
     GameData getGame(int gameID) throws IllegalAccessException;
     HashSet<GameData> listGames();
 
-    void updateGame(int gameID, String game) throws DataAccessException, IllegalAccessException;
+    // void updateGame(int gameID, String game) throws DataAccessException, IllegalAccessException;
 
     void clear();
 
