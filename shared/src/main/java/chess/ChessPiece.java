@@ -444,11 +444,9 @@ public class ChessPiece {
                 }
             }
         }
-        // 如果最开始的开始, pawn就在它自己的start point呢?
         // 如果一开始就在start point 且前面没东西. empty == true 表示前面没东西
         if (row == startRow && empty)   // 因为start_row 本来就是7 或者2 如果row等于start_row 证明pawn本来就在原位
         {
-            // move forward 2 for start
             nextRow += upDown; // depends on the color.  // 因为已经在在前面加一个位置; 这里再加up_down就完成了2格前进的操作
             //如果pawn的下一行在bound 以内. 并且下一个piece为空.
             if (board.getPiece(new ChessPosition(nextRow, column)) == null)
