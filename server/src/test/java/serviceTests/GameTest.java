@@ -2,6 +2,8 @@ package serviceTests;
 
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.sql.SQLException;
 import java.util.UUID;
 
 import request.CreateGameRequest;
@@ -23,6 +25,9 @@ class GameTest {
 
     private String third_Auth;
 
+    GameTest() throws DataAccessException {
+    }
+
     @BeforeEach
     void setUp() throws DataAccessException, IllegalAccessException {
         String first_Auth = this.auth_service.register(new RegisterRequest(
@@ -40,7 +45,7 @@ class GameTest {
     }
 
     @AfterEach
-    void tearDown() throws DataAccessException {
+    void tearDown() throws DataAccessException, SQLException {
         this.do_service.clear();
     }
 

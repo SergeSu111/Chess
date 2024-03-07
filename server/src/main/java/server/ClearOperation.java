@@ -5,6 +5,8 @@ import dataAccess.DataAccessException;
 import service.ClearService;
 import spark.*;
 
+import java.sql.SQLException;
+
 
 /*This class is for the service of processing clear endpoints*/
 public class ClearOperation extends ServiceHandle
@@ -17,7 +19,7 @@ public class ClearOperation extends ServiceHandle
         // 继承了ServiceHandle来的得到request的属性.
     }
 
-    public Object clear () throws DataAccessException {
+    public Object clear () throws DataAccessException, SQLException {
         myClearService.clear();
 
         this.response.status(200); // 200 表面http request成功了

@@ -2,6 +2,8 @@ package serviceTests;
 
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.sql.SQLException;
 import java.util.UUID;
 
 import request.CreateGameRequest;
@@ -24,6 +26,9 @@ class DBoperationTest {
 
     private String third_Auth;
 
+    DBoperationTest() throws DataAccessException {
+    }
+
     @BeforeEach
     void setUp() throws DataAccessException, IllegalAccessException {
         String first_Auth = this.auth_service.register(new RegisterRequest(
@@ -41,14 +46,14 @@ class DBoperationTest {
     }
 
     @AfterEach
-    void tearDown() throws DataAccessException {
+    void tearDown() throws DataAccessException, SQLException {
         this.do_service.clear();
     }
 
     @Test
     @Order(1)
     @DisplayName("clear (+)")
-    void clear_positive() throws DataAccessException {
+    void clear_positive() throws DataAccessException, SQLException {
         this.do_service.clear();
         DataAccessException exception = assertThrows(DataAccessException.class, () -> this.auth_service.logout(this.third_Auth));
         assertEquals("Error: unauthorized", exception.getMessage());

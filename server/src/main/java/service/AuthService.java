@@ -7,9 +7,14 @@ import request.RegisterRequest;
 import result.LoginResult;
 import result.RegisterResult;
 
+import java.sql.SQLException;
+
 public class AuthService {
     private AuthDAO authDAO = new MemoryAuth();
-    private UserDAO userDAO = new MemoryUser();
+    private UserDAO userDAO = new sqlUser();
+
+    public AuthService() throws DataAccessException {
+    }
 
     public RegisterResult register(RegisterRequest request) throws DataAccessException, IllegalAccessException {
        if (userDAO.userIsStored(request.username()))
@@ -24,7 +29,7 @@ public class AuthService {
        }
     }
 
-    public LoginResult login(LoginRequest loginRequest) throws DataAccessException, IllegalAccessException {
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException, IllegalAccessException, SQLException {
         if (userDAO.userIsStored(loginRequest.username()))
         {
             if (userDAO.passwordMatch(loginRequest.username(), loginRequest.password()))

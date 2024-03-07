@@ -17,8 +17,7 @@ import java.util.Objects;
 public class AuthHandle extends ServiceHandle
 {
     private AuthService authService = new AuthService();
-    public AuthHandle(Request request, Response response)
-    {
+    public AuthHandle(Request request, Response response) throws DataAccessException {
         super(request, response); // inherit the request and response from ServiceHandle
     }
 

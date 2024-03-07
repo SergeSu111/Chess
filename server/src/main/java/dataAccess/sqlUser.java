@@ -5,6 +5,8 @@ import model.UserData;
 
 import java.sql.SQLException;
 import java.util.Objects;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 //  create User table
 public class sqlUser implements UserDAO {
@@ -37,9 +39,12 @@ public class sqlUser implements UserDAO {
         {
             try (var preparedStatement = conn.prepareStatement("INSERT INTO Users (username, password, email) VALUES (?, ?, ?)"))
             {
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                String hash = encoder.encode(password);
+
                 preparedStatement.setString(1, username);
                 preparedStatement.setString(2, email);
-                preparedStatement.setString(3, password);
+                preparedStatement.setString(3, hash);
 
                 preparedStatement.executeUpdate();
             }
@@ -58,6 +63,13 @@ public class sqlUser implements UserDAO {
                preparedStatement.setString(1, username);
 
                preparedStatement.executeUpdate();
+               // construct a new userDate reference , pass in these user information as parameters into the class
+               try (var result = preparedStatement.executeQuery())  // I am not sur if I need to write in the try block or not
+               {
+                   UserData userData = new UserData(result.getString("username"), result.getString("password"), result.getString("email"));
+                   return userData;
+               }
+
            }
        }
        catch (SQLException E)
@@ -76,12 +88,9 @@ public class sqlUser implements UserDAO {
                 preparedStatement.setString(1, username);
                 try (var result = preparedStatement.executeQuery())
                 {
-                    while (result.next())
+                    if (result.next())
                     {
-                        if (Objects.equals(username, result.getString("username")))
-                        {
                             return true;
-                        }
                     }
                     return false;
                 }
@@ -97,17 +106,18 @@ public class sqlUser implements UserDAO {
     public boolean passwordMatch(String testUsername, String password) throws DataAccessException, IllegalAccessException {
         try (var conn = DatabaseManager.getConnection())
         {
-            try (var preparedStatement = conn.prepareStatement("SELECT username, password FROM Users WHERE username = ?, passowrd = ?"))
+            try (var preparedStatement = conn.prepareStatement("SELECT username, password FROM Users WHERE username = ?"))
             {
                 preparedStatement.setString(1, testUsername);
-                preparedStatement.setString(1, password);
                 try (var result = preparedStatement.executeQuery())
                 {
-                    while (result.next())
+                     if (result.next())
                     {
-                        if (Objects.equals(testUsername, result.getString("username")) && Objects.equals(password, result.getString("password")))
+                        if (Objects.equals(testUsername, result.getString("username")))
                         {
-                            return true;
+                            // github encode password code
+                            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                            return encoder.matches(password, result.getString("password"));
                         }
                     }
                     return false;
