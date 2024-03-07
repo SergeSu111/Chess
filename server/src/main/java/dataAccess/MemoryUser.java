@@ -45,4 +45,9 @@ public class MemoryUser implements UserDAO{
             return false;
         }
     }
+
+    @Override
+    public void configureDatabase() throws DataAccessException {
+
+    }
 }
