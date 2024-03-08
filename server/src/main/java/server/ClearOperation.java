@@ -12,8 +12,7 @@ import java.sql.SQLException;
 public class ClearOperation extends ServiceHandle
 {
     ClearService myClearService = new ClearService();
-    public ClearOperation(Request request, Response response)
-    {
+    public ClearOperation(Request request, Response response) throws DataAccessException {
         super(request, response);
         // 既然要处理clear的endpoints 肯定需要clear 的request内容.
         // 继承了ServiceHandle来的得到request的属性.

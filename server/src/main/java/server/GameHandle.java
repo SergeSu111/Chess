@@ -19,8 +19,7 @@ import java.util.Objects;
 public class GameHandle extends ServiceHandle{
 
     private final GameService gameService = new GameService(); // 把gameService拿过来
-    public GameHandle(Request request, Response response)
-    {
+    public GameHandle(Request request, Response response) throws DataAccessException {
         super(request, response);
     }
 

@@ -14,9 +14,12 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class GameService {
-    private final GameDAO gameDAO = new MemoryGame();
+    private final GameDAO gameDAO = new sqlGame();
 
-    private final AuthDAO authDAO = new MemoryAuth();
+    private final AuthDAO authDAO = new sqlAuth();
+
+    public GameService() throws DataAccessException {
+    }
 
     public ListGameResult listGame(String authToken) throws DataAccessException, IllegalAccessException {
         if (authDAO.authIsStored(authToken))
