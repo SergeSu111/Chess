@@ -3,7 +3,9 @@ package dataAccess;
 
 import model.UserData;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Objects;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -35,64 +37,90 @@ public class sqlUser implements UserDAO {
 
     @Override
     public void createUser(String username, String email, String password) throws DataAccessException {
-        try(var conn = DatabaseManager.getConnection())
+        if (username != null || email != null || password != null)
         {
-            try (var preparedStatement = conn.prepareStatement("INSERT INTO Users (username, password, email) VALUES (?, ?, ?)"))
+            try(var conn = DatabaseManager.getConnection())
             {
-                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-                String hash = encoder.encode(password);
+                try (var preparedStatement = conn.prepareStatement("INSERT INTO Users (username, password, email) VALUES (?, ?, ?)"))
+                {
+                    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                    String hash = encoder.encode(password);
 
-                preparedStatement.setString(1, username);
-                preparedStatement.setString(2, email);
-                preparedStatement.setString(3, hash);
+                    preparedStatement.setString(1, username);
+                    preparedStatement.setString(2, email);
+                    preparedStatement.setString(3, hash);
 
-                preparedStatement.executeUpdate();
+                    preparedStatement.executeUpdate();
+                }
+            }
+            catch (SQLException E)
+            {
+                throw new DataAccessException(E.getMessage());
             }
         }
-        catch (SQLException E)
+        else
         {
-            throw new DataAccessException(E.getMessage());
+            throw new DataAccessException("Error: bad request");
         }
     }
 
     @Override
     public UserData getUser(String username) throws DataAccessException, IllegalAccessException {
+        UserData userData = null;
        try (var conn = DatabaseManager.getConnection())
        {
-           try (var preparedStatement = conn.prepareStatement("SELECT username FROM Users WHERE username = ?")) {
+           // 最后两个参数意味数据库的改变不会影响结果集 并且结果集只是可读 不能修改数据库的信息
+           try (var preparedStatement = conn.prepareStatement("SELECT username FROM Users WHERE username = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
                preparedStatement.setString(1, username);
 
-               preparedStatement.executeUpdate();
-               // construct a new userDate reference , pass in these user information as parameters into the class
-               try (var result = preparedStatement.executeQuery())  // I am not sur if I need to write in the try block or not
+               var result = preparedStatement.executeQuery(); // 将数据库里select的数据给result
+               int count = 0;
+               if (result.last())
                {
-                   UserData userData = new UserData(result.getString("username"), result.getString("password"), result.getString("email"));
-                   return userData;
+                   count = result.getRow(); // 直接把result所有的行数拿来
                }
-
+               if (count == 1) // 如果行数为1 整数数据库里只有这一个数据 那么直接拿过来
+               {
+                   // construct a new userDate reference , pass in these user information as parameters into the class
+                   // 将拿来的数据的每一行 都给UserData.
+                   userData = new UserData(result.getString(1), result.getString(2), result.getString(3));
+               }
+               else if (count > 1) // 证明数据库里有不止一个用户信息
+               {
+                    throw new DataAccessException("Error: There are more than one user data.");
+               }
            }
        }
        catch (SQLException E)
        {
            throw new DataAccessException(E.getMessage());
        }
+        return userData; // if userData == null 证明里面没有数据
     }
+
 
     @Override
     public boolean userIsStored(String username) throws DataAccessException, IllegalAccessException
     {
+        boolean existed = false; // 如果没有用户在数据库 或者有多个 则直接返回
         try (var conn = DatabaseManager.getConnection())
         {
-            try (var preparedStatement = conn.prepareStatement("SELECT username FROM Users WHERE username = ?"))
+            try (var preparedStatement = conn.prepareStatement("SELECT username FROM Users WHERE username = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
             {
                 preparedStatement.setString(1, username);
-                try (var result = preparedStatement.executeQuery())
+                var result = preparedStatement.executeQuery();
+                int count = 0;
+                if (result.last())
                 {
-                    if (result.next())
-                    {
-                            return true;
-                    }
-                    return false;
+                    count = result.getRow();
+                }
+                if (count == 1)
+                {
+                    existed = true;
+                }
+                else if (count > 1)
+                {
+                    throw new DataAccessException("Error: There are more than one user data.");
                 }
             }
         }
@@ -100,34 +128,37 @@ public class sqlUser implements UserDAO {
         {
             throw new DataAccessException(E.getMessage());
         }
+        return  existed;
     }
 
     @Override
     public boolean passwordMatch(String testUsername, String password) throws DataAccessException, IllegalAccessException {
+        String Password = null; // 之后设置这个testPassword 然后如果不是null 则返回true 如果是null 返回false
         try (var conn = DatabaseManager.getConnection())
         {
-            try (var preparedStatement = conn.prepareStatement("SELECT username, password FROM Users WHERE username = ?"))
-            {
+            try (var preparedStatement = conn.prepareStatement("SELECT username, password FROM Users WHERE username = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
                 preparedStatement.setString(1, testUsername);
-                try (var result = preparedStatement.executeQuery())
-                {
-                     if (result.next())
-                    {
-                        if (Objects.equals(testUsername, result.getString("username")))
-                        {
-                            // github encode password code
-                            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-                            return encoder.matches(password, result.getString("password"));
-                        }
-                    }
-                    return false;
+                var result = preparedStatement.executeQuery();
+                int count = 0;
+                if (result.last()) {
+                    count = result.getRow();
+                }
+                if (count == 1) {
+                    Password = result.getString(2);
+                } else if (count > 1) {
+                    throw new DataAccessException("Error: There are more than one user data.");
                 }
             }
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
+        if (Password != null)
+        {
+            return true;
+        }
+        return false;
+
+
     }
 
     private final String[] createStatements = {  // Why the type is String?

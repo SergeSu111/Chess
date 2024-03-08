@@ -13,5 +13,5 @@ public interface AuthDAO {
 
     boolean authIsStored(String authToken) throws DataAccessException, IllegalAccessException;
 
-    String getUserName(String authToken) throws IllegalAccessException;
+    String getUserName(String authToken) throws IllegalAccessException, DataAccessException;
 }
