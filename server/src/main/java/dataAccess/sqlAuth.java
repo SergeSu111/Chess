@@ -17,7 +17,7 @@ public class sqlAuth  implements AuthDAO{
     {
         try(var conn = DatabaseManager.getConnection())
         {
-            try(var preparedStatement = conn.prepareStatement("TRUNCATE TABLE Users"))
+            try(var preparedStatement = conn.prepareStatement("TRUNCATE TABLE Auths"))
             {
                 preparedStatement.executeUpdate();
             }
@@ -119,35 +119,32 @@ public class sqlAuth  implements AuthDAO{
     @Override
     public String getUserName(String authToken) throws IllegalAccessException, DataAccessException {
         // 先设置要得到的username 为null
-        String myUsername = null;
         // 然后连接数据库查询 如果数据库有则将username 修改为其值 否则直接返回为null 有问题throw error
         try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("SELECT username FROM Auths WHERE authToken = ?",  ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
         {
             preparedStatement.setString(1, authToken);
-            var result = preparedStatement.executeQuery();
-            int count = 0;
-            if (result.last())
+            try (var result = preparedStatement.executeQuery())
             {
-                count = result.getRow(); // 看行里有几个username
-            }
-            if (count == 1)
-            {
-                myUsername = result.getString(2); // 那么将第二列拿过来
-            }
-            else if (count > 1)
-            {
-                throw new DataAccessException("Error: There are more than one auth data.");
-            }
-            if (result.next())
-            {
-                myUsername = result.getString(2);
+                if (!result.next())
+                {
+                    throw new DataAccessException("Error: Username not exist");
+                }
+                String myUsername = result.getString("username");
+                return myUsername;
             }
         }
         catch (SQLException e)
         {
             throw new DataAccessException(e.getMessage());
         }
-        return myUsername;
+        catch (DataAccessException e)
+        {
+            throw e;
+        }
+        catch (Exception e)
+        {
+            throw new DataAccessException("Error: bad request");
+        }
     }
 
 
