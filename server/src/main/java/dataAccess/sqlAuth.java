@@ -66,6 +66,10 @@ public class sqlAuth  implements AuthDAO{
             {
                 throw new DataAccessException("Error: There are more than one auth data.");
             }
+            else if (count == 0)
+            {
+                throw new DataAccessException("Error: unauthorized");
+            }
         }
         catch (SQLException e)
         {
@@ -75,12 +79,18 @@ public class sqlAuth  implements AuthDAO{
     }
 
     @Override
-    public void deleteAuth(String authToken) throws DataAccessException, IllegalAccessException
+    public void deleteAuth(String authToken) throws DataAccessException
     {
+        if (authToken == null)
+        {
+            throw new DataAccessException("Error: unauthorized");
+        }
+
         try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("DELETE FROM Auths WHERE authToken = ?"))
         {
             preparedStatement.setString(1, authToken);
             preparedStatement.executeUpdate();
+
         }
         catch (SQLException e)
         {
@@ -106,7 +116,13 @@ public class sqlAuth  implements AuthDAO{
             }
             else if (count > 1)
             {
+
                 throw new DataAccessException("Error: There are more than one auth data.");
+            }
+            else if( count == 0)
+            {
+                return false;
+                //throw new DataAccessException("Error: unauthorized");
             }
         }
         catch (SQLException e)

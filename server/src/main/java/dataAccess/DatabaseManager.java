@@ -38,9 +38,9 @@ public class DatabaseManager {
     public static int getRows(String dbName) throws DataAccessException {
         String sqlStatement;
         switch (dbName) {
-            case "auth" -> sqlStatement = "SELECT COUNT(*) FROM auth";
-            case "user" -> sqlStatement = "SELECT COUNT(*) FROM user";
-            case "game" -> sqlStatement = "SELECT COUNT(*) FROM game";
+            case "Auths" -> sqlStatement = "SELECT COUNT(*) FROM Auths";
+            case "Users" -> sqlStatement = "SELECT COUNT(*) FROM Users";
+            case "Games" -> sqlStatement = "SELECT COUNT(*) FROM Games";
             default -> throw new DataAccessException("Invalid database requested.");
         }
         int Rows = 0;
