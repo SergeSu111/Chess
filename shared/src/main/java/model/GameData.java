@@ -14,7 +14,6 @@ public record GameData(Integer gameID, String whiteUsername, String blackUsernam
         {
             throw new IllegalAccessException("Error: invalid parameter");
         }
-
     }
 
 }

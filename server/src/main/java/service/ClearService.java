@@ -18,7 +18,6 @@ public class ClearService {
         gameDAO.clear();  // 删的是game hashset
         userDAO.clear();  // 山的是user hashset
         authDAO.clear(); // 删的是auth hashset
-
     }
 
 }

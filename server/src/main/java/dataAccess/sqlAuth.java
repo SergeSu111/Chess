@@ -34,7 +34,7 @@ public class sqlAuth  implements AuthDAO{
         try (var preparedStatement = DatabaseManager.getConnection().prepareStatement( "INSERT INTO Auths (authToken, username) VALUES(?, ?)"))
         {
             preparedStatement.setString(1,newAuthToken); //设置当前的参数 把用户创建的token放进去
-            preparedStatement.setString(2,  username);
+            preparedStatement.setString(2, username);
 
             preparedStatement.executeUpdate(); // 提交给数据库
         }
@@ -154,8 +154,8 @@ public class sqlAuth  implements AuthDAO{
               `authToken` varchar(255) NOT NULL,
               `username` varchar(255) NOT NULL,
               `email`varchar(255),
-              PRIMARY KEY (`authToken`),
-            )
+              PRIMARY KEY (`authToken`)
+            );
             """
     };
 

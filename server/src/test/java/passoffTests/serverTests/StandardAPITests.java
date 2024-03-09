@@ -266,7 +266,6 @@ public class StandardAPITests {
         registerRequest.username = newUser.username;
         registerRequest.password = null;
         registerRequest.email = newUser.email;
-
         TestModels.TestLoginRegisterResult registerResult = serverFacade.register(registerRequest);
 
         Assertions.assertEquals(HttpURLConnection.HTTP_BAD_REQUEST, serverFacade.getStatusCode(),

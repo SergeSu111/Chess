@@ -5,10 +5,8 @@ import model.UserData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Objects;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 //  create User table
 public class sqlUser implements UserDAO {
@@ -36,8 +34,8 @@ public class sqlUser implements UserDAO {
     }
 
     @Override
-    public void createUser(String username, String email, String password) throws DataAccessException {
-        if (username != null || email != null || password != null)
+    public void createUser(String username, String password, String email) throws DataAccessException {
+        if (username != null && password != null)
         {
             try(var conn = DatabaseManager.getConnection())
             {
@@ -47,8 +45,8 @@ public class sqlUser implements UserDAO {
                     String hash = encoder.encode(password);
 
                     preparedStatement.setString(1, username);
-                    preparedStatement.setString(2, email);
-                    preparedStatement.setString(3, hash);
+                    preparedStatement.setString(2, hash);
+                    preparedStatement.setString(3, email);
 
                     preparedStatement.executeUpdate();
                 }
@@ -133,26 +131,28 @@ public class sqlUser implements UserDAO {
 
     @Override
     public boolean passwordMatch(String testUsername, String password) throws DataAccessException, IllegalAccessException {
-        String Password = null; // 之后设置这个testPassword 然后如果不是null 则返回true 如果是null 返回false
+        String databasePassword = null; // 之后设置这个testPassword 然后如果不是null 则返回true 如果是null 返回false
+        boolean match = false;
         try (var conn = DatabaseManager.getConnection())
         {
-            try (var preparedStatement = conn.prepareStatement("SELECT username, password FROM Users WHERE username = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+            try (var preparedStatement = conn.prepareStatement("SELECT password FROM Users WHERE username = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
                 preparedStatement.setString(1, testUsername);
                 var result = preparedStatement.executeQuery();
-                int count = 0;
-                if (result.last()) {
-                    count = result.getRow();
+                if (result.next()) {
+                    databasePassword = result.getString(1);
+                } else  {
+                    throw new DataAccessException("Error: There is no user in that user data.");
                 }
-                if (count == 1) {
-                    Password = result.getString(2);
-                } else if (count > 1) {
-                    throw new DataAccessException("Error: There are more than one user data.");
-                }
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                // String testHash = encoder.encode(password);
+                match = encoder.matches(password, databasePassword);
             }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
-        if (Password != null)
+
+
+        if (databasePassword != null && match)// and  encode.match
         {
             return true;
         }
@@ -163,12 +163,12 @@ public class sqlUser implements UserDAO {
 
     private final String[] createStatements = {  // Why the type is String?
             """
-            CREATE TABLE IF NOT EXISTS  Users (
+            CREATE TABLE IF NOT EXISTS Users (
               `username` varchar(255) NOT NULL,
               `password` varchar(255) NOT NULL,
               `email`varchar(255),
-              PRIMARY KEY (`username`),
-            )
+              PRIMARY KEY (`username`)
+            );
             """
     };
 

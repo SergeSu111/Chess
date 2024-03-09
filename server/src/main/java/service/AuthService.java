@@ -32,6 +32,10 @@ public class AuthService {
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException, IllegalAccessException, SQLException {
         if (userDAO.userIsStored(loginRequest.username()))
         {
+            if (loginRequest.password() == null || loginRequest.username() == null)
+            {
+                throw new DataAccessException("Error: bad request");
+            }
             if (userDAO.passwordMatch(loginRequest.username(), loginRequest.password()))
             {
                 String theAuthToken = authDAO.createAuth(loginRequest.username()); // 创建一个login的token

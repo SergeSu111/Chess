@@ -15,6 +15,10 @@ import java.util.HashSet;
 import java.util.Random;
 
 public class sqlGame implements GameDAO{
+
+    public sqlGame() throws DataAccessException {
+        configureDatabase();
+    }
     @Override
     public int createGame(String gameName) throws DataAccessException {
         Random random = new Random();
@@ -23,7 +27,7 @@ public class sqlGame implements GameDAO{
 
         try (var conn = DatabaseManager.getConnection())
         {
-            try (var preparedStatement = conn.prepareStatement("INSERT INTO games (gameID, gameName, game) " + "VALUES(?, ?, ?)", Statement.RETURN_GENERATED_KEYS))
+            try (var preparedStatement = conn.prepareStatement("INSERT INTO Games (gameID, gameName, game) " + "VALUES(?, ?, ?)", Statement.RETURN_GENERATED_KEYS))
             {
                 preparedStatement.setInt(1, randomPositiveInt);
                 preparedStatement.setString(2, gameName);
@@ -39,7 +43,7 @@ public class sqlGame implements GameDAO{
     }
 
     @Override
-    public GameData getGame(int gameID) throws IllegalAccessException, DataAccessException {
+    public GameData getGame(int gameID) throws DataAccessException {
         GameData game = null;
         try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("SELECT gameID, whiteUsername, blackUsername, gameName, game FROM Games WHERE gameID = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             preparedStatement.setInt(1, gameID);
@@ -70,7 +74,7 @@ public class sqlGame implements GameDAO{
     }
 
     public void addGame(int gameID, String whiteUsername, String blackUsername, String gameName, String game) throws DataAccessException {
-        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, game) VALUES(?,?, ?, ?)", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("INSERT INTO Games (gameID, whiteUsername, blackUsername, gameName, game) VALUES(?,?, ?, ?,?)", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
         {
             preparedStatement.setInt(1, gameID);
             preparedStatement.setString(2, whiteUsername);
@@ -88,7 +92,7 @@ public class sqlGame implements GameDAO{
     @Override
     public HashSet<GameData> listGames() throws DataAccessException {
         HashSet<GameData> games = new HashSet<>();
-        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("SELECT * FROM game", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("SELECT * FROM Games", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
         {
             var result = preparedStatement.executeQuery();
             while (result.next())
@@ -105,7 +109,7 @@ public class sqlGame implements GameDAO{
 
     @Override
     public void clear() throws DataAccessException {
-        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("TRUNCATE TABLE "))
+        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("TRUNCATE TABLE Games"))
         {
             preparedStatement.executeUpdate();
         }
@@ -119,7 +123,7 @@ public class sqlGame implements GameDAO{
     @Override
     public boolean gameExists(int gameId) throws IllegalAccessException, DataAccessException {
         boolean game = false;
-        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("SELECT gameID FROM game WHERE gameID = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("SELECT gameID FROM Games WHERE gameID = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
         {
             preparedStatement.setInt(1, gameId);
             var result = preparedStatement.executeQuery();
@@ -149,7 +153,7 @@ public class sqlGame implements GameDAO{
         {
             throw new DataAccessException("Error: your game is not existed");
         }
-        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("DELETE FROM game WHERE gameID = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("DELETE FROM Games WHERE gameID = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
         {
             preparedStatement.setInt(1, gameID);
             preparedStatement.executeUpdate();
@@ -167,7 +171,7 @@ public class sqlGame implements GameDAO{
             delGame(update.gameID());
             if (theColor.equals("BLACK"))
             {
-                addGame(update.gameID(), username, update.blackUsername(), update.gameName(), update.game());
+                addGame(update.gameID(), update.whiteUsername(), username, update.gameName(), update.game());
             }
             else if (theColor.equals("WHITE"))
             {
@@ -184,16 +188,16 @@ public class sqlGame implements GameDAO{
     @Override
     public void joinGame(int gameID, String username, String theColor) throws DataAccessException, IllegalAccessException
     {
-        boolean color;
+        boolean colorIsEmpty;
         try
         {
-            color = colorFree(theColor, gameID);
+            colorIsEmpty = colorFree(theColor, gameID);
         }
         catch (IllegalAccessException ex)
         {
             throw new DataAccessException("Error: bad request");
         }
-        if (color)
+        if (colorIsEmpty)
         {
             updatePlayers(gameID, username, theColor);
         }
@@ -225,8 +229,8 @@ public class sqlGame implements GameDAO{
               `blackUsername` varchar(255) DEFAULT NULL,
               `gameName` varchar(255) NOT NULL,
               `game` JSON NOT NULL,
-               PRIMARY KEY (`gameID`),
-            )
+               PRIMARY KEY (`gameID`)
+            );
             """
     };
 
