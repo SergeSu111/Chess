@@ -31,13 +31,17 @@ public class sqlAuth  implements AuthDAO{
     @Override
     public String createAuth(String username) throws DataAccessException {
         String newAuthToken = UUID.randomUUID().toString(); // get a random token
-        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement( "INSERT INTO Auths (authToken, username) VALUES(?, ?)"))
+        try (var conn = DatabaseManager.getConnection())
         {
-            preparedStatement.setString(1,newAuthToken); //设置当前的参数 把用户创建的token放进去
-            preparedStatement.setString(2, username);
+            try (var preparedStatement = conn.prepareStatement( "INSERT INTO Auths (authToken, username) VALUES(?, ?)"))
+            {
+                preparedStatement.setString(1,newAuthToken); //设置当前的参数 把用户创建的token放进去
+                preparedStatement.setString(2, username);
 
-            preparedStatement.executeUpdate(); // 提交给数据库
+                preparedStatement.executeUpdate(); // 提交给数据库
+            }
         }
+
         catch (SQLException ex)
         {
             throw new DataAccessException(ex.getMessage());
@@ -49,26 +53,29 @@ public class sqlAuth  implements AuthDAO{
     public AuthData getAuth(String authToken) throws DataAccessException, IllegalAccessException {
         AuthData auth = null; // 先设置为null 后面如果在数据库找到则更新 或有任何问题则还是null.
 
-        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("SELECT authToken, username FROM Auths WHERE authToken = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+        try (var conn = DatabaseManager.getConnection())
         {
-            preparedStatement.setString(1, authToken);
-            var result = preparedStatement.executeQuery(); // 将选择来的信息存储到result里
-            int count = 0;
-            if (result.last())
+            try (var preparedStatement = conn.prepareStatement("SELECT authToken, username FROM Auths WHERE authToken = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
             {
-                count = result.getRow();
-            }
-            if (count == 1)
-            {
-                auth = new AuthData(result.getString(1), result.getString(2)); // 则将result里的行都拿过来给AuthData
-            }
-            else if ( count > 1)
-            {
-                throw new DataAccessException("Error: There are more than one auth data.");
-            }
-            else if (count == 0)
-            {
-                throw new DataAccessException("Error: unauthorized");
+                preparedStatement.setString(1, authToken);
+                var result = preparedStatement.executeQuery(); // 将选择来的信息存储到result里
+                int count = 0;
+                if (result.last())
+                {
+                    count = result.getRow();
+                }
+                if (count == 1)
+                {
+                    auth = new AuthData(result.getString(1), result.getString(2)); // 则将result里的行都拿过来给AuthData
+                }
+                else if ( count > 1)
+                {
+                    throw new DataAccessException("Error: There are more than one auth data.");
+                }
+                else if (count == 0)
+                {
+                    throw new DataAccessException("Error: unauthorized");
+                }
             }
         }
         catch (SQLException e)
@@ -101,30 +108,34 @@ public class sqlAuth  implements AuthDAO{
     @Override
     public boolean authIsStored(String authToken) throws DataAccessException, IllegalAccessException {
         boolean existed = false;
-        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("SELECT username FROM Auths WHERE authToken = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+        try (var conn = DatabaseManager.getConnection())
         {
-            preparedStatement.setString(1, authToken);
-            var result = preparedStatement.executeQuery();
-            int count = 0;
-            if (result.last())
+            try (var preparedStatement = conn.prepareStatement("SELECT username FROM Auths WHERE authToken = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
             {
-                count = result.getRow();
-            }
-            if (count == 1)
-            {
-                existed = true;
-            }
-            else if (count > 1)
-            {
+                preparedStatement.setString(1, authToken);
+                var result = preparedStatement.executeQuery();
+                int count = 0;
+                if (result.last())
+                {
+                    count = result.getRow();
+                }
+                if (count == 1)
+                {
+                    existed = true;
+                }
+                else if (count > 1)
+                {
 
-                throw new DataAccessException("Error: There are more than one auth data.");
-            }
-            else if( count == 0)
-            {
-                return false;
-                //throw new DataAccessException("Error: unauthorized");
+                    throw new DataAccessException("Error: There are more than one auth data.");
+                }
+                else if( count == 0)
+                {
+                    return false;
+                    //throw new DataAccessException("Error: unauthorized");
+                }
             }
         }
+
         catch (SQLException e)
         {
             throw new DataAccessException(e.getMessage());
@@ -136,17 +147,20 @@ public class sqlAuth  implements AuthDAO{
     public String getUserName(String authToken) throws IllegalAccessException, DataAccessException {
         // 先设置要得到的username 为null
         // 然后连接数据库查询 如果数据库有则将username 修改为其值 否则直接返回为null 有问题throw error
-        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("SELECT username FROM Auths WHERE authToken = ?",  ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+        try (var conn = DatabaseManager.getConnection())
         {
-            preparedStatement.setString(1, authToken);
-            try (var result = preparedStatement.executeQuery())
+            try (var preparedStatement = conn.prepareStatement("SELECT username FROM Auths WHERE authToken = ?",  ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
             {
-                if (!result.next())
+                preparedStatement.setString(1, authToken);
+                try (var result = preparedStatement.executeQuery())
                 {
-                    throw new DataAccessException("Error: Username not exist");
+                    if (!result.next())
+                    {
+                        throw new DataAccessException("Error: Username not exist");
+                    }
+                    String myUsername = result.getString("username");
+                    return myUsername;
                 }
-                String myUsername = result.getString("username");
-                return myUsername;
             }
         }
         catch (SQLException e)

@@ -45,25 +45,29 @@ public class sqlGame implements GameDAO{
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
         GameData game = null;
-        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("SELECT gameID, whiteUsername, blackUsername, gameName, game FROM Games WHERE gameID = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
-            preparedStatement.setInt(1, gameID);
-            var result = preparedStatement.executeQuery();
-            int count = 0;
-            if (result.last())
+        try (var conn = DatabaseManager.getConnection())
+        {
+            try (var preparedStatement = conn.prepareStatement("SELECT gameID, whiteUsername, blackUsername, gameName, game FROM Games WHERE gameID = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
             {
-                count = result.getRow();
-            }
-            if (count == 1)
-            {
-                game = new GameData(result.getInt(1), result.getString(2), result.getString(3), result.getString(4), result.getString(5));
-            }
-            else if (count == 0)
-            {
-                throw new DataAccessException("Error: There is no game in DB");
-            }
-            else if (count > 1)
-            {
-                throw new DataAccessException("Error: There are more than one game data.");
+                preparedStatement.setInt(1, gameID);
+                var result = preparedStatement.executeQuery();
+                int count = 0;
+                if (result.last())
+                {
+                    count = result.getRow();
+                }
+                if (count == 1)
+                {
+                    game = new GameData(result.getInt(1), result.getString(2), result.getString(3), result.getString(4), result.getString(5));
+                }
+                else if (count == 0)
+                {
+                    throw new DataAccessException("Error: There is no game in DB");
+                }
+                else if (count > 1)
+                {
+                    throw new DataAccessException("Error: There are more than one game data.");
+                }
             }
         }
         catch (SQLException E)
@@ -74,15 +78,19 @@ public class sqlGame implements GameDAO{
     }
 
     public void addGame(int gameID, String whiteUsername, String blackUsername, String gameName, String game) throws DataAccessException {
-        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("INSERT INTO Games (gameID, whiteUsername, blackUsername, gameName, game) VALUES(?,?, ?, ?,?)", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+        try (var conn = DatabaseManager.getConnection())
         {
-            preparedStatement.setInt(1, gameID);
-            preparedStatement.setString(2, whiteUsername);
-            preparedStatement.setString(3, blackUsername);
-            preparedStatement.setString(4, gameName);
-            preparedStatement.setString(5, game);
-            preparedStatement.executeUpdate();
+            try (var preparedStatement = conn.prepareStatement("INSERT INTO Games (gameID, whiteUsername, blackUsername, gameName, game) VALUES(?,?, ?, ?,?)", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+            {
+                preparedStatement.setInt(1, gameID);
+                preparedStatement.setString(2, whiteUsername);
+                preparedStatement.setString(3, blackUsername);
+                preparedStatement.setString(4, gameName);
+                preparedStatement.setString(5, game);
+                preparedStatement.executeUpdate();
+            }
         }
+
         catch(SQLException e)
         {
             throw new DataAccessException(e.getMessage());
@@ -92,14 +100,18 @@ public class sqlGame implements GameDAO{
     @Override
     public HashSet<GameData> listGames() throws DataAccessException {
         HashSet<GameData> games = new HashSet<>();
-        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("SELECT * FROM Games", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+        try (var conn = DatabaseManager.getConnection())
         {
-            var result = preparedStatement.executeQuery();
-            while (result.next())
+            try (var preparedStatement = conn.prepareStatement("SELECT * FROM Games", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
             {
-                games.add(new GameData(result.getInt(1), result.getString(2), result.getString(3), result.getString(4), result.getString(5)));
+                var result = preparedStatement.executeQuery();
+                while (result.next())
+                {
+                    games.add(new GameData(result.getInt(1), result.getString(2), result.getString(3), result.getString(4), result.getString(5)));
+                }
             }
         }
+
         catch (SQLException ex)
         {
             throw new DataAccessException(ex.getMessage());
@@ -109,9 +121,12 @@ public class sqlGame implements GameDAO{
 
     @Override
     public void clear() throws DataAccessException {
-        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("TRUNCATE TABLE Games"))
+        try (var conn = DatabaseManager.getConnection())
         {
-            preparedStatement.executeUpdate();
+            try (var preparedStatement = conn.prepareStatement("TRUNCATE TABLE Games"))
+            {
+                preparedStatement.executeUpdate();
+            }
         }
         catch (SQLException E)
         {
@@ -123,22 +138,25 @@ public class sqlGame implements GameDAO{
     @Override
     public boolean gameExists(int gameId) throws IllegalAccessException, DataAccessException {
         boolean game = false;
-        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("SELECT gameID FROM Games WHERE gameID = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+        try (var conn = DatabaseManager.getConnection())
         {
-            preparedStatement.setInt(1, gameId);
-            var result = preparedStatement.executeQuery();
-            int count = 0;
-            if (result.last())
+            try (var preparedStatement = conn.prepareStatement("SELECT gameID FROM Games WHERE gameID = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
             {
-                count = result.getRow();
-            }
-            if (count == 1)
-            {
-                game = true;
-            }
-            else if (count > 1)
-            {
-                throw new DataAccessException("Error: There are more than one game data.");
+                preparedStatement.setInt(1, gameId);
+                var result = preparedStatement.executeQuery();
+                int count = 0;
+                if (result.last())
+                {
+                    count = result.getRow();
+                }
+                if (count == 1)
+                {
+                    game = true;
+                }
+                else if (count > 1)
+                {
+                    throw new DataAccessException("Error: There are more than one game data.");
+                }
             }
         }
         catch (SQLException ex)
@@ -153,10 +171,13 @@ public class sqlGame implements GameDAO{
         {
             throw new DataAccessException("Error: your game is not existed");
         }
-        try (var preparedStatement = DatabaseManager.getConnection().prepareStatement("DELETE FROM Games WHERE gameID = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+        try (var conn = DatabaseManager.getConnection())
         {
-            preparedStatement.setInt(1, gameID);
-            preparedStatement.executeUpdate();
+            try (var preparedStatement = conn.prepareStatement("DELETE FROM Games WHERE gameID = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+            {
+                preparedStatement.setInt(1, gameID);
+                preparedStatement.executeUpdate();
+            }
         }
         catch (SQLException e)
         {
