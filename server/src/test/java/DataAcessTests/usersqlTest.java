@@ -71,6 +71,7 @@ class SQLUserDAOTests {
         //assertEquals("richard", userData.username());
     }
 
+
     @Test
     @Order(5)
     @DisplayName("getUser (-)")
