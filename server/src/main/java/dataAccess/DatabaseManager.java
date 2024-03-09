@@ -35,6 +35,25 @@ public class DatabaseManager {
     /**
      * Creates the database if it does not already exist.
      */
+    public static int getRows(String dbName) throws DataAccessException {
+        String sqlStatement;
+        switch (dbName) {
+            case "auth" -> sqlStatement = "SELECT COUNT(*) FROM auth";
+            case "user" -> sqlStatement = "SELECT COUNT(*) FROM user";
+            case "game" -> sqlStatement = "SELECT COUNT(*) FROM game";
+            default -> throw new DataAccessException("Invalid database requested.");
+        }
+        int Rows = 0;
+        try (var statement = DatabaseManager.getConnection().prepareStatement(
+                sqlStatement, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+            var result = statement.executeQuery();
+            if (result.next()) { Rows = result.getInt(1); }
+        } catch (SQLException ex) {
+            throw new DataAccessException(ex.getMessage());
+        }
+        return Rows;
+    }
+
     public static void createDatabase() throws DataAccessException {
         try {
             var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
