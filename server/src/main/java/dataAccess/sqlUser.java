@@ -63,13 +63,15 @@ public class sqlUser implements UserDAO {
     }
 
     @Override
-    public UserData getUser(String username) throws DataAccessException, IllegalAccessException {
+    public UserData getUser(String username, String password, String email) throws DataAccessException {
         UserData userData = null;
        try (var conn = DatabaseManager.getConnection())
        {
            // 最后两个参数意味数据库的改变不会影响结果集 并且结果集只是可读 不能修改数据库的信息
-           try (var preparedStatement = conn.prepareStatement("SELECT username FROM Users WHERE username = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+           try (var preparedStatement = conn.prepareStatement("SELECT username, password, email FROM Users WHERE username = ? AND password = ? AND email = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
                preparedStatement.setString(1, username);
+               preparedStatement.setString(2, password);
+               preparedStatement.setString(3, email);
 
                var result = preparedStatement.executeQuery(); // 将数据库里select的数据给result
                int count = 0;
@@ -93,6 +95,7 @@ public class sqlUser implements UserDAO {
        {
            throw new DataAccessException(E.getMessage());
        }
+
         return userData; // if userData == null 证明里面没有数据
     }
 
