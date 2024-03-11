@@ -1,6 +1,9 @@
 package model;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
+
+import java.util.Objects;
 
 public record GameData(Integer gameID, String whiteUsername, String blackUsername, String gameName, String game) {
     public boolean availableColor (String requestedColor) throws IllegalAccessException {
@@ -15,5 +18,4 @@ public record GameData(Integer gameID, String whiteUsername, String blackUsernam
             throw new IllegalAccessException("Error: invalid parameter");
         }
     }
-
 }

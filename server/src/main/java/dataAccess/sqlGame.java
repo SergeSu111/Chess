@@ -3,14 +3,10 @@ package dataAccess;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
-import model.UserData;
-import request.CreateGameRequest;
 
-import javax.xml.transform.Result;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 
@@ -32,7 +28,15 @@ public class sqlGame implements GameDAO{
                 preparedStatement.setInt(1, randomPositiveInt);
                 preparedStatement.setString(2, gameName);
                 preparedStatement.setString(3, game);
-                preparedStatement.executeUpdate();
+                //preparedStatement.executeUpdate();
+
+                System.out.println("Executing SQL: " + preparedStatement.toString());
+
+                int rowAffected = preparedStatement.executeUpdate();
+                if (rowAffected == 0)
+                {
+                    throw new DataAccessException("Error: Insertion failed, no row affected.");
+                }
             }
         }
         catch (Exception e)
@@ -90,7 +94,6 @@ public class sqlGame implements GameDAO{
                 preparedStatement.executeUpdate();
             }
         }
-
         catch(SQLException e)
         {
             throw new DataAccessException(e.getMessage());
@@ -196,7 +199,7 @@ public class sqlGame implements GameDAO{
             }
             else if (theColor.equals("WHITE"))
             {
-                addGame(update.gameID(), username, update.blackUsername(), update.gameName(), update.game());
+                addGame(update.gameID(),username, update.blackUsername(), update.gameName(), update.game());
             }
             else
             {
