@@ -1,5 +1,9 @@
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPosition;
+
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
@@ -8,7 +12,7 @@ import static ui.EscapeSequences.*;
 
 public class board {
     private static final int BOARD_SIZE_IN_SQUARES = 8; // board size :8*8
-    private static final int LINE_WIDTH_IN_CHARS = 0; // margin 单元格和单元格之间的距离
+    private static final int LINE_WIDTH_IN_CHARS = 1; // margin 单元格和单元格之间的距离
     private static final int SQUARE_SIZE_IN_CHARS = 2; // 每个单元格的大小
 
     private static final String EMPTY = "   ";  //
@@ -21,7 +25,7 @@ public class board {
 
         drawHeaders(out);
 
-        drawChessBoard(out);
+        drawBoard(out);
 
         out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(SET_TEXT_COLOR_RED);
@@ -32,6 +36,10 @@ public class board {
         String[] headers = {"h", "g", "f", "e", "d", "c", "b", "a"};  // header
         for (int column = 0; column < BOARD_SIZE_IN_SQUARES; column++) {
             drawHeader(out, headers[column]);
+            if (column < BOARD_SIZE_IN_SQUARES - 1)
+            {
+                out.print(EMPTY.repeat(LINE_WIDTH_IN_CHARS));
+            }
         }
 
         out.println(); // to next line
@@ -55,11 +63,32 @@ public class board {
 
     private static void drawBoard(PrintStream out)
     {
-        for (int boardRow = 0; boardRow < BOARD_SIZE_IN_SQUARES; boardRow++)
+        ChessBoard board = new ChessBoard();
+        // double loop call getpiece from chessboard
+        out.print(SET_BG_COLOR_WHITE);
+        out.print(SET_TEXT_COLOR_RED);
+        for (int row = 1; row <= 8; row ++)
         {
-
+            for (int column = 1; column <= 8; column ++)
+            {
+                board.getPiece(new ChessPosition(row, column)); // get piece from ChessBoard
+                if (column % 2 != 0) // how to make sure my current
+                {
+                    out.print(SET_BG_COLOR_WHITE);
+                }
+                else
+                {
+                    out.print(SET_BG_COLOR_BLACK);
+                }
+            }
         }
     }
+
+    private static void drawBoardRows(PrintStream out)
+    {
+
+    }
+
 
 
 
@@ -71,8 +100,7 @@ public class board {
 
 
 
-    private static void drawChessBoard(PrintStream out)
-    {}
+
 
 
 
