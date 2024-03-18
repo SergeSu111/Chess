@@ -43,8 +43,6 @@ public class board {
         }
 
         out.println(); // to next line
-
-
     }
 
     private static void drawHeader(PrintStream out, String headerText) {
@@ -64,15 +62,15 @@ public class board {
     private static void drawBoard(PrintStream out)
     {
         ChessBoard board = new ChessBoard();
+        board.resetBoard();
         // double loop call getpiece from chessboard
-        out.print(SET_BG_COLOR_WHITE);
+        //out.print(SET_BG_COLOR_WHITE);
         out.print(SET_TEXT_COLOR_RED);
-        for (int row = 1; row <= 8; row ++)
+        for (int row = 0; row < 8; row ++)
         {
-            for (int column = 1; column <= 8; column ++)
+            for (int column = 0; column < 8; column ++)
             {
-                board.getPiece(new ChessPosition(row, column)); // get piece from ChessBoard
-                if (column % 2 != 0) // how to make sure my current
+                if ((column + row) % 2 == 0) // how to make sure my current
                 {
                     out.print(SET_BG_COLOR_WHITE);
                 }
@@ -80,17 +78,11 @@ public class board {
                 {
                     out.print(SET_BG_COLOR_BLACK);
                 }
+                out.print(EMPTY + board.getPiece(new ChessPosition(row+1, column+1)) + EMPTY); // after the color set, then get the text
             }
+            out.println();
         }
     }
-
-    private static void drawBoardRows(PrintStream out)
-    {
-
-    }
-
-
-
 
     private static void setGray(PrintStream out)
     {
