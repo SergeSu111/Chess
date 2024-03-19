@@ -350,6 +350,15 @@ public class ChessPiece {
 // 代表在界外
     }
 
+
+    @Override
+    public String toString() {
+        return "ChessPiece{" +
+                "pieceColor=" + pieceColor +
+                ", type=" + type +
+                '}';
+    }
+
     public static ArrayList<ChessMove> pawnMoves (ChessBoard board, int row, int column, ChessGame.TeamColor myColor, PieceType myType)
     {
         // 得到当前pawn的起始位置根据Position
