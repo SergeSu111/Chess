@@ -186,7 +186,7 @@ public class board {
             case ROOK -> pieceString = BLACK_ROOK;
             case KNIGHT -> pieceString = BLACK_KNIGHT;
             case PAWN -> pieceString = BLACK_PAWN;
-            default -> pieceString = "\u2003";
+            default -> pieceString = " \u2003 ";
         }
         out.print(pieceString);
 
@@ -202,7 +202,7 @@ public class board {
         out.print(color);
         for (int i = 0; i <= 9; i++)
         {
-            out.print("\u2003");
+            out.print(" \u2003 ");
         }
         out.print(RESET_BG_COLOR);
         out.print(System.lineSeparator());
