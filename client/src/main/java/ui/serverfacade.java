@@ -2,7 +2,10 @@ package ui;
 
 
 import com.google.gson.Gson;
-import request.RegisterRequest;
+import request.*;
+import result.CreateGameResult;
+import result.ListGameResult;
+import result.LoginResult;
 import result.RegisterResult;
 
 import java.net.HttpURLConnection;
@@ -10,23 +13,49 @@ import java.net.HttpURLConnection;
 public class serverfacade {
     private final String serverUrl;
 
-    public serverfacade(String url)
-    {
+    public serverfacade(String url) {
         serverUrl = url; // the url is localhost 8080?
     }
 
-    public RegisterResult register(RegisterRequest request) throws ResponseException
-    {
-        RegisterResult response = null;
-        try
-        {
-            String body = new Gson().toJson(request); // 先将register请求变成json
-            HttpURLConnection connection =makeHTTPRequest("POST", "/user", request, RegisterResult.class);
-        }
+    public RegisterResult register(RegisterRequest request) throws ResponseException {
+        var path = "/user";
+        return this.makeHTTPRequest("POST", path, request, RegisterResult.class);
     }
 
+    public LoginResult login(LoginRequest request) throws ResponseException {
+        var path = "/session";
+        return this.makeHTTPRequest("POST", path, request, LoginResult.class);
+    }
 
-    private <T>  T makeHTTPRequest (String method, String path, Object request, Class<T> responseClass)
+    public void logout(String authToken) throws ResponseException {
+        var path = "/session";
+        this.makeHTTPRequest("DELETE", path, null, null);
+    }
+
+    public ListGameResult listGames(ListGameRequest request) throws ResponseException {
+        var path = "/game";
+        return this.makeHTTPRequest("GET", path, request, ListGameResult.class);
+    }
+
+    public CreateGameResult createGames(CreateGameRequest request) throws ResponseException
+    {
+        var path = "/game";
+        return this.makeHTTPRequest("POST", path, request, CreateGameResult.class);
+    }
+
+    public void JoinGame (JoinGameRequest request) throws ResponseException
+    {
+        var path = "/game";
+        this.makeHTTPRequest("PUT", path, request, null);
+    }
+
+    public void clear() throws ResponseException
+    {
+        var path = "/db";
+        this.makeHTTPRequest("DELETE", path, null, null);
+    }
+
+    private <T> T makeHTTPRequest(String method, String path, Object request, Class<T> responseClass)
     {
 
     }
