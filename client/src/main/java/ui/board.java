@@ -23,8 +23,8 @@ public class board {
 //    private static final int LINE_WIDTH_IN_CHARS = 1; // margin 单元格和单元格之间的距离
 //    private static final int SQUARE_SIZE_IN_CHARS = 3; // 每个单元格的大小
 
-    private static final String boardSpaceBlackColor = SET_BG_COLOR_BLACK;
-    private static final String boardSpaceWhiteColor = SET_BG_COLOR_WHITE;
+    private static final String boardSpaceBlackColor = SET_BG_COLOR_GREEN;
+    private static final String boardSpaceWhiteColor = SET_BG_COLOR_RED;
     private static final String SeparateColor = RESET_BG_COLOR; // 分离两个board的中间颜色;
     private static final String boardEdgeColor = SET_BG_COLOR_LIGHT_GREY; // 棋子四周的颜色
 
@@ -87,10 +87,12 @@ public class board {
                 if (currSpaceColor == ChessGame.TeamColor.WHITE) // 如果当前行开头颜色是白色
                 {
                     out.print(boardSpaceBlackColor); // 则下一个棋子颜色是黑色
+                    currSpaceColor = ChessGame.TeamColor.BLACK; // 然后将当前的背景颜色设置为黑色
                 }
                 else
                 {
                     out.print(boardSpaceWhiteColor); // 如果开头棋子是黑色 则下一个棋子是白色
+                    currSpaceColor = ChessGame.TeamColor.WHITE; // 然后将当前背景颜色设置为白色
                 }
                 // 分层好了body里每一个棋子背景颜色以后后开始搞里面的piece call getPiece来得到棋子
                 ChessPiece currPiece = board.getPiece(new ChessPosition(row, column));
@@ -100,15 +102,15 @@ public class board {
                 }
                 else
                 {
-                    out.print("\u2003"); // 否则的话则是空的 那么就打印全角空格string 表示空的
+                    out.print(EMPTY); // 否则的话则是空的 那么就打印全角空格string 表示空的
                 }
             }
 
             // 棋子也都打印好了 接下来就是恢复出厂设置
             out.print(boardEdgeColor); // 恢复成灰色
-            out.print("\u2003");
+            out.print(" \u2003 ");
             out.print(RESET_BG_COLOR);
-            out.println();
+            out.print(System.lineSeparator());
         }
         drawFooter(out); // 接下来打印footer
     }
@@ -119,7 +121,7 @@ public class board {
         // 并且设置两种情况自己的headers是什么
         String [] headers;
         out.print(boardEdgeColor); // board四周边缘的颜色
-        out.print("\u2003"); // 全角空格 目的是将title一开始有一些空隙
+        out.print(" \u2003 "); // 全角空格 目的是将title一开始有一些空隙
         // 设置title颜色为黑色
         out.print(SET_TEXT_COLOR_BLACK);
         // 如果当前颜色是team color的白色的话
@@ -145,7 +147,7 @@ public class board {
 
 
         // headers全部打印完以后开始重新设置空隙 背景颜色 等等
-        out.print("\u2003");
+        out.print(" \u2003 ");
         out.print(RESET_BG_COLOR);
         out.println(); // 换行 结束headers
 
@@ -154,9 +156,9 @@ public class board {
     /*将标题里每一个小letter都隔开打印*/
     private static void drawLetterinSpace(PrintStream out, String letter)
     {
-        out.print(" \u2006"); // 1/6 空格
-        out.print(letter);
-        out.print(" \u2006"); // 1/6 空格 为下一个letter做准备
+           out.print("\u2006 "); // 1/6 空格
+           out.print(letter);
+           out.print("\u2006 "); // 1/6 空格 为下一个letter做准备
     }
 
     /*画每一个piece*/
