@@ -1,126 +1,140 @@
 package ui;
 
-
 import com.google.gson.Gson;
-import request.*;
+import request.CreateGameRequest;
+import request.JoinGameRequest;
+import request.LoginRequest;
+import request.RegisterRequest;
 import result.CreateGameResult;
 import result.ListGameResult;
 import result.LoginResult;
 import result.RegisterResult;
+import ui.ResponseException;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.IOException;
+import java.lang.module.ResolutionException;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
+import java.net.URISyntaxException;
+
 
 public class serverfacade {
-    private final String serverUrl;
+    private final int serverPort;
+    private final String urlStemLocal;
 
-    public serverfacade(String url) {
-        serverUrl = url; // the url is localhost 8080?
+    public serverfacade(int serverPort) {
+        this.serverPort = serverPort;
+        urlStemLocal = "http://localhost:";
     }
 
     public RegisterResult register(RegisterRequest request) throws ResponseException {
-        var path = "/user";
-        return this.makeHTTPRequest("POST", path, request, RegisterResult.class);
-    }
-
-    public LoginResult login(LoginRequest request) throws ResponseException {
-        var path = "/session";
-        return this.makeHTTPRequest("POST", path, request, LoginResult.class);
-    }
-
-    public void logout(String authToken) throws ResponseException {
-        var path = "/session";
-        this.makeHTTPRequest("DELETE", path, null, null);
-    }
-
-    public ListGameResult listGames(ListGameRequest request) throws ResponseException {
-        var path = "/game";
-        return this.makeHTTPRequest("GET", path, request, ListGameResult.class);
-    }
-
-    public CreateGameResult createGames(CreateGameRequest request) throws ResponseException {
-        var path = "/game";
-        return this.makeHTTPRequest("POST", path, request, CreateGameResult.class);
-    }
-
-    public void JoinGame(JoinGameRequest request) throws ResponseException {
-        var path = "/game";
-        this.makeHTTPRequest("PUT", path, request, null);
-    }
-
-    public void clear() throws ResponseException {
-        var path = "/db";
-        this.makeHTTPRequest("DELETE", path, null, null);
-    }
-
-    private <T> T makeHTTPRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+        RegisterResult response = null;
         try {
-            URL url = (new URI(serverUrl + path)).toURL();  // 将请求的path转变成URL, 因为HTTP请求的地址通常是URL表示的
-            // 通过open Connection()的方法来打开连接到服务器的HTTP连接 创建了可以连接到服务器的HTTP连接.是关于这个特定的URL的HTTP连接
-            HttpURLConnection http = (HttpURLConnection) url.openConnection();
-            http.setRequestMethod(method); // 将这个http设置一个请求方法
-            http.setDoOutput(true); // 指明该连接对象将会output一个request到server 包括给server发送数据等
-
-            writeBody(request, http); // 用于将请求体request写入到http连接对象中
-            http.connect(); // 前面的都是配置 这行才是真正的将http与服务器进行连接
-            throwIfNotSuccessful(http);  // 检查HTTP是否响应成功 如果不成功抛出异常
-            return readyBody(http, responseClass); // 如果响应成功 则从http中读取response. 并将其转换为相应的类型. 最后返回给调用者
-        } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
-        }
-    }
-
-    private static void writeBody(Object request, HttpURLConnection http) throws IOException {
-        if (request != null) // 如果request不为空
-        {
-            http.addRequestProperty("Content-Type", "application/json"); // 那么就把这个request加到http里 改成json的模式传 先设置了request的类型属性
-            String reqData = new Gson().toJson(request); // 然后将request转成json类型 给到reqData
-            try (OutputStream reqBody = http.getOutputStream()) // 大致意思应该是通过这个函数得到了reqBody
-            {
-                reqBody.write(reqData.getBytes()); // 将request data 写入这个body里
-            }
-        }
-    }
-
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
-        var status = http.getResponseCode(); // 因为http要连接到服务器 所以肯定会返回一个status code
-        if (!isSuccessful(status)) // 如果code不是成功的code
-        {
-            throw new ResponseException(status, "failure: " + status); // 报告异常
-        }
-    }
-
-    /*既然返回成功 那么给我返回的东西*/
-    private static <T> T readyBody(HttpURLConnection http, Class<T> responseClass) throws IOException
-    {
-        T response = null;
-        // 如果响应体长度小于0. 证明长度为止或无法确定. 在这种情况下, 响应体 应该是可读的
-        // 因为无法确定长度 所以需要读取整个响应体以获取长度
-        if (http.getContentLength() < 0)
-        {
-            // 使用了try with-resources语句 打开了一个输入流resBody来读取http的响应体 当读取完之后关掉它
-            try (InputStream respBody = http.getInputStream())
-            {
-                // 创建一个reader来从resBody中读取字符串.
-                InputStreamReader reader = new InputStreamReader(respBody);
-                if (responseClass != null)
-                {
-                    // reader最后读取出来了响应后的response 然后转换为responseClass
-                    response = new Gson().fromJson(reader, responseClass);
-                }
-            }
-        }
+            String body = new Gson().toJson(request);
+            HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/user", "POST", body);
+            if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
+            else { response = getHTTPResponseBody(connection, RegisterResult.class); }
+        } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
         return response;
     }
 
-    private boolean isSuccessful(int status)
-    {
-        return status / 100 == 2;
+    public LoginResult login(LoginRequest request) throws ResponseException {
+        LoginResult response = null;
+        try {
+            String body = new Gson().toJson(request);
+            HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/session", "POST", body);
+            if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
+            else { response = getHTTPResponseBody(connection, LoginResult.class); }
+        } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
+        return response;
     }
 
+    public void logout(String authToken) throws ResponseException {
+        try {
+            HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/session", "DELETE", "", authToken);
+            if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
+        } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
+    }
+
+    public ListGameResult listGames(String authToken) throws ResponseException {
+        ListGameResult response;
+        try {
+            HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/game", "GET", "", authToken);
+            if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
+            response = getHTTPResponseBody(connection, ListGameResult.class);
+        } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
+        return response;
+    }
+
+    public CreateGameResult createGame(CreateGameRequest request, String authToken) throws ResponseException {
+        CreateGameResult response = null;
+        try {
+            String body = new Gson().toJson(request);
+            HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/game", "POST", body, authToken);
+            if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
+            else { response = getHTTPResponseBody(connection, CreateGameResult.class); }
+        } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
+        return response;
+    }
+
+    public void joinGame(JoinGameRequest request, String authToken) throws ResponseException {
+        try {
+            String body = new Gson().toJson(request);
+            HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/game", "PUT", body, authToken);
+            if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
+        } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
+    }
+
+    public void clear() throws ResponseException {
+        try {
+            HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/db", "DELETE", "");
+            if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
+        } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
+    }
+
+    private HttpURLConnection makeHTTPRequest(int port, String urlStem, String path, String method, String body, String authHeader) throws URISyntaxException, IOException {
+        String preURI = weldURLComponents(port, urlStem, path);
+        URI uri = new URI(preURI);
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+        http.setRequestMethod(method);
+        if (!(authHeader == null)) { http.setRequestProperty("authorization", authHeader); }
+        writeHTTPRequestBody(http, body);
+        http.connect();
+        return http;
+    }
+
+    private String weldURLComponents(int port, String urlStem, String path) { return urlStem + port + path; }
+
+    private HttpURLConnection makeHTTPRequest(int port, String urlStem, String path, String method, String body) throws URISyntaxException, IOException {
+        return makeHTTPRequest(port, urlStem, path, method, body, null);
+    }
+
+    private static void writeHTTPRequestBody(HttpURLConnection http, String body) throws IOException {
+        if (!body.isEmpty()) {
+            http.setDoOutput(true);
+            try (OutputStream outputStream = http.getOutputStream()) {
+                outputStream.write(body.getBytes());
+            }
+        }
+    }
+
+    private static boolean hasGoodResponseCode(HttpURLConnection http) throws IOException {
+        return http.getResponseCode() == 200;
+    }
+
+    private static void throwResponseError(HttpURLConnection http) throws IOException, ResponseException {
+        throw new ResponseException("Server returned: " + http.getResponseCode() + " " + http.getResponseMessage());
+    }
+
+    private static <T> T getHTTPResponseBody(HttpURLConnection http, Class<T> clazz) throws IOException {
+        T responseBody;
+        try (InputStream inputStream = http.getInputStream()) {
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            responseBody = new Gson().fromJson(inputStreamReader, clazz);
+        }
+        return responseBody;
+    }
 }
