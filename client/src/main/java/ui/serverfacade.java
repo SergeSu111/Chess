@@ -47,7 +47,7 @@ public class serverfacade {
             String body = new Gson().toJson(request);
             HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/session", "POST", body);
             if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
-            else { response = getHTTPResponseBody(connection, LoginResult.class); }
+            else { response = getHTTPResponseBody(connection, LoginResult.class); }  // response is null
         } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
         return response;
     }
@@ -128,6 +128,18 @@ public class serverfacade {
     private static void throwResponseError(HttpURLConnection http) throws IOException, ResponseException {
         throw new ResponseException("Server returned: " + http.getResponseCode() + " " + http.getResponseMessage());
     }
+
+//    private static <T> T getHTTPErrorResponseBody(HttpURLConnection http, Class<T> clazz) throws IOException {
+//        T responseBody = null;
+//        try (InputStream inputStream = http.getErrorStream()) {
+//            if (inputStream != null) {
+//                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+//                responseBody = new Gson().fromJson(inputStreamReader, clazz);
+//            }
+//        }
+//        return responseBody;
+//    }
+
 
     private static <T> T getHTTPResponseBody(HttpURLConnection http, Class<T> clazz) throws IOException {
         T responseBody;

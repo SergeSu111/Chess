@@ -1,12 +1,10 @@
 package ui;
 
 public class ResponseException extends Exception{
-    final private int statusCode;
 
-    public ResponseException(int statusCode, String message)
+    public ResponseException( String message)
     {
         super(message);
-        this.statusCode = statusCode;
     }
 
 }

@@ -19,6 +19,12 @@ public class board {
         board.resetBoard();
     }
 
+    public static ChessBoard getDefaultBoard()
+    {
+        return board;
+    }
+
+
 //    private static final int BOARD_SIZE_IN_SQUARES = 8; // board size :8*8
 //    private static final int LINE_WIDTH_IN_CHARS = 1; // margin 单元格和单元格之间的距离
 //    private static final int SQUARE_SIZE_IN_CHARS = 3; // 每个单元格的大小
