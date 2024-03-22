@@ -1,4 +1,4 @@
-package test;
+package clientTests;
 
 import org.junit.jupiter.api.*;
 import request.CreateGameRequest;
@@ -11,8 +11,6 @@ import ui.ResponseException;
 import ui.serverfacade;
 
 import java.util.ArrayList;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ServerFacadeTests {
@@ -66,9 +64,9 @@ public class ServerFacadeTests {
     @Order(2)
     @DisplayName("register (-)")
     public void registerNegative() {
-        ResponseException exception = assertThrows(ResponseException.class, () ->
+        ResponseException exception = Assertions.assertThrows(ResponseException.class, () ->
                 serverFacade.register(new RegisterRequest("", null, "")));
-        assertEquals("Server returned: 400 Bad Request", exception.getMessage());
+        Assertions.assertEquals("Server returned: 400 Bad Request", exception.getMessage());
     }
 
     @Test
@@ -77,15 +75,15 @@ public class ServerFacadeTests {
     public void loginPositive() throws ResponseException {
         String SergeAuth = serverFacade.register(sergeRequest).authToken();
         serverFacade.logout(SergeAuth);
-        assertInstanceOf(String.class, serverFacade.login(sergeLoginRequest).authToken());
+        Assertions.assertInstanceOf(String.class, serverFacade.login(sergeLoginRequest).authToken());
     }
 
     @Test
     @Order(4)
     @DisplayName("login (-)")
     public void loginNegative() {
-        ResponseException exception = assertThrows(ResponseException.class, () -> serverFacade.login(sergeLoginRequest));
-        assertEquals("Server returned: 401 Unauthorized", exception.getMessage());
+        ResponseException exception = Assertions.assertThrows(ResponseException.class, () -> serverFacade.login(sergeLoginRequest));
+        Assertions.assertEquals("Server returned: 401 Unauthorized", exception.getMessage());
     }
 
     @Test
@@ -94,16 +92,16 @@ public class ServerFacadeTests {
     public void logoutPositive() throws ResponseException {
         String sergeAuth = serverFacade.register(sergeRequest).authToken();
         serverFacade.logout(sergeAuth);
-        ResponseException exception = assertThrows(ResponseException.class, () -> serverFacade.logout(sergeAuth));
-        assertEquals("Server returned: 401 Unauthorized", exception.getMessage());
+        ResponseException exception = Assertions.assertThrows(ResponseException.class, () -> serverFacade.logout(sergeAuth));
+        Assertions.assertEquals("Server returned: 401 Unauthorized", exception.getMessage());
     }
 
     @Test
     @Order(6)
     @DisplayName("logout (-)")
     public void logoutNegative() {
-        ResponseException exception = assertThrows(ResponseException.class, () -> serverFacade.logout("hehe"));
-        assertEquals("Server returned: 401 Unauthorized", exception.getMessage());
+        ResponseException exception = Assertions.assertThrows(ResponseException.class, () -> serverFacade.logout("hehe"));
+        Assertions.assertEquals("Server returned: 401 Unauthorized", exception.getMessage());
     }
 
     @Test
@@ -115,7 +113,7 @@ public class ServerFacadeTests {
         serverFacade.createGame(new CreateGameRequest("Game2"), SergeAuth);
         serverFacade.createGame(new CreateGameRequest("Game3"), SergeAuth);
         ArrayList<ListGameInformation> games = serverFacade.listGames(SergeAuth).games();
-        assertEquals(new ListGameInformation(games.get(1).gameID(), null, null, games.get(1).gameName()),
+        Assertions.assertEquals(new ListGameInformation(games.get(1).gameID(), null, null, games.get(1).gameName()),
                 games.get(1));
     }
 
@@ -123,8 +121,8 @@ public class ServerFacadeTests {
     @Order(8)
     @DisplayName("(listGames (-)")
     public void listGamesNegative() {
-        ResponseException exception = assertThrows(ResponseException.class, () -> serverFacade.listGames("ll"));
-        assertEquals("Server returned: 401 Unauthorized", exception.getMessage());
+        ResponseException exception = Assertions.assertThrows(ResponseException.class, () -> serverFacade.listGames("ll"));
+        Assertions.assertEquals("Server returned: 401 Unauthorized", exception.getMessage());
     }
 
     @Test
@@ -136,7 +134,7 @@ public class ServerFacadeTests {
         int gamerGameID = serverFacade.createGame(new CreateGameRequest("game2"), sergeAuth).gameID();
         serverFacade.createGame(new CreateGameRequest("Game3"), sergeAuth);
         ArrayList<ListGameInformation> games = serverFacade.listGames(sergeAuth).games();
-        assertEquals(games.get(1).gameID(
+        Assertions.assertEquals(games.get(1).gameID(
 
         ), games.get(1).gameID());
     }
@@ -145,9 +143,9 @@ public class ServerFacadeTests {
     @Order(10)
     @DisplayName("createGame (-)")
     public void createGameNegative() {
-        ResponseException exception = assertThrows(ResponseException.class, () ->
+        ResponseException exception = Assertions.assertThrows(ResponseException.class, () ->
                 serverFacade.createGame(new CreateGameRequest("New Game"), "hehe"));
-        assertEquals("Server returned: 401 Unauthorized", exception.getMessage());
+        Assertions.assertEquals("Server returned: 401 Unauthorized", exception.getMessage());
     }
 
 
@@ -162,7 +160,7 @@ public class ServerFacadeTests {
         serverFacade.joinGame(new JoinGameRequest("WHITE", gameID), harperAuth);
         serverFacade.joinGame(new JoinGameRequest("BLACK", gameID), sergeAuth);
         ListGameInformation muppetShowdownInfo = serverFacade.listGames(harperAuth).games().getFirst();
-        assertEquals(new ListGameInformation(gameID, "harper", "Serge", "Game2"), muppetShowdownInfo);
+        Assertions.assertEquals(new ListGameInformation(gameID, "harper", "Serge", "Game2"), muppetShowdownInfo);
     }
 
     @Test
@@ -171,9 +169,9 @@ public class ServerFacadeTests {
     public void joinGameNegative() throws ResponseException {
         String sergeAuth = serverFacade.register(sergeRequest).authToken();
         int gameID = serverFacade.createGame(new CreateGameRequest("Game4"), sergeAuth).gameID();
-        ResponseException exception = assertThrows(ResponseException.class, () ->
+        ResponseException exception = Assertions.assertThrows(ResponseException.class, () ->
                 serverFacade.joinGame(new JoinGameRequest("YELLOW", gameID), sergeAuth));
-        assertEquals("Server returned: 400 Bad Request", exception.getMessage());
+        Assertions.assertEquals("Server returned: 400 Bad Request", exception.getMessage());
     }
 
     @Test
@@ -187,7 +185,7 @@ public class ServerFacadeTests {
         serverFacade.clear();
         String kermitAuth = serverFacade.register(new RegisterRequest("harper", "harper666",
                 "xinyu99@gmail.com")).authToken();
-        assertEquals(0, serverFacade.listGames(kermitAuth).games().size());
+        Assertions.assertEquals(0, serverFacade.listGames(kermitAuth).games().size());
     }
 
     @Test
@@ -196,8 +194,8 @@ public class ServerFacadeTests {
     public void clearNegative() throws ResponseException{
         String sergeAuth = serverFacade.register(sergeRequest).authToken();
         serverFacade.clear();
-        ResponseException exception = assertThrows(ResponseException.class, () -> serverFacade.logout(sergeAuth));
-        assertEquals("Server returned: 401 Unauthorized", exception.getMessage());
+        ResponseException exception = Assertions.assertThrows(ResponseException.class, () -> serverFacade.logout(sergeAuth));
+        Assertions.assertEquals("Server returned: 401 Unauthorized", exception.getMessage());
     }
 
 
