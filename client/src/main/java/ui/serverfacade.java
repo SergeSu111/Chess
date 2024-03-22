@@ -75,7 +75,7 @@ public class serverfacade {
             String body = new Gson().toJson(request);
             HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/game", "POST", body, authToken);
             if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
-            else { response = getHTTPResponseBody(connection, CreateGameResult.class); }
+            else { response = getHTTPResponseBody(connection, CreateGameResult.class);}
         } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
         return response;
     }
