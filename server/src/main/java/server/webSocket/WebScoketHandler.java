@@ -2,6 +2,7 @@ package server.webSocket;
 
 
 import WebSocketMessages.userCommands.UserGameCommand;
+import WebSocketRequests.*;
 import com.google.gson.Gson;
 import org.eclipse.jetty.server.Authentication;
 import org.eclipse.jetty.websocket.api.Session;
@@ -20,17 +21,31 @@ public class WebScoketHandler {
         UserGameCommand userGameCommand = new Gson().fromJson(message, UserGameCommand.class);
         switch(userGameCommand.getCommandType())
         {
-            case JOIN_PLAYER -> joinPlayer();
-            case JOIN_OBSERVER -> joinObserver();
-            case MAKE_MOVE -> makeMove();
-            case LEAVE -> leave();
-            case RESIGN -> reSign();
+            case JOIN_PLAYER -> joinPlayer(new Gson().fromJson(message, JoinPlayer.class));
+            case JOIN_OBSERVER -> joinObserver(new Gson().fromJson(message, JoinObserver.class));
+            case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MakeMove.class));
+            case LEAVE -> leave(new Gson().fromJson(message, Leave.class));
+            case RESIGN -> reSign(new Gson().fromJson(message, Resign.class));
         }
     }
 
-    private void joinPlayer()
+    private void joinPlayer(JoinPlayer joinplayer)
+    {
+
+    }
+
+    private void joinObserver(JoinObserver joinObserver)
+    {
+    }
+
+    private void makeMove(MakeMove move)
     {}
 
+    private void leave(Leave leave)
+    {}
+
+    private void reSign(Resign resign)
+    {}
 
 
 }
