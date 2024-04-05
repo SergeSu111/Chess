@@ -31,7 +31,7 @@ public class WebScoketHandler {
 
     private void joinPlayer(JoinPlayer joinplayer)
     {
-
+//        connections.add()
     }
 
     private void joinObserver(JoinObserver joinObserver)

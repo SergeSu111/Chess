@@ -2,6 +2,7 @@ package server.webSocket;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import WebSocketMessages.serverMessages.ServerMessage;
@@ -11,15 +12,18 @@ import org.eclipse.jetty.websocket.api.Session;
 //代表webscoket里处理用户加入 删除 的class
 public class ConnectionManager {
     // 可以并发的hashmap. Concurrent 并发 指的是多个事件在同一时间发生 比如同时有好几个客户都加入游戏或观察游戏 或退出
-    public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
+    //
+
+    // 大的dictionary 是整个游戏 小的hashmap是一个小游戏
+    public final ConcurrentHashMap<Integer, ConcurrentHashMap<String, Session>> connections = new ConcurrentHashMap<>();
 
     // add member to party
     // 每一个member都需要自己独特的session 可以和别人对话 进行连接 所以需要session
-    public void add(String memberUsername, Session session)
+    public void add(String memberAuthtoken, Session session)
     {
         // 根据用户username 和session注册一个新的成员
-        var connection = new Connection(memberUsername, session);
-        connections.put(memberUsername, connection); // 以键值对的形式 放进并发组里
+        var connection = new Connection(memberAuthtoken, session);
+        connections.put(memberAuthtoken, connection); // 以键值对的形式 放进并发组里
     }
 
     // remove member from party
@@ -39,7 +43,7 @@ public class ConnectionManager {
         {
             // 如果这个member没有睡着 可以被分享消息
             if (c.session.isOpen()) {
-                if (!c.memberUsername.equals(excludeVistorName)) {
+                if (!c.member.equals(excludeVistorName)) {
                     // 如果当前用户不是这个移动棋子的玩家
                     c.send(serverMessage.toString()); // 则把消息发送给这个用户
                 }

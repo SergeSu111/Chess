@@ -8,6 +8,14 @@ public class JoinPlayer extends UserGameCommand {
         super(authToken);
     }
 
+    public Integer getGameID() {
+        return gameID;
+    }
+
+    public void setGameID(Integer gameID) {
+        this.gameID = gameID;
+    }
+
     private Integer gameID;
     private ChessGame.TeamColor playColor;
 }
