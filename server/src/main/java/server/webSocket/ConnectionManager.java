@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import WebSocketMessages.serverMessages.ServerMessage;
 import org.eclipse.jetty.websocket.api.Session;
-import org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor;
+
 
 //代表webscoket里处理用户加入 删除 的class
 public class ConnectionManager {
