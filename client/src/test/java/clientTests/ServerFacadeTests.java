@@ -31,25 +31,27 @@ public class ServerFacadeTests {
     }
 
     @AfterAll
-    static void stopServer() {
+    static void stopServer()
+    {
         server.stop();
     }
 
 
     @BeforeEach
-    public void setUp() throws ResponseException {
+    public void clear() throws ResponseException {
         serverFacade.clear();
     }
 
     @AfterEach
-    public void tearDown() throws ResponseException {
+    public void shotDown() throws ResponseException {
         serverFacade.clear();
     }
 
     @Test
     @Order(1)
     @DisplayName("register (+)")
-    public void registerPositive() throws ResponseException {
+    public void registerNice() throws ResponseException
+    {
         String sergeAuth = serverFacade.register(sergeRequest).authToken();
         String harperAuth = serverFacade.register(new RegisterRequest("harper", "harper666",
                 "xinyu99@gmail.com")).authToken();

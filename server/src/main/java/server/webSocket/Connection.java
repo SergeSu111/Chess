@@ -19,6 +19,7 @@ public class Connection {
     public void send(String msg) throws IOException
     {
         session.getRemote().sendString(msg);
+        // getRemote()就是拥有权限把消息发送给一个其他人
     }
 
 
