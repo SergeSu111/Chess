@@ -1,4 +1,13 @@
 package WebSocketRequests;
 
-public record JoinObserver(Integer gameID) {
+import WebSocketMessages.userCommands.UserGameCommand;
+
+public class JoinObserver extends UserGameCommand
+{
+
+    public JoinObserver(String authToken) {
+        super(authToken);
+    }
+
+    private Integer gameID;
 }

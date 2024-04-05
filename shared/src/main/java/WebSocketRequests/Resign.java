@@ -1,8 +1,12 @@
 package WebSocketRequests;
 
-import java.net.InterfaceAddress;
+import WebSocketMessages.userCommands.UserGameCommand;
 
-public record Resign(Integer gameID)
-{
+public class Resign extends UserGameCommand {
 
+    public Resign(String authToken) {
+        super(authToken);
+    }
+
+    private Integer gameID;
 }

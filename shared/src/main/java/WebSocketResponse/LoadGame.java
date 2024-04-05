@@ -1,6 +1,11 @@
 package WebSocketResponse;
 
+import WebSocketMessages.serverMessages.ServerMessage;
 import chess.ChessGame;
 
-public record LoadGame(ChessGame game) {
+public class LoadGame extends ServerMessage {
+    public LoadGame(ServerMessageType type) {
+        super(type);
+    }
+    private ChessGame game; // I am not sure
 }

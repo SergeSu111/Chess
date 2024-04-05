@@ -17,7 +17,6 @@ public class ChessBoard {
     public ChessBoard(ChessPiece[][] squares) {
         this.squares = squares;
     }
-
     /**
      * Adds a chess piece to the chessboard
      *

@@ -18,6 +18,9 @@ public class ChessGame {
         this.board = new ChessBoard();
         this.board.resetBoard();
     }
+    // 我女朋友睡着了 微信没挂 等会等他睡熟了再挂 现在打不了电话 你有没有discord 用discord打
+    //可以QQ啊 欸，你手机闭麦就好了，其电脑 别提了 我他妈qq密码都不记得 找不到了 OK discord号码是多少
+    //discord呢？我苹果找不到discord比较繁琐，你稍等 那我先去洗个澡 最多10分钟 OK 你去我先看下代码
 
     /**
      * @return Which team's turn it is

@@ -1,4 +1,11 @@
 package WebSocketResponse;
 
-public record Error(String errorMessage) {
+import WebSocketMessages.serverMessages.ServerMessage;
+
+public class Error extends ServerMessage {
+    public Error(ServerMessageType type) {
+        super(type);
+    }
+
+    private String errorMessage;
 }
