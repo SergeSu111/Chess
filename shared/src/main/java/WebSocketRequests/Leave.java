@@ -1,4 +1,4 @@
 package WebSocketRequests;
 
-public record Leave() {
+public record Leave(Integer gameID) {
 }

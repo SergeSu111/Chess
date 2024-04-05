@@ -1,4 +1,4 @@
 package WebSocketRequests;
 
-public record JoinObserver() {
+public record JoinObserver(Integer gameID) {
 }

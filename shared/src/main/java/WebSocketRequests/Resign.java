@@ -1,4 +1,8 @@
 package WebSocketRequests;
 
-public record Resign() {
+import java.net.InterfaceAddress;
+
+public record Resign(Integer gameID)
+{
+
 }

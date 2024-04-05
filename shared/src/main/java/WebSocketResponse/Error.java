@@ -1,4 +1,4 @@
 package WebSocketResponse;
 
-public record Error() {
+public record Error(String errorMessage) {
 }

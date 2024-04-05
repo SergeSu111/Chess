@@ -1,4 +1,6 @@
 package WebSocketRequests;
 
-public record JoinPlayer() {
+import chess.ChessGame;
+
+public record JoinPlayer(Integer gameID, ChessGame.TeamColor playerColor) {
 }

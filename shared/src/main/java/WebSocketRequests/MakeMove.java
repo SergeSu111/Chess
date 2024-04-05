@@ -1,4 +1,6 @@
 package WebSocketRequests;
 
-public record MakeMove() {
+import chess.ChessMove;
+
+public record MakeMove(Integer gameID, ChessMove Move) {
 }

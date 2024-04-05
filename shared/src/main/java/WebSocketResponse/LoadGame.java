@@ -1,4 +1,6 @@
 package WebSocketResponse;
 
-public record LoadGame() {
+import chess.ChessGame;
+
+public record LoadGame(ChessGame game) {
 }
