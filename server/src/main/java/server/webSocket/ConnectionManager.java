@@ -52,21 +52,21 @@ public class ConnectionManager {
             {
                 if (!connection.memberUsername.equals(excludeVistorName)) // 如果这个成员是我们要发送给的
                 {
-                    connection.send(serverMessage);
+                    connection.send(serverMessage); // 那么就发送消息给这个connection
                 }
             }
-        }
             else
             {
                 // 否则不能被分享消息 就准备把它踢出party
                 // 比如用户离开游戏了 就分享不到了
-                removeList.add(c);
+                removeList.add(connection);
             }
         }
+
         // 将每一个离开的用户从party里删除
         for (var c : removeList)
         {
-            connections.remove(c.memberUsername);
+            singleGame.remove(c);
         }
 
 

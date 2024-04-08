@@ -19,7 +19,7 @@ public class Connection {
     // why we still need send message in connection? In WHandler we just send message to all client.
     public void send(ServerMessage serverMessage) throws IOException
     {
-        session.getRemote().sendString(serverMessage);
+        session.getRemote().sendString(serverMessage.toString());
         // getRemote()就是拥有权限把消息发送给一个其他人
     }
 
