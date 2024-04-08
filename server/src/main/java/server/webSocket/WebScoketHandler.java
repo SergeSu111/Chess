@@ -32,7 +32,6 @@ public class WebScoketHandler {
     private void joinPlayer(JoinPlayer joinplayer, Session session)
     {
         connections.add(joinplayer.getGameID(), joinplayer.getAuthString(), session);
-        
     }
 
     private void joinObserver(JoinObserver joinObserver)

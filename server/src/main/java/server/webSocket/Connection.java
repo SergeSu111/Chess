@@ -1,4 +1,5 @@
 package server.webSocket;
+import WebSocketMessages.serverMessages.ServerMessage;
 import org.eclipse.jetty.websocket.api.Session;
 
 import java.io.IOException;
@@ -16,9 +17,9 @@ public class Connection {
     }
 
     // why we still need send message in connection? In WHandler we just send message to all client.
-    public void send(String msg) throws IOException
+    public void send(ServerMessage serverMessage) throws IOException
     {
-        session.getRemote().sendString(msg);
+        session.getRemote().sendString(serverMessage);
         // getRemote()就是拥有权限把消息发送给一个其他人
     }
 
