@@ -21,17 +21,18 @@ public class WebScoketHandler {
         UserGameCommand userGameCommand = new Gson().fromJson(message, UserGameCommand.class);
         switch(userGameCommand.getCommandType())
         {
-            case JOIN_PLAYER -> joinPlayer(new Gson().fromJson(message, JoinPlayer.class));
-            case JOIN_OBSERVER -> joinObserver(new Gson().fromJson(message, JoinObserver.class));
-            case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MakeMove.class));
+            case JOIN_PLAYER -> joinPlayer(new Gson().fromJson(message, JoinPlayer.class), session);
+            case JOIN_OBSERVER -> joinObserver(new Gson().fromJson(message, JoinObserver.class), session);
+            case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MakeMove.class), session);
             case LEAVE -> leave(new Gson().fromJson(message, Leave.class));
             case RESIGN -> reSign(new Gson().fromJson(message, Resign.class));
         }
     }
 
-    private void joinPlayer(JoinPlayer joinplayer)
+    private void joinPlayer(JoinPlayer joinplayer, Session session)
     {
-//        connections.add()
+        connections.add(joinplayer.getGameID(), joinplayer.getAuthString(), session);
+        
     }
 
     private void joinObserver(JoinObserver joinObserver)
