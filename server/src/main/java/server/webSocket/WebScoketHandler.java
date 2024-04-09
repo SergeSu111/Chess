@@ -1,22 +1,32 @@
 package server.webSocket;
 
 
+import WebSocketMessages.serverMessages.ServerMessage;
 import WebSocketMessages.userCommands.UserGameCommand;
 import WebSocketRequests.*;
+import WebSocketResponse.LoadGame;
+import WebSocketResponse.Notification;
+import chess.ChessGame;
 import com.google.gson.Gson;
-import org.eclipse.jetty.server.Authentication;
+import dataAccess.DataAccessException;
+import dataAccess.sqlAuth;
+import dataAccess.sqlGame;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 import java.io.IOException;
 
 // 很像webscoket服务器 接收来自webscoket成员的信息然后返回传播给其他webscket成员的class
+@WebSocket
 public class WebScoketHandler {
-    private final ConnectionManager connections = new ConnectionManager();
+    private final ConnectionManager connectionManager = new ConnectionManager();
 
 
     // onmessage 一定需要一个session 和S挺message message可以是"JoinPlayer"
-    public void onMessage(Session session, String message) throws IOException
-    {
+    @OnWebSocketMessage
+    public void onMessage(Session session, String message) throws IOException, DataAccessException {
         // 将message转换为userGameCommand 但随之也会自己joinPlayer class的属性也会消失
         UserGameCommand userGameCommand = new Gson().fromJson(message, UserGameCommand.class);
         switch(userGameCommand.getCommandType())
@@ -29,9 +39,41 @@ public class WebScoketHandler {
         }
     }
 
-    private void joinPlayer(JoinPlayer joinplayer, Session session)
-    {
-        connections.add(joinplayer.getGameID(), joinplayer.getAuthString(), session);
+
+    private void joinPlayer(JoinPlayer joinplayer, Session session) throws IOException, DataAccessException, IllegalAccessException {
+        connectionManager.add(joinplayer.getGameID(), joinplayer.getAuthString(), session); // 将用户加入到某个游戏里
+        ChessGame.TeamColor teamColor = joinplayer.getPlayerColor(); // 得到用户加入游戏的颜色是什么
+
+        // 检查用户加入游戏的颜色有没有被占用
+        sqlGame mysqlGame = new sqlGame();
+        sqlAuth mysqlAuth = new sqlAuth(); // 得到sqlAuth来get username
+        GameData game = mysqlGame.getGame(joinplayer.getGameID());
+        ChessGame chessgame = new Gson().fromJson(game.game(), ChessGame.class);
+        String username = mysqlAuth.getUserName(joinplayer.getAuthString()); // 得到了username
+        if (teamColor == ChessGame.TeamColor.BLACK)
+        {
+            if (!username.equals(game.blackUsername()))
+            {
+                try
+                {
+                    connectionManager.sendError(joinplayer.getAuthString(), new Error(ServerMessage.ServerMessageType.ERROR, "Error: bad gameID."));
+                }
+            }
+        }
+
+
+        // 通过sqlgame 得到username
+         // 创造一个myConnectionManager
+        Notification notification = new Notification("A player %s is joining the game with team: %s."); // 会得到一个joinPlayer 的notification
+        connectionManager.broadcast(joinplayer.getAuthString(), notification, joinplayer.getGameID()); // 然后我再把这个notification发送给其他所有人
+        // get the game by ID FROM DB
+
+
+        // create loadgame object
+        LoadGame loadgame = new LoadGame(chessgame);
+
+        // session.getremote().send(loadgame)
+        session.getRemote().sendString(new Gson().toJson(loadgame.getGame()));
     }
 
     private void joinObserver(JoinObserver joinObserver)
@@ -39,7 +81,9 @@ public class WebScoketHandler {
     }
 
     private void makeMove(MakeMove move)
-    {}
+    {
+
+    }
 
     private void leave(Leave leave)
     {}
