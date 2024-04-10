@@ -3,9 +3,12 @@ package WebSocketResponse;
 import WebSocketMessages.serverMessages.ServerMessage;
 
 public class Notification extends ServerMessage {
-    public Notification(ServerMessageType type) {
-        super(type);
+    public Notification(String message) {
+        super(ServerMessageType.NOTIFICATION);
+        this.message = message;
     }
+
+
 
     public String getMessage() {
         return message;

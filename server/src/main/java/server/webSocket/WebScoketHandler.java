@@ -1,10 +1,10 @@
 package server.webSocket;
 
-
 import WebSocketMessages.serverMessages.ServerMessage;
 import WebSocketMessages.userCommands.UserGameCommand;
 import WebSocketRequests.*;
-import WebSocketResponse.LoadGame;
+import WebSocketResponse.*;
+import WebSocketResponse.WSError;
 import WebSocketResponse.Notification;
 import chess.ChessGame;
 import com.google.gson.Gson;
@@ -15,7 +15,6 @@ import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-
 import java.io.IOException;
 
 // 很像webscoket服务器 接收来自webscoket成员的信息然后返回传播给其他webscket成员的class
@@ -26,7 +25,7 @@ public class WebScoketHandler {
 
     // onmessage 一定需要一个session 和S挺message message可以是"JoinPlayer"
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException, DataAccessException {
+    public void onMessage(Session session, String message) throws IOException, DataAccessException, IllegalAccessException {
         // 将message转换为userGameCommand 但随之也会自己joinPlayer class的属性也会消失
         UserGameCommand userGameCommand = new Gson().fromJson(message, UserGameCommand.class);
         switch(userGameCommand.getCommandType())
@@ -56,28 +55,62 @@ public class WebScoketHandler {
             {
                 try
                 {
-                    connectionManager.sendError(joinplayer.getAuthString(), new Error(ServerMessage.ServerMessageType.ERROR, "Error: bad gameID."));
+                    connectionManager.sendError(joinplayer.getAuthString(),
+                            new WSError("Error: This username is already taken.", ServerMessage.ServerMessageType.ERROR) );
+                    System.out.println("sent error");
                 }
+                catch(IOException E)
+                {
+                    throw new IOException(E.getMessage());
+                }
+                return;
+            }
+        }
+
+        if (teamColor == ChessGame.TeamColor.WHITE)
+        {
+            if(!username.equals(game.whiteUsername()))
+            {
+                try
+                {
+                    connectionManager.sendError(joinplayer.getAuthString(), new WSError("Error: This username is already taken.", ServerMessage.ServerMessageType.ERROR));
+                    System.out.println("send error");
+                }
+                catch (IOException E)
+                {
+                    throw new IOException(E.getMessage());
+                }
+                return;
             }
         }
 
 
         // 通过sqlgame 得到username
          // 创造一个myConnectionManager
-        Notification notification = new Notification("A player %s is joining the game with team: %s."); // 会得到一个joinPlayer 的notification
-        connectionManager.broadcast(joinplayer.getAuthString(), notification, joinplayer.getGameID()); // 然后我再把这个notification发送给其他所有人
+        Notification notification = new Notification("A player " + username + " is joining the game with team: " + teamColor); // 会得到一个joinPlayer 的notification
+        var loadGame = new LoadGame(chessgame);
+        try
+        {
+            connectionManager.broadcast(joinplayer.getAuthString(), notification, joinplayer.getGameID()); // 然后我再把这个notification发送给其他所有人
+            connectionManager.sendOneLoad(joinplayer.getGameID(), joinplayer.getAuthString(), loadGame);
+        }
+        catch (IOException e)
+        {
+            throw new IOException(e.getMessage());
+        }
+
         // get the game by ID FROM DB
 
 
-        // create loadgame object
-        LoadGame loadgame = new LoadGame(chessgame);
 
         // session.getremote().send(loadgame)
-        session.getRemote().sendString(new Gson().toJson(loadgame.getGame()));
+        //session.getRemote().sendString(new Gson().toJson(loadGame.getGame()));
     }
 
     private void joinObserver(JoinObserver joinObserver)
     {
+        connectionManager.add();
+
     }
 
     private void makeMove(MakeMove move)

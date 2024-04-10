@@ -5,6 +5,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import WebSocketMessages.serverMessages.ServerMessage;
+import WebSocketResponse.LoadGame;
+import WebSocketResponse.Notification;
+import WebSocketResponse.WSError;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 
@@ -40,7 +43,7 @@ public class ConnectionManager {
 
     // broadcast
     // 如果玩家移动棋子 websocket是不用提醒这个玩家的 而要提醒其他玩家 所以需要excludeVistorName
-    public void broadcast(String excludeVistorName, ServerMessage serverMessage, Integer gameID) throws IOException
+    public void broadcast(String excludeVistorName, Notification serverMessage, Integer gameID) throws IOException
     {
         // 对于一些没有办法分享信息的成员 就放进来 之后踢掉
 
@@ -53,7 +56,8 @@ public class ConnectionManager {
             {
                 if (!connection.memberAuthToken.equals(excludeVistorName)) // 如果这个成员是我们要发送给的
                 {
-                    String msg = new Gson().toJson(serverMessage, ServerMessage.class);
+                    //String msg = new Gson().toJson(serverMessage, ServerMessage.class);
+                    String msg = new Gson().toJson(serverMessage, Notification.class);
                     connection.send(msg); // 那么就发送消息给这个connection
                 }
             }
@@ -73,9 +77,29 @@ public class ConnectionManager {
 
     }
 
+    public void sendOneLoad(int gameID, String authToken, LoadGame loadGame) throws IOException {
+        var removeList = new Vector<Connection>();
+        for (var c : connections.get(gameID))
+        {
+            if (c.session.isOpen())
+            {
+                if (c.memberAuthToken.equals(authToken))
+                {
+                    String msg = new Gson().toJson(loadGame, LoadGame.class);
+                    c.send(msg);
+                }
+            }
+            else
+            {
+                removeList.add(c);
+            }
+        }
+    }
+
+
 
     // 传入一个authToken 和error message 来对这个authToken的用户发送错误消息
-    public void sendError(String authToken, Error error) throws IOException {
+    public void sendError(String authToken, WSError error) throws IOException {
         ArrayList<Connection> removeList = new ArrayList<Connection>();
         for (int gameID : connections.keySet()) {
             for (var c : connections.get(gameID)) // 当前game的每一个用户
@@ -90,13 +114,15 @@ public class ConnectionManager {
                     removeList.add(c); // 如果睡着了就放入removeList里
                 }
             }
+
+            for (var c : removeList) {
+                Vector<Connection> tmp = connections.get(gameID);
+                tmp.remove(c);
+                connections.put(gameID, tmp);
+            }
         }
 
-//        for (var c : removeList) {
-//            ArrayList<Connection> tmp = connections.get(gameID);
-//            tmp.remove(c);
-//            connections.put(gameID, tmp);
-//        }
+
     }
     }
 

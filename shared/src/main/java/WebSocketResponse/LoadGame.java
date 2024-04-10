@@ -4,17 +4,16 @@ import WebSocketMessages.serverMessages.ServerMessage;
 import chess.ChessGame;
 
 public class LoadGame extends ServerMessage {
-    public LoadGame(ServerMessageType type) {
-        super(type);
+    public LoadGame(ChessGame game) {
+        super(ServerMessageType.LOAD_GAME);
+        this.game = game;
     }
-
     public ChessGame getGame() {
-        return game;
+        return this.game;
     }
 
     public void setGame(ChessGame game) {
         this.game = game;
     }
-
-    private ChessGame game; // I am not sure
+    private ChessGame game;
 }
