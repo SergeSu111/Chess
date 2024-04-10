@@ -196,8 +196,29 @@ public class WebScoketHandler {
 
     }
 
-    private void leave(Leave leave)
-    {}
+    private void leave(Leave leave) throws DataAccessException, IllegalAccessException {
+        String auth = leave.getAuthString(); // 得到auth
+        int gameID = leave.getGameID(); // 得到gameID
+        sqlGame theSqlGame = new sqlGame();
+        sqlAuth theSqlAuth = new sqlAuth();
+        String username = theSqlAuth.getUserName(auth); // 得到了username
+        GameData game = theSqlGame.getGame(gameID); // 得到了要离开的gameData
+        String StringGame = game.game();
+        ChessGame realGame = new Gson().fromJson(StringGame, ChessGame.class);
+
+        ChessGame.TeamColor selfColor;
+        if(game.whiteUsername().equals(username)){
+            selfColor = ChessGame.TeamColor.WHITE;
+        } else if (game.blackUsername().equals(username)) {
+            selfColor = ChessGame.TeamColor.BLACK;
+        }
+
+        Notification notification = new Notification(username + " is leaving the game.");
+
+        connectionManager.remove(auth, gameID);
+
+
+    }
 
     private void reSign(Resign resign)
     {}

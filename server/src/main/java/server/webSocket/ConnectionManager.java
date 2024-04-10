@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import WebSocketMessages.serverMessages.ServerMessage;
 import WebSocketResponse.LoadGame;
 import WebSocketResponse.Notification;
 import WebSocketResponse.WSError;
@@ -38,7 +37,14 @@ public class ConnectionManager {
     public void remove(String memberAuthToken,Integer gameID)
     {
         // 根据key 来删除这个connection
-        connections.remove(memberAuthToken);
+        Vector<Connection> singleGame = this.connections.get(gameID); // 得到了要删除的游戏局
+        for (Connection c : singleGame)
+        {
+            if (Objects.equals(c.memberAuthToken, memberAuthToken)) // 如果找到了我要删除的人
+            {
+                singleGame.remove(c); // 从game里删除
+            }
+        }
     }
 
     // broadcast
@@ -77,7 +83,7 @@ public class ConnectionManager {
 
     }
 
-    public void sendOneLoad(int gameID, String authToken, LoadGame loadGame) throws IOException {
+    public void loadMessage(int gameID, String authToken, LoadGame loadGame) throws IOException {
         var removeList = new Vector<Connection>();
         for (var c : connections.get(gameID))
         {
@@ -93,6 +99,32 @@ public class ConnectionManager {
             {
                 removeList.add(c);
             }
+        }
+        for(var connection : removeList){
+            Vector<Connection>  newConnection = connections.get(gameID);
+            newConnection.remove(connection);
+            connections.put(gameID, newConnection);
+        }
+    }
+
+    public void loadMessage(int gameID, LoadGame loadGame) throws IOException {
+        var removeList = new Vector<Connection>();
+        for (var c : connections.get(gameID))
+        {
+            if (c.session.isOpen())
+            {
+                String msg = new Gson().toJson(loadGame, LoadGame.class);
+                c.send(msg);
+            }
+            else
+            {
+                removeList.add(c);
+            }
+        }
+        for(var connection : removeList){
+            Vector<Connection>  newConnection = connections.get(gameID);
+            newConnection.remove(connection);
+            connections.put(gameID, newConnection);
         }
     }
 

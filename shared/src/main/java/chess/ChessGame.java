@@ -18,9 +18,6 @@ public class ChessGame {
         this.board = new ChessBoard();
         this.board.resetBoard();
     }
-    // 我女朋友睡着了 微信没挂 等会等他睡熟了再挂 现在打不了电话 你有没有discord 用discord打
-    //可以QQ啊 欸，你手机闭麦就好了，其电脑 别提了 我他妈qq密码都不记得 找不到了 OK discord号码是多少
-    //discord呢？我苹果找不到discord比较繁琐，你稍等 那我先去洗个澡 最多10分钟 OK 你去我先看下代码
 
     /**
      * @return Which team's turn it is
@@ -103,6 +100,9 @@ public class ChessGame {
      */
     // 此函数要做的是传进来一个move 看看这个move里有哪些步是合法能走的. 然后就走过去 否则就抛出异常
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        if(board.getPiece(move.getStartPosition()).getTeamColor() != this.turn){
+            throw new InvalidMoveException("not your piece");
+        }
         ArrayList<ChessMove> resultMove = (ArrayList<ChessMove>) validMoves(move.getStartPosition());  // 得到了这个move的piece能走的合法的所有走法
         if (!resultMove.contains(move)) {
             throw new InvalidMoveException("It is illegal.");
