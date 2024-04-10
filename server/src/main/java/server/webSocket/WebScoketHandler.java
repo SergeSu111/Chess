@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import dataAccess.sqlAuth;
 import dataAccess.sqlGame;
+import dataAccess.sqlUser;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -196,28 +197,32 @@ public class WebScoketHandler {
 
     }
 
-    private void leave(Leave leave) throws DataAccessException, IllegalAccessException {
+    private void leave(Leave leave) throws DataAccessException, IllegalAccessException, IOException {
         String auth = leave.getAuthString(); // 得到auth
         int gameID = leave.getGameID(); // 得到gameID
         sqlGame theSqlGame = new sqlGame();
         sqlAuth theSqlAuth = new sqlAuth();
-        sqlUser
+        sqlUser theSqlUser = new sqlUser();
         String username = theSqlAuth.getUserName(auth); // 得到了username
         GameData game = theSqlGame.getGame(gameID); // 得到了要离开的gameData
         String StringGame = game.game();
         ChessGame realGame = new Gson().fromJson(StringGame, ChessGame.class);
 
-        ChessGame.TeamColor selfColor;
-        if(game.whiteUsername().equals(username)){
+        ChessGame.TeamColor selfColor = null;
+        if (game.whiteUsername().equals(username)) {
             selfColor = ChessGame.TeamColor.WHITE;
         } else if (game.blackUsername().equals(username)) {
             selfColor = ChessGame.TeamColor.BLACK;
+        } else
+        {
+            connectionManager.sendError(auth, new WSError("The color does not exist.")); // 否则的话则说颜色没有被鉴别
         }
 
         Notification notification = new Notification(username + " is leaving the game.");
-
+        connectionManager.broadcast(auth, notification, gameID); // send to others
         connectionManager.remove(auth, gameID); // 将用户从游戏里删除
-
+        assert selfColor != null;
+        theSqlUser.removeUser(selfColor, gameID); // 从db里删除
 
 
 
