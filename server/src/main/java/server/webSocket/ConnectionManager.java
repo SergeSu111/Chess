@@ -60,16 +60,11 @@ public class ConnectionManager {
         {
             if (connection.session.isOpen())  // 如果这个成员没有睡着
             {
-                if (!connection.memberAuthToken.equals(excludeVistorName) && !includedSelf) // 如果这个成员是我们要发送给的
+                if (!connection.memberAuthToken.equals(excludeVistorName) || includedSelf) // 如果这个成员是我们要发送给的
                 {
                     //String msg = new Gson().toJson(serverMessage, ServerMessage.class);
                     String msg = new Gson().toJson(serverMessage, Notification.class);
                     connection.send(msg); // 那么就发送消息给这个connection
-                }
-                else
-                {
-                    String msg = new Gson().toJson(serverMessage, Notification.class);
-                    connection.send(msg);
                 }
             }
             else

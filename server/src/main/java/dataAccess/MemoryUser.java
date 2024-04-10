@@ -1,5 +1,6 @@
 package dataAccess;
 
+import chess.ChessGame;
 import model.UserData;
 
 public class MemoryUser implements UserDAO{
@@ -44,6 +45,11 @@ public class MemoryUser implements UserDAO{
         {
             return false;
         }
+    }
+
+    @Override
+    public void removeUser(ChessGame.TeamColor color, int gameID) throws DataAccessException {
+
     }
 
     @Override

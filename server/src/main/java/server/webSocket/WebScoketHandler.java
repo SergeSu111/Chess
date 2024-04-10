@@ -254,15 +254,26 @@ public class WebScoketHandler {
             return;
         }
 
+        ChessGame.TeamColor selfColor = null;
+        if (game.whiteUsername().equals(username)) {
+            selfColor = ChessGame.TeamColor.WHITE;
+        } else if (game.blackUsername().equals(username)) {
+            selfColor = ChessGame.TeamColor.BLACK;
+        } else
+        {
+            connectionManager.sendError(auth, new WSError("The color does not exist.")); // 否则的话则说颜色没有被鉴别
+        }
+
+
         realGame.setTeamTurn(null); // 将team设置为null
         Notification notification = new Notification(username + " resigned the game.");
-        Leave leaveForReSign = new Leave(auth, gameID);
-        this.leave(leaveForReSign); // 给这个投降的人call leave 离开游戏
         realGame.resign();
         theSqlGame.updateGame(realGame, gameID);
         connectionManager.broadcast(auth, notification, gameID, true);
 
-
+        connectionManager.remove(auth, gameID); // 将用户从游戏里删除
+        assert selfColor != null;
+        theSqlUser.removeUser(selfColor, gameID); // 从db里删除
 
 
 
