@@ -173,7 +173,7 @@ public class sqlUser implements UserDAO {
         else if(color.equals(ChessGame.TeamColor.BLACK)){
             colorIsWhite = false;
         }
-        else{
+        else{ 
             throw new DataAccessException("Error: bad request");
         }
         try (var conn = DatabaseManager.getConnection()){
