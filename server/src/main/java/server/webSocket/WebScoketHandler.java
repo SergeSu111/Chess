@@ -42,7 +42,7 @@ public class WebScoketHandler {
 
 
     private void joinPlayer(JoinPlayer joinplayer, Session session) throws IOException, DataAccessException, IllegalAccessException {
-        connectionManager.add(joinplayer.getGameID(), joinplayer.getAuthString(), session); // 将用户加入到某个游戏里
+        isGameIDAndAuthValid(joinplayer, session);
         ChessGame.TeamColor teamColor = joinplayer.getPlayerColor(); // 得到用户加入游戏的颜色是什么
 
         // 检查用户加入游戏的颜色有没有被占用
@@ -111,41 +111,12 @@ public class WebScoketHandler {
 
     private void joinObserver(JoinObserver joinObserver, Session session) throws DataAccessException, IllegalAccessException, IOException {
 
+        isGameIDAndAuthValid(joinObserver, session);
         int gameID = joinObserver.getGameID();
         String auth = joinObserver.getAuthString();
-        connectionManager.add(gameID, auth, session); // 将这个用户加入到big party里去
 
         sqlGame mysqlGame = new sqlGame();
         sqlAuth mysqlAuth = new sqlAuth(); // 得到sqlAuth来get username
-
-        if(!mysqlGame.gameExists(gameID)) // false
-        {
-            try
-            {
-                connectionManager.sendError(joinObserver.getAuthString(), new WSError("Error: The observing game is not exist.", ServerMessage.ServerMessageType.ERROR));
-                System.out.println("send error");
-            }
-            catch( IOException e)
-            {
-                throw new IOException(e.getMessage());
-            }
-            return;
-        }
-
-        if (!mysqlAuth.authIsStored(auth))
-        {
-            try
-            {
-                connectionManager.sendError(joinObserver.getAuthString(), new WSError("Error: The user is not exist.", ServerMessage.ServerMessageType.ERROR));
-                System.out.println("send error");
-            }
-            catch( IOException e)
-            {
-                throw new IOException(e.getMessage());
-            }
-            return;
-        }
-
 
         GameData game = mysqlGame.getGame(gameID);
         ChessGame chessGame = new Gson().fromJson(game.game(), ChessGame.class);
@@ -175,10 +146,42 @@ public class WebScoketHandler {
     private void reSign(Resign resign)
     {}
 
-    private void isGameIDandAuthValid(JoinObserver joinObserver, Session session)
-    {
-        int gameID = joinObserver.getGameID();
-        String auth = joinObserver.getAuthString();
+    private void isGameIDAndAuthValid(UserGameCommand userGameCommand, Session session) throws IOException, DataAccessException, IllegalAccessException {
+        int gameID = userGameCommand.getGameID();
+        String auth = userGameCommand.getAuthString();
+        connectionManager.add(gameID, auth, session); // 将这个用户加入到big party里去
+
+        sqlGame mysqlGame = new sqlGame();
+        sqlAuth mysqlAuth = new sqlAuth(); // 得到sqlAuth来get username
+
+        if(!mysqlGame.gameExists(gameID)) // false
+        {
+            try
+            {
+                connectionManager.sendError(userGameCommand.getAuthString(), new WSError("Error: The game ID is not exist.", ServerMessage.ServerMessageType.ERROR));
+                System.out.println("send error");
+            }
+            catch( IOException e)
+            {
+                throw new IOException(e.getMessage());
+            }
+            return;
+        }
+
+        if (!mysqlAuth.authIsStored(auth))
+        {
+            try
+            {
+                connectionManager.sendError(userGameCommand.getAuthString(), new WSError("Error: The user is not exist.", ServerMessage.ServerMessageType.ERROR));
+                System.out.println("send error");
+            }
+            catch( IOException e)
+            {
+                throw new IOException(e.getMessage());
+            }
+            return;
+        }
+
 
     }
 
