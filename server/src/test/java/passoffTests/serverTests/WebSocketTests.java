@@ -377,9 +377,9 @@ public class WebSocketTests {
                 resign(white.user, white.authToken, gameID, Set.of(black.user, observer.user),
                         Set.of());
 
-        assertNotificationMessage(messages.get(white.user));
         assertNotificationMessage(messages.get(black.user));
         assertNotificationMessage(messages.get(observer.user));
+        assertNotificationMessage(messages.get(white.user));
 
     }
 

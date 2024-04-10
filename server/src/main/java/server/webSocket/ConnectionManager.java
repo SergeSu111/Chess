@@ -49,7 +49,7 @@ public class ConnectionManager {
 
     // broadcast
     // 如果玩家移动棋子 websocket是不用提醒这个玩家的 而要提醒其他玩家 所以需要excludeVistorName
-    public void broadcast(String excludeVistorName, Notification serverMessage, Integer gameID) throws IOException
+    public void broadcast(String excludeVistorName, Notification serverMessage, Integer gameID, Boolean includedSelf) throws IOException
     {
         // 对于一些没有办法分享信息的成员 就放进来 之后踢掉
 
@@ -60,11 +60,16 @@ public class ConnectionManager {
         {
             if (connection.session.isOpen())  // 如果这个成员没有睡着
             {
-                if (!connection.memberAuthToken.equals(excludeVistorName)) // 如果这个成员是我们要发送给的
+                if (!connection.memberAuthToken.equals(excludeVistorName) && !includedSelf) // 如果这个成员是我们要发送给的
                 {
                     //String msg = new Gson().toJson(serverMessage, ServerMessage.class);
                     String msg = new Gson().toJson(serverMessage, Notification.class);
                     connection.send(msg); // 那么就发送消息给这个connection
+                }
+                else
+                {
+                    String msg = new Gson().toJson(serverMessage, Notification.class);
+                    connection.send(msg);
                 }
             }
             else

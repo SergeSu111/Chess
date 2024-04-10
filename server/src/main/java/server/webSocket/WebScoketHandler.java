@@ -96,7 +96,7 @@ public class WebScoketHandler {
         var loadGame = new LoadGame(chessgame);
         try
         {
-            connectionManager.broadcast(joinplayer.getAuthString(), notification, joinplayer.getGameID()); // 然后我再把这个notification发送给其他所有人
+            connectionManager.broadcast(joinplayer.getAuthString(), notification, joinplayer.getGameID(), false); // 然后我再把这个notification发送给其他所有人
             connectionManager.loadMessage(joinplayer.getGameID(), joinplayer.getAuthString(), loadGame);
         }
         catch (IOException e)
@@ -129,7 +129,7 @@ public class WebScoketHandler {
         var loadGame = new LoadGame(chessGame);
         try
         {
-            connectionManager.broadcast(auth, notification, gameID);
+            connectionManager.broadcast(auth, notification, gameID, false);
             connectionManager.loadMessage(gameID, auth, loadGame);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -149,6 +149,10 @@ public class WebScoketHandler {
         ChessGame realGame = new Gson().fromJson(StrGame, ChessGame.class); // 将strGame转变为realGame
         ChessPiece startPiece = realGame.getBoard().getPiece(theMove.getStartPosition()); // 得到了这个棋子的起始位置
 
+        if(realGame.getIsResigned()){
+            connectionManager.sendError(auth, new WSError("You cannot move after another user resigned."));
+            return;
+        }
 
         ChessGame.TeamColor selfColor;
         if(theGame.whiteUsername().equals(username)){
@@ -188,7 +192,7 @@ public class WebScoketHandler {
                 theMove.getStartPosition().toString() + " to " + theMove.getEndPosition().toString() + ".");
         try
         {
-            connectionManager.broadcast(auth, notification, gameID);  // 将notification传给其他所有用户
+            connectionManager.broadcast(auth, notification, gameID, false);  // 将notification传给其他所有用户
             connectionManager.loadMessage(gameID, loadGameMessage);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -219,7 +223,7 @@ public class WebScoketHandler {
         }
 
         Notification notification = new Notification(username + " is leaving the game.");
-        connectionManager.broadcast(auth, notification, gameID); // send to others
+        connectionManager.broadcast(auth, notification, gameID, false); // send to others
         connectionManager.remove(auth, gameID); // 将用户从游戏里删除
         assert selfColor != null;
         theSqlUser.removeUser(selfColor, gameID); // 从db里删除
@@ -228,8 +232,26 @@ public class WebScoketHandler {
 
     }
 
-    private void reSign(Resign resign)
-    {}
+    private void reSign(Resign resign) throws DataAccessException, IllegalAccessException, IOException {
+        String auth = resign.getAuthString();
+        Integer gameID = resign.getGameID();
+        sqlGame theSqlGame = new sqlGame();
+        sqlAuth theSqlAuth = new sqlAuth();
+        sqlUser theSqlUser = new sqlUser();
+        String username = theSqlAuth.getUserName(auth); // 得到username
+        GameData game = theSqlGame.getGame(gameID);
+        String StringGame = game.game();
+        ChessGame realGame = new Gson().fromJson(StringGame, ChessGame.class);
+
+        realGame.setTeamTurn(null); // 将team设置为null
+        Notification notification = new Notification(username + " resigned the game.");
+        Leave leaveForReSign = new Leave(auth, gameID);
+        this.leave(leaveForReSign); // 给这个投降的人call leave 离开游戏
+        realGame.resign();
+        theSqlGame.updateGame(realGame, gameID);
+        connectionManager.broadcast(auth, notification, gameID, true);
+
+    }
 
     private void isGameIDAndAuthValid(UserGameCommand userGameCommand, Session session) throws IOException, DataAccessException, IllegalAccessException {
         int gameID = userGameCommand.getGameID();

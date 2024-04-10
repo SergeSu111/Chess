@@ -13,12 +13,21 @@ public class ChessGame {
 
     private ChessBoard board;
     private TeamColor turn;
+    private boolean isResigned;
     public ChessGame() {
         this.turn = TeamColor.WHITE;
         this.board = new ChessBoard();
         this.board.resetBoard();
+        this.isResigned = false;
     }
 
+    public void resign(){
+        this.isResigned = true;
+    }
+
+    public boolean getIsResigned(){
+        return this.isResigned;
+    }
     /**
      * @return Which team's turn it is
      */
