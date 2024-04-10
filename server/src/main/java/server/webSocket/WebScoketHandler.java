@@ -109,7 +109,7 @@ public class WebScoketHandler {
         //session.getRemote().sendString(new Gson().toJson(loadGame.getGame()));
     }
 
-    private void joinObserver(JoinObserver joinObserver, Session session) throws DataAccessException, IllegalAccessException {
+    private void joinObserver(JoinObserver joinObserver, Session session) throws DataAccessException, IllegalAccessException, IOException {
 
         int gameID = joinObserver.getGameID();
         String auth = joinObserver.getAuthString();
@@ -117,9 +117,40 @@ public class WebScoketHandler {
 
         sqlGame mysqlGame = new sqlGame();
         sqlAuth mysqlAuth = new sqlAuth(); // 得到sqlAuth来get username
+
+        if(!mysqlGame.gameExists(gameID)) // false
+        {
+            try
+            {
+                connectionManager.sendError(joinObserver.getAuthString(), new WSError("Error: The observing game is not exist.", ServerMessage.ServerMessageType.ERROR));
+                System.out.println("send error");
+            }
+            catch( IOException e)
+            {
+                throw new IOException(e.getMessage());
+            }
+            return;
+        }
+
+        if (!mysqlAuth.authIsStored(auth))
+        {
+            try
+            {
+                connectionManager.sendError(joinObserver.getAuthString(), new WSError("Error: The user is not exist.", ServerMessage.ServerMessageType.ERROR));
+                System.out.println("send error");
+            }
+            catch( IOException e)
+            {
+                throw new IOException(e.getMessage());
+            }
+            return;
+        }
+
+
         GameData game = mysqlGame.getGame(gameID);
         ChessGame chessGame = new Gson().fromJson(game.game(), ChessGame.class);
         String username = mysqlAuth.getUserName(auth); // 得到username
+
         Notification notification = new Notification("A player called " + username + " is observing the game.");
         var loadGame = new LoadGame(chessGame);
         try
@@ -143,6 +174,13 @@ public class WebScoketHandler {
 
     private void reSign(Resign resign)
     {}
+
+    private void isGameIDandAuthValid(JoinObserver joinObserver, Session session)
+    {
+        int gameID = joinObserver.getGameID();
+        String auth = joinObserver.getAuthString();
+
+    }
 
 
 }
