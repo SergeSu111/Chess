@@ -18,6 +18,8 @@ public class GoConsolor {
     static String userAuthToken;
     private boolean running = true;
     private boolean LoggedOutMenu = true;
+
+    private boolean inGame = false; // 确定有没有在game里
     private boolean LoggedInMenu = true;
 
     public void run() {
@@ -54,7 +56,7 @@ public class GoConsolor {
                     quit - Quit Game.
                     help - Show all available actions. 
                 
-                """, getUserAuthStatusAsString(this.userAuthorized));
+                """, getUserAuthStatusAsString(this.userAuthorized, this.inGame));
         System.out.print(printString);
     }
 
@@ -70,10 +72,24 @@ public class GoConsolor {
                 quit - Quit Game.
                 help - Show all available actions.
             
-            """, getUserAuthStatusAsString(this.userAuthorized));
+            """, getUserAuthStatusAsString(this.userAuthorized, this.inGame));
         System.out.print(printString);
     }
 
+    private void GameUIMenu()
+    {
+        String printString = String.format("""
+                %s OPTIONS:
+                    help - Show all available actions in Game.
+                    Redraw Chess Board - Redraw the board by the request.
+                    Leave - Leave the Game.
+                    Make Move - Tell me where you want to go.
+                    Resign - Surrender the game.
+                    Highlight Legal Moves - Tell me what potential moves I can go.
+                
+                """, getUserAuthStatusAsString(this.userAuthorized, this.inGame));
+            System.out.print(printString);
+    }
     private Collection<String> promptUserForInput() throws IOException
     {
         System.out.print(getPrompt());
@@ -82,19 +98,24 @@ public class GoConsolor {
 
     private String getPrompt()
     {
-        return String.format("[%s] >>> ", getUserAuthStatusAsString(this.userAuthorized));
+        return String.format("[%s] >>> ", getUserAuthStatusAsString(this.userAuthorized, this.inGame));
     }
 
-    private String getUserAuthStatusAsString(boolean userAuthorized)
+    private String getUserAuthStatusAsString(boolean userAuthorized, boolean inGame)
     {
         if (userAuthorized)
         {
             return "LOGGED_IN";
         }
-        else
+        else if (!userAuthorized)
         {
             return "LOGGED_OUT";
         }
+        else if (userAuthorized && inGame)
+        {
+            return "IN GAME";
+        }
+        return "Not found";
     }
 
     private static Collection<String> getUserInput() throws IOException
