@@ -21,5 +21,7 @@ public interface GameDAO {
 
     void joinGame(int gameID, String username, String theColor) throws DataAccessException, IllegalAccessException;
 
+    void updateGame(ChessGame updatedGame, int gameID) throws DataAccessException;
+
     boolean colorFree(String theColor, int gameID) throws DataAccessException, IllegalAccessException;
 }

@@ -7,6 +7,9 @@ import WebSocketResponse.*;
 import WebSocketResponse.WSError;
 import WebSocketResponse.Notification;
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import dataAccess.sqlAuth;
@@ -135,8 +138,33 @@ public class WebScoketHandler {
 
     }
 
-    private void makeMove(MakeMove move)
-    {
+    private void makeMove(MakeMove move) throws DataAccessException, IllegalAccessException {
+        int gameID = move.getGameID();
+        String auth = move.getAuthString();
+        sqlGame theSqlGame = new sqlGame();
+        sqlAuth theSqlAuth = new sqlAuth();
+        String username = theSqlAuth.getUserName(auth); // 得到了username
+        GameData theGame = theSqlGame.getGame(gameID); // 得到了gameData
+        ChessMove theMove = move.getMove(); // 得到了当前可以走的所有的路线
+        String StrGame = theGame.game(); // 根据GameData得到了StrGame
+        ChessGame realGame = new Gson().fromJson(StrGame, ChessGame.class); // 将strGame转变为realGame
+        ChessPiece startPiece = realGame.getBoard().getPiece(theMove.getStartPosition()); // 得到了这个棋子的起始位置
+
+        // try to make move
+        try
+        {
+            realGame.makeMove(theMove);
+        }
+        catch (InvalidMoveException e)
+        {
+            throw new RuntimeException(e);
+        }
+
+        // put the updated realGame into db
+        theSqlGame.updateGame(realGame, gameID);
+
+        // grab the updated game from db
+
 
     }
 

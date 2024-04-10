@@ -233,6 +233,21 @@ public class sqlGame implements GameDAO{
         }
     }
 
+    @Override
+    public void updateGame(ChessGame updatedGame, int gameID) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()){
+            try (var preparedStatement = conn.prepareStatement("UPDATE games SET game=? WHERE gameID=?")) {
+                var gameStringObj = new Gson().toJson(updatedGame);
+                preparedStatement.setString(1, gameStringObj);
+                preparedStatement.setInt(2, gameID);
+                preparedStatement.executeUpdate();
+            }
+        }
+        catch (Exception e){
+            throw new DataAccessException("Error: bad request");
+        }
+    }
+
 
     @Override
     public boolean colorFree(String theColor, int gameID) throws DataAccessException, IllegalAccessException {
@@ -246,6 +261,8 @@ public class sqlGame implements GameDAO{
             throw new DataAccessException("Error: bad request");
         }
     }
+
+
 
     private final String[] createStatements = {  // Why the type is String?
             """
