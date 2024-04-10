@@ -1,5 +1,6 @@
 package dataAccess;
 
+import chess.ChessGame;
 import model.GameData;
 
 import java.util.HashMap;
@@ -81,6 +82,11 @@ public class MemoryGame  implements GameDAO{
         {
             throw new DataAccessException("Error: already taken");
         }
+    }
+
+    @Override
+    public void updateGame(ChessGame updatedGame, int gameID) throws DataAccessException {
+
     }
 
     @Override

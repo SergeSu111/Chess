@@ -135,7 +135,6 @@ public class WebScoketHandler {
             throw new RuntimeException(e);
         }
 
-
     }
 
     private void makeMove(MakeMove move) throws DataAccessException, IllegalAccessException {
@@ -162,8 +161,16 @@ public class WebScoketHandler {
 
         // put the updated realGame into db
         theSqlGame.updateGame(realGame, gameID);
-
-        // grab the updated game from db
+        var loadGameMessage = new LoadGame(realGame);  // put into loadGame
+        Notification notification = new Notification(username + "is moving" + startPiece.getPieceType().toString() + " from " +
+                theMove.getStartPosition().toString() + " to " + theMove.getEndPosition().toString() + ".");
+        try
+        {
+            connectionManager.broadcast(auth, notification, gameID);  // 将notification传给其他所有用户
+            connectionManager.sendOneLoad(gameID, auth, loadGameMessage);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
 
     }
