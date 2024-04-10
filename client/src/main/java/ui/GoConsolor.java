@@ -141,7 +141,7 @@ public class GoConsolor {
                             System.out.print("I am login");
 //                            validate = new ArrayList<>(Arrays.asList("str", "str"));
 
-                                login(userArguments);
+                            login(userArguments);
 
                         }
                     }
@@ -316,7 +316,7 @@ public class GoConsolor {
         // Default board printing for phase 5
         //     Actual implementation will be done via websockets in phase 6
         System.out.print("GameID: " + gameID + "\n");
-       board.drawWholeBoard(board.getDefaultBoard());
+        board.drawWholeBoard(board.getDefaultBoard());
     }
 
     private void observe(ArrayList<String> userArgs) throws ResponseException {

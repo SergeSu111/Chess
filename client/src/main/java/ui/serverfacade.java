@@ -9,11 +9,13 @@ import result.CreateGameResult;
 import result.ListGameResult;
 import result.LoginResult;
 import result.RegisterResult;
+import ui.ResponseException;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.lang.module.ResolutionException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -35,7 +37,7 @@ public class serverfacade {
             HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/user", "POST", body);
             if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
             else { response = getHTTPResponseBody(connection, RegisterResult.class); }
-        } catch (Exception ex) { throw new ResponseException(500, ex.getMessage()); }
+        } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
         return response;
     }
 
@@ -46,7 +48,7 @@ public class serverfacade {
             HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/session", "POST", body);
             if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
             else { response = getHTTPResponseBody(connection, LoginResult.class); }  // response is null
-        } catch (Exception ex) { throw new ResponseException(500, ex.getMessage()); }
+        } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
         return response;
     }
 
@@ -54,7 +56,7 @@ public class serverfacade {
         try {
             HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/session", "DELETE", "", authToken);
             if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
-        } catch (Exception ex) { throw new ResponseException(500, ex.getMessage()); }
+        } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
     }
 
     public ListGameResult listGames(String authToken) throws ResponseException {
@@ -63,7 +65,7 @@ public class serverfacade {
             HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/game", "GET", "", authToken);
             if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
             response = getHTTPResponseBody(connection, ListGameResult.class);
-        } catch (Exception ex) { throw new ResponseException(500, ex.getMessage()); }
+        } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
         return response;
     }
 
@@ -74,7 +76,7 @@ public class serverfacade {
             HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/game", "POST", body, authToken);
             if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
             else { response = getHTTPResponseBody(connection, CreateGameResult.class);}
-        } catch (Exception ex) { throw new ResponseException(500, ex.getMessage()); }
+        } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
         return response;
     }
 
@@ -83,14 +85,14 @@ public class serverfacade {
             String body = new Gson().toJson(request);
             HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/game", "PUT", body, authToken);
             if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
-        } catch (Exception ex) { throw new ResponseException(500, ex.getMessage()); }
+        } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
     }
 
     public void clear() throws ResponseException {
         try {
             HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/db", "DELETE", "");
             if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
-        } catch (Exception ex) { throw new ResponseException(500, ex.getMessage()); }
+        } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
     }
 
     private HttpURLConnection makeHTTPRequest(int port, String urlStem, String path, String method, String body, String authHeader) throws URISyntaxException, IOException {
@@ -124,7 +126,7 @@ public class serverfacade {
     }
 
     private static void throwResponseError(HttpURLConnection http) throws IOException, ResponseException {
-        throw new ResponseException(500, "Server returned: " + http.getResponseCode() + " " + http.getResponseMessage());
+        throw new ResponseException("Server returned: " + http.getResponseCode() + " " + http.getResponseMessage());
     }
 
 //    private static <T> T getHTTPErrorResponseBody(HttpURLConnection http, Class<T> clazz) throws IOException {

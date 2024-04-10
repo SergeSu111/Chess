@@ -162,9 +162,9 @@ public class board {
     /*将标题里每一个小letter都隔开打印*/
     private static void drawLetterinSpace(PrintStream out, String letter)
     {
-           out.print("\u2006 "); // 1/6 空格
-           out.print(letter);
-           out.print("\u2006 "); // 1/6 空格 为下一个letter做准备
+        out.print("\u2006 "); // 1/6 空格
+        out.print(letter);
+        out.print("\u2006 "); // 1/6 空格 为下一个letter做准备
     }
 
     /*画每一个piece*/

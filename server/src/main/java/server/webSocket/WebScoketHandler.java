@@ -15,6 +15,8 @@ import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import passoffTests.testClasses.TestException;
+
 import java.io.IOException;
 
 // 很像webscoket服务器 接收来自webscoket成员的信息然后返回传播给其他webscket成员的class
@@ -31,7 +33,7 @@ public class WebScoketHandler {
         switch(userGameCommand.getCommandType())
         {
             case JOIN_PLAYER -> joinPlayer(new Gson().fromJson(message, JoinPlayer.class), session);
-            case JOIN_OBSERVER -> joinObserver(new Gson().fromJson(message, JoinObserver.class));
+            case JOIN_OBSERVER -> joinObserver(new Gson().fromJson(message, JoinObserver.class), session);
             case MAKE_MOVE -> makeMove(new Gson().fromJson(message, MakeMove.class));
             case LEAVE -> leave(new Gson().fromJson(message, Leave.class));
             case RESIGN -> reSign(new Gson().fromJson(message, Resign.class));
@@ -107,9 +109,27 @@ public class WebScoketHandler {
         //session.getRemote().sendString(new Gson().toJson(loadGame.getGame()));
     }
 
-    private void joinObserver(JoinObserver joinObserver)
-    {
-        connectionManager.add();
+    private void joinObserver(JoinObserver joinObserver, Session session) throws DataAccessException, IllegalAccessException {
+
+        int gameID = joinObserver.getGameID();
+        String auth = joinObserver.getAuthString();
+        connectionManager.add(gameID, auth, session); // 将这个用户加入到big party里去
+
+        sqlGame mysqlGame = new sqlGame();
+        sqlAuth mysqlAuth = new sqlAuth(); // 得到sqlAuth来get username
+        GameData game = mysqlGame.getGame(gameID);
+        ChessGame chessGame = new Gson().fromJson(game.game(), ChessGame.class);
+        String username = mysqlAuth.getUserName(auth); // 得到username
+        Notification notification = new Notification("A player called " + username + " is observing the game.");
+        var loadGame = new LoadGame(chessGame);
+        try
+        {
+            connectionManager.broadcast(auth, notification, gameID);
+            connectionManager.sendOneLoad(gameID, auth, loadGame);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
     }
 
