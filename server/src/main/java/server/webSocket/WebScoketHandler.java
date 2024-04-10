@@ -1,15 +1,13 @@
 package server.webSocket;
 
-import WebSocketMessages.serverMessages.ServerMessage;
 import WebSocketMessages.userCommands.UserGameCommand;
 import WebSocketRequests.*;
 import WebSocketResponse.*;
-import WebSocketResponse.WSError;
+import WebSocketResponse.Error;
 import WebSocketResponse.Notification;
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPiece;
-import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import dataAccess.sqlAuth;
@@ -61,7 +59,7 @@ public class WebScoketHandler {
                 try
                 {
                     connectionManager.sendError(joinplayer.getAuthString(),
-                            new WSError("Error: This username is already taken.") );
+                            new Error("Error: This username is already taken.") );
                     System.out.println("sent error");
                 }
                 catch(IOException E)
@@ -78,7 +76,7 @@ public class WebScoketHandler {
             {
                 try
                 {
-                    connectionManager.sendError(joinplayer.getAuthString(), new WSError("Error: This username is already taken."));
+                    connectionManager.sendError(joinplayer.getAuthString(), new Error("Error: This username is already taken."));
                     System.out.println("send error");
                 }
                 catch (IOException E)
@@ -150,7 +148,7 @@ public class WebScoketHandler {
         ChessPiece startPiece = realGame.getBoard().getPiece(theMove.getStartPosition()); // 得到了这个棋子的起始位置
 
         if(realGame.getIsResigned()){
-            connectionManager.sendError(auth, new WSError("You cannot move after another user resigned."));
+            connectionManager.sendError(auth, new Error("You cannot move after another user resigned."));
             return;
         }
 
@@ -161,12 +159,12 @@ public class WebScoketHandler {
             selfColor = ChessGame.TeamColor.BLACK;
         }
         else {
-            connectionManager.sendError(auth, new WSError("not your turn"));
+            connectionManager.sendError(auth, new Error("not your turn"));
             return;
         }
 
         if(selfColor != realGame.getBoard().getPiece(theMove.getStartPosition()).getTeamColor()){
-            connectionManager.sendError(auth, new WSError("not your turn"));
+            connectionManager.sendError(auth, new Error("not your turn"));
             return;
         }
 
@@ -178,7 +176,7 @@ public class WebScoketHandler {
         catch (Exception e)
         {
             try {
-                connectionManager.sendError(auth, new WSError(e.getMessage()));
+                connectionManager.sendError(auth, new Error(e.getMessage()));
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -219,7 +217,7 @@ public class WebScoketHandler {
             selfColor = ChessGame.TeamColor.BLACK;
         } else
         {
-            connectionManager.sendError(auth, new WSError("The color does not exist.")); // 否则的话则说颜色没有被鉴别
+            connectionManager.sendError(auth, new Error("The color does not exist.")); // 否则的话则说颜色没有被鉴别
         }
 
         Notification notification = new Notification(username + " is leaving the game.");
@@ -229,7 +227,7 @@ public class WebScoketHandler {
         theSqlUser.removeUser(selfColor, gameID); // 从db里删除
 
 
-
+ 
     }
 
     private void reSign(Resign resign) throws DataAccessException, IllegalAccessException, IOException {
@@ -244,13 +242,13 @@ public class WebScoketHandler {
         ChessGame realGame = new Gson().fromJson(StringGame, ChessGame.class);
 
         if(realGame.getIsResigned()){
-            connectionManager.sendError(auth, new WSError("Game is over, cannot resign.")); // 否则的话则说颜色没有被鉴别
+            connectionManager.sendError(auth, new Error("Game is over, cannot resign.")); // 否则的话则说颜色没有被鉴别
             return;
         }
 
         if( !( game.whiteUsername().equals(username) || game.blackUsername().equals(username) ) )
         {  // which is observer
-            connectionManager.sendError(auth, new WSError("Observer cannot resign.")); // 否则的话则说颜色没有被鉴别
+            connectionManager.sendError(auth, new Error("Observer cannot resign.")); // 否则的话则说颜色没有被鉴别
             return;
         }
 
@@ -261,7 +259,7 @@ public class WebScoketHandler {
             selfColor = ChessGame.TeamColor.BLACK;
         } else
         {
-            connectionManager.sendError(auth, new WSError("The color does not exist.")); // 否则的话则说颜色没有被鉴别
+            connectionManager.sendError(auth, new Error("The color does not exist.")); // 否则的话则说颜色没有被鉴别
         }
 
 
@@ -291,7 +289,7 @@ public class WebScoketHandler {
         {
             try
             {
-                connectionManager.sendError(userGameCommand.getAuthString(), new WSError("Error: The game ID is not exist."));
+                connectionManager.sendError(userGameCommand.getAuthString(), new Error("Error: The game ID is not exist."));
                 System.out.println("send error");
             }
             catch( IOException e)
@@ -305,7 +303,7 @@ public class WebScoketHandler {
         {
             try
             {
-                connectionManager.sendError(userGameCommand.getAuthString(), new WSError("Error: The user is not exist."));
+                connectionManager.sendError(userGameCommand.getAuthString(), new Error("Error: The user is not exist."));
                 System.out.println("send error");
             }
             catch( IOException e)

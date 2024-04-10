@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import WebSocketResponse.LoadGame;
 import WebSocketResponse.Notification;
-import WebSocketResponse.WSError;
+import WebSocketResponse.Error;
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 
@@ -131,7 +131,7 @@ public class ConnectionManager {
 
 
     // 传入一个authToken 和error message 来对这个authToken的用户发送错误消息
-    public void sendError(String authToken, WSError error) throws IOException {
+    public void sendError(String authToken, Error error) throws IOException {
         ArrayList<Connection> removeList = new ArrayList<Connection>();
         for (int gameID : connections.keySet()) {
             for (var c : connections.get(gameID)) // 当前game的每一个用户
