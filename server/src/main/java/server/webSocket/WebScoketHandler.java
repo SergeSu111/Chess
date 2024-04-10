@@ -18,7 +18,6 @@ import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import passoffTests.testClasses.TestException;
 
 import java.io.IOException;
 
@@ -61,7 +60,7 @@ public class WebScoketHandler {
                 try
                 {
                     connectionManager.sendError(joinplayer.getAuthString(),
-                            new WSError("Error: This username is already taken.", ServerMessage.ServerMessageType.ERROR) );
+                            new WSError("Error: This username is already taken.") );
                     System.out.println("sent error");
                 }
                 catch(IOException E)
@@ -78,7 +77,7 @@ public class WebScoketHandler {
             {
                 try
                 {
-                    connectionManager.sendError(joinplayer.getAuthString(), new WSError("Error: This username is already taken.", ServerMessage.ServerMessageType.ERROR));
+                    connectionManager.sendError(joinplayer.getAuthString(), new WSError("Error: This username is already taken."));
                     System.out.println("send error");
                 }
                 catch (IOException E)
@@ -97,7 +96,7 @@ public class WebScoketHandler {
         try
         {
             connectionManager.broadcast(joinplayer.getAuthString(), notification, joinplayer.getGameID()); // 然后我再把这个notification发送给其他所有人
-            connectionManager.sendOneLoad(joinplayer.getGameID(), joinplayer.getAuthString(), loadGame);
+            connectionManager.loadMessage(joinplayer.getGameID(), joinplayer.getAuthString(), loadGame);
         }
         catch (IOException e)
         {
@@ -130,14 +129,14 @@ public class WebScoketHandler {
         try
         {
             connectionManager.broadcast(auth, notification, gameID);
-            connectionManager.sendOneLoad(gameID, auth, loadGame);
+            connectionManager.loadMessage(gameID, auth, loadGame);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
     }
 
-    private void makeMove(MakeMove move) throws DataAccessException, IllegalAccessException {
+    private void makeMove(MakeMove move) throws DataAccessException, IllegalAccessException, IOException {
         int gameID = move.getGameID();
         String auth = move.getAuthString();
         sqlGame theSqlGame = new sqlGame();
@@ -149,25 +148,47 @@ public class WebScoketHandler {
         ChessGame realGame = new Gson().fromJson(StrGame, ChessGame.class); // 将strGame转变为realGame
         ChessPiece startPiece = realGame.getBoard().getPiece(theMove.getStartPosition()); // 得到了这个棋子的起始位置
 
+
+        ChessGame.TeamColor selfColor;
+        if(theGame.whiteUsername().equals(username)){
+            selfColor = ChessGame.TeamColor.WHITE;
+        } else if (theGame.blackUsername().equals(username)) {
+            selfColor = ChessGame.TeamColor.BLACK;
+        }
+        else {
+            connectionManager.sendError(auth, new WSError("not your turn"));
+            return;
+        }
+
+        if(selfColor != realGame.getBoard().getPiece(theMove.getStartPosition()).getTeamColor()){
+            connectionManager.sendError(auth, new WSError("not your turn"));
+            return;
+        }
+
         // try to make move
         try
         {
             realGame.makeMove(theMove);
         }
-        catch (InvalidMoveException e)
+        catch (Exception e)
         {
-            throw new RuntimeException(e);
+            try {
+                connectionManager.sendError(auth, new WSError(e.getMessage()));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            return;
         }
 
         // put the updated realGame into db
         theSqlGame.updateGame(realGame, gameID);
         var loadGameMessage = new LoadGame(realGame);  // put into loadGame
-        Notification notification = new Notification(username + "is moving" + startPiece.getPieceType().toString() + " from " +
+        Notification notification = new Notification(username + " is moving " + startPiece.getPieceType().toString() + " from " +
                 theMove.getStartPosition().toString() + " to " + theMove.getEndPosition().toString() + ".");
         try
         {
             connectionManager.broadcast(auth, notification, gameID);  // 将notification传给其他所有用户
-            connectionManager.sendOneLoad(gameID, auth, loadGameMessage);
+            connectionManager.loadMessage(gameID, loadGameMessage);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -193,7 +214,7 @@ public class WebScoketHandler {
         {
             try
             {
-                connectionManager.sendError(userGameCommand.getAuthString(), new WSError("Error: The game ID is not exist.", ServerMessage.ServerMessageType.ERROR));
+                connectionManager.sendError(userGameCommand.getAuthString(), new WSError("Error: The game ID is not exist."));
                 System.out.println("send error");
             }
             catch( IOException e)
@@ -207,7 +228,7 @@ public class WebScoketHandler {
         {
             try
             {
-                connectionManager.sendError(userGameCommand.getAuthString(), new WSError("Error: The user is not exist.", ServerMessage.ServerMessageType.ERROR));
+                connectionManager.sendError(userGameCommand.getAuthString(), new WSError("Error: The user is not exist."));
                 System.out.println("send error");
             }
             catch( IOException e)
