@@ -243,6 +243,17 @@ public class WebScoketHandler {
         String StringGame = game.game();
         ChessGame realGame = new Gson().fromJson(StringGame, ChessGame.class);
 
+        if(realGame.getIsResigned()){
+            connectionManager.sendError(auth, new WSError("Game is over, cannot resign.")); // 否则的话则说颜色没有被鉴别
+            return;
+        }
+
+        if( !( game.whiteUsername().equals(username) || game.blackUsername().equals(username) ) )
+        {  // which is observer
+            connectionManager.sendError(auth, new WSError("Observer cannot resign.")); // 否则的话则说颜色没有被鉴别
+            return;
+        }
+
         realGame.setTeamTurn(null); // 将team设置为null
         Notification notification = new Notification(username + " resigned the game.");
         Leave leaveForReSign = new Leave(auth, gameID);
@@ -250,6 +261,10 @@ public class WebScoketHandler {
         realGame.resign();
         theSqlGame.updateGame(realGame, gameID);
         connectionManager.broadcast(auth, notification, gameID, true);
+
+
+
+
 
     }
 
