@@ -201,6 +201,7 @@ public class WebScoketHandler {
         int gameID = leave.getGameID(); // 得到gameID
         sqlGame theSqlGame = new sqlGame();
         sqlAuth theSqlAuth = new sqlAuth();
+        sqlUser
         String username = theSqlAuth.getUserName(auth); // 得到了username
         GameData game = theSqlGame.getGame(gameID); // 得到了要离开的gameData
         String StringGame = game.game();
@@ -215,7 +216,9 @@ public class WebScoketHandler {
 
         Notification notification = new Notification(username + " is leaving the game.");
 
-        connectionManager.remove(auth, gameID);
+        connectionManager.remove(auth, gameID); // 将用户从游戏里删除
+
+
 
 
     }
