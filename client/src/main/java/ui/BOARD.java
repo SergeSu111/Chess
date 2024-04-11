@@ -78,51 +78,6 @@ public class BOARD {
         out.print("\u2006 "); // 1/6 空格 为下一个letter做准备
     }
 
-    /*画每一个piece*/
-    private static void drawPeice(PrintStream out, ChessPiece.PieceType type, ChessGame.TeamColor color)
-    {
-        if (color == ChessGame.TeamColor.WHITE) // 如果要画的棋子是白色
-        {
-            out.print(SET_TEXT_COLOR_WHITE);  // 那么就设置text颜色为白色
-        }
-        else
-        {
-            out.print(SET_TEXT_COLOR_BLACK); // 否则是黑色  则设置text颜色为黑色
-        }
-        drawPieceIcon(out, type);
-    }
 
-    private static void drawPieceIcon(PrintStream out, ChessPiece.PieceType type) // 将棋子画出来
-    {
-        String pieceString;
-        switch (type)
-        {
-            case KING -> pieceString = BLACK_KING;
-            case QUEEN -> pieceString = BLACK_QUEEN;
-            case BISHOP -> pieceString = BLACK_BISHOP;
-            case ROOK -> pieceString = BLACK_ROOK;
-            case KNIGHT -> pieceString = BLACK_KNIGHT;
-            case PAWN -> pieceString = BLACK_PAWN;
-            default -> pieceString = " \u2003 ";
-        }
-        out.print(pieceString);
-
-    }
-
-    private static void drawFooter(PrintStream out)
-    {
-        drawEmptyRows(out, EdgeColor);
-    }
-
-    private static void drawEmptyRows(PrintStream out, String color)
-    {
-        out.print(color);
-        for (int i = 0; i <= 9; i++)
-        {
-            out.print(" \u2003 ");
-        }
-        out.print(RESET_BG_COLOR);
-        out.print(System.lineSeparator());
-    }
 
 }
