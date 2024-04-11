@@ -13,44 +13,44 @@ import java.io.IOException;
 
 
 public class GoConsolor {
-    private final serverfacade server = new serverfacade(8080);
+    private final serverFacade server = new serverFacade(8080);
     private boolean userAuthorized = false;
     static String userAuthToken;
     private boolean running = true;
-    private boolean LoggedOutMenu = true;
+    private boolean LOGGEDOUTMENU = true;
 
     private boolean inGame = false; // 确定有没有在game里
-    private boolean LoggedInMenu = true;
+    private boolean LOGGEDINMENU = true;
 
     private boolean inGameMenu = true;
 
     public void run() {
         while (this.running) {
-            if (this.LoggedOutMenu) {
+            if (this.LOGGEDOUTMENU) {
                 printLoggedOutMenu();
-                this.LoggedOutMenu = false;
+                this.LOGGEDOUTMENU = false;
             }
-            else if (this.LoggedInMenu) {
+            else if (this.LOGGEDINMENU) {
                 printLoggedInMenu();
-                this.LoggedInMenu = false;
+                this.LOGGEDINMENU = false;
             }
             else if (this.inGameMenu)
             {
-                printGameUIMenu(); // 如果inGameMenu 为 true 打印 正在游戏的board
+                PRINTGAMEUIMENU(); // 如果inGameMenu 为 true 打印 正在游戏的board
                 this.inGameMenu = false; // 然后让这个条件为true  这样下次就不会再重复打印inGameMenu
             }
 
-            ArrayList<String> Input = new ArrayList<>();
+            ArrayList<String> INPUT = new ArrayList<>();
             try
             {
-                Input = (ArrayList<String>) promptUserForInput(); // 将status打印 然后返回一个 带有空隙的list   // 每一个元素都是一个命令 用空格分割
+                INPUT = (ArrayList<String>) promptUserForInput(); // 将status打印 然后返回一个 带有空隙的list   // 每一个元素都是一个命令 用空格分割
             }
             catch (IOException ex)
             {
                 System.out.print("An error occurred. Please try again");
             }
 
-            parseCommands(Input); // 没问题的情况下 把这个input放入parseCommands里解析
+            parseCommands(INPUT); // 没问题的情况下 把这个input放入parseCommands里解析
         }
     }
 
@@ -83,7 +83,7 @@ public class GoConsolor {
         System.out.print(printString);
     }
 
-    private void printGameUIMenu()
+    private void PRINTGAMEUIMENU()
     {
         String printString = String.format("""
                 %s OPTIONS:
@@ -343,7 +343,7 @@ public class GoConsolor {
         // Default board printing for phase 5
         //     Actual implementation will be done via websockets in phase 6
         System.out.print("GameID: " + gameID + "\n");
-        board.drawWholeBoard(board.getDefaultBoard());
+        BOARD.drawWholeBoard(BOARD.getDefaultBoard());
     }
 
     private void observe(ArrayList<String> userArgs) throws ResponseException {
@@ -381,7 +381,7 @@ public class GoConsolor {
     {
         this.userAuthToken = authToken;
         this.userAuthorized = (authToken != null);
-        if (this.userAuthorized) { this.LoggedInMenu = true;
-        } else { this.LoggedOutMenu = true; }
+        if (this.userAuthorized) { this.LOGGEDINMENU = true;
+        } else { this.LOGGEDOUTMENU = true; }
     }
 }
