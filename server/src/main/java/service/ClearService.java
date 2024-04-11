@@ -5,10 +5,10 @@ import dataAccess.*;
 import java.sql.SQLException;
 
 public class ClearService {
-    private GameDAO gameDAO = new sqlGame(); // 将接口和方法连接 这样只需要改变方法 不需要改变接口
-    private UserDAO userDAO = new sqlUser(); // 将接口和方法链接 这样只需要改变方法 不需要改变接口
+    private GameDAO gameDAO = new SQLGame(); // 将接口和方法连接 这样只需要改变方法 不需要改变接口
+    private UserDAO userDAO = new SQLUser(); // 将接口和方法链接 这样只需要改变方法 不需要改变接口
 
-    private AuthDAO authDAO = new sqlAuth(); // 将接口和方法链接 这样只需要改变方法 不需要改变接口
+    private AuthDAO authDAO = new SQLAuth(); // 将接口和方法链接 这样只需要改变方法 不需要改变接口
 
     public ClearService() throws DataAccessException {
     }

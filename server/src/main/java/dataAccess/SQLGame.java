@@ -10,9 +10,9 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Random;
 
-public class sqlGame implements GameDAO{
+public class SQLGame implements GameDAO{
 
-    public sqlGame() throws DataAccessException {
+    public SQLGame() throws DataAccessException {
         configureDatabase();
     }
     @Override

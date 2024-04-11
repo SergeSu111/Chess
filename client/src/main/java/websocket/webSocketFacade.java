@@ -15,13 +15,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.WebSocket;
 
-public class websocketFacade extends Endpoint
+public class webSocketFacade extends Endpoint
 {
     Session session;
     NotificationHandler notificationHandler;
 
 
-    public websocketFacade(String url, websocket.NotificationHandler notificationHandler) throws ResponseException
+    public webSocketFacade(String url, websocket.NotificationHandler notificationHandler) throws ResponseException
     {
         try
         {
@@ -91,8 +91,8 @@ public class websocketFacade extends Endpoint
     {
         try
         {
-            Resign ResignCMD = new Resign(auth.authToken(), gameID);
-            this.session.getBasicRemote().sendText(new Gson().toJson(ResignCMD));
+            Resign RESIGNCMD = new Resign(auth.authToken(), gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(RESIGNCMD));
         }
         catch(IOException e)
         {

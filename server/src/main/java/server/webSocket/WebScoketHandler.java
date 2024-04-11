@@ -9,9 +9,10 @@ import chess.ChessMove;
 import chess.ChessPiece;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
-import dataAccess.sqlAuth;
-import dataAccess.sqlGame;
-import dataAccess.sqlUser;
+import dataAccess.SQLAuth;
+import dataAccess.SQLGame;
+import dataAccess.SQLUser;
+import dataAccess.SQLUser;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
@@ -46,8 +47,8 @@ public class WebScoketHandler {
         ChessGame.TeamColor teamColor = joinplayer.getPlayerColor(); // 得到用户加入游戏的颜色是什么
 
         // 检查用户加入游戏的颜色有没有被占用
-        sqlGame mysqlGame = new sqlGame();
-        sqlAuth mysqlAuth = new sqlAuth(); // 得到sqlAuth来get username
+        SQLGame mysqlGame = new SQLGame();
+        SQLAuth mysqlAuth = new SQLAuth(); // 得到sqlAuth来get username
         GameData game = mysqlGame.getGame(joinplayer.getGameID());
         ChessGame chessgame = new Gson().fromJson(game.game(), ChessGame.class);
         String username = mysqlAuth.getUserName(joinplayer.getAuthString()); // 得到了username
@@ -115,8 +116,8 @@ public class WebScoketHandler {
         int gameID = joinObserver.getGameID();
         String auth = joinObserver.getAuthString();
 
-        sqlGame mysqlGame = new sqlGame();
-        sqlAuth mysqlAuth = new sqlAuth(); // 得到sqlAuth来get username
+        SQLGame mysqlGame = new SQLGame();
+        SQLAuth mysqlAuth = new SQLAuth(); // 得到sqlAuth来get username
 
         GameData game = mysqlGame.getGame(gameID);
         ChessGame chessGame = new Gson().fromJson(game.game(), ChessGame.class);
@@ -137,13 +138,13 @@ public class WebScoketHandler {
     private void makeMove(MakeMove move) throws DataAccessException, IllegalAccessException, IOException {
         int gameID = move.getGameID();
         String auth = move.getAuthString();
-        sqlGame theSqlGame = new sqlGame();
-        sqlAuth theSqlAuth = new sqlAuth();
+        SQLGame theSqlGame = new SQLGame();
+        SQLAuth theSqlAuth = new SQLAuth();
         String username = theSqlAuth.getUserName(auth); // 得到了username
         GameData theGame = theSqlGame.getGame(gameID); // 得到了gameData
         ChessMove theMove = move.getMove(); // 得到了当前可以走的所有的路线
-        String StrGame = theGame.game(); // 根据GameData得到了StrGame
-        ChessGame realGame = new Gson().fromJson(StrGame, ChessGame.class); // 将strGame转变为realGame
+        String STRGAME = theGame.game(); // 根据GameData得到了StrGame
+        ChessGame realGame = new Gson().fromJson(STRGAME, ChessGame.class); // 将strGame转变为realGame
         ChessPiece startPiece = realGame.getBoard().getPiece(theMove.getStartPosition()); // 得到了这个棋子的起始位置
 
         if(realGame.getIsResigned()){
@@ -201,13 +202,13 @@ public class WebScoketHandler {
     private void leave(Leave leave) throws DataAccessException, IllegalAccessException, IOException {
         String auth = leave.getAuthString(); // 得到auth
         int gameID = leave.getGameID(); // 得到gameID
-        sqlGame theSqlGame = new sqlGame();
-        sqlAuth theSqlAuth = new sqlAuth();
-        sqlUser theSqlUser = new sqlUser();
+        SQLGame theSqlGame = new SQLGame();
+        SQLAuth theSqlAuth = new SQLAuth();
+        SQLUser theSqlUser = new SQLUser();
         String username = theSqlAuth.getUserName(auth); // 得到了username
         GameData game = theSqlGame.getGame(gameID); // 得到了要离开的gameData
-        String StringGame = game.game();
-        ChessGame realGame = new Gson().fromJson(StringGame, ChessGame.class);
+        String STRINGGAME = game.game();
+        ChessGame realGame = new Gson().fromJson(STRINGGAME, ChessGame.class);
 
         ChessGame.TeamColor selfColor = null;
         if (game.whiteUsername().equals(username)) {
@@ -231,14 +232,14 @@ public class WebScoketHandler {
 
     private void reSign(Resign resign) throws DataAccessException, IllegalAccessException, IOException {
         String auth = resign.getAuthString();
-        Integer gameID = resign.getGameID();
-        sqlGame theSqlGame = new sqlGame();
-        sqlAuth theSqlAuth = new sqlAuth();
-        sqlUser theSqlUser = new sqlUser();
+        int gameID = resign.getGameID();
+        SQLGame theSqlGame = new SQLGame();
+        SQLAuth theSqlAuth = new SQLAuth();
+        SQLUser theSqlUser = new SQLUser();
         String username = theSqlAuth.getUserName(auth); // 得到username
         GameData game = theSqlGame.getGame(gameID);
-        String StringGame = game.game();
-        ChessGame realGame = new Gson().fromJson(StringGame, ChessGame.class);
+        String STRINGGAME = game.game();
+        ChessGame realGame = new Gson().fromJson(STRINGGAME, ChessGame.class);
 
         if(realGame.getIsResigned()){
             connectionManager.sendError(auth, new WSError("Game is over, cannot resign.")); // 否则的话则说颜色没有被鉴别
@@ -281,8 +282,8 @@ public class WebScoketHandler {
         String auth = userGameCommand.getAuthString();
         connectionManager.add(gameID, auth, session); // 将这个用户加入到big party里去
 
-        sqlGame mysqlGame = new sqlGame();
-        sqlAuth mysqlAuth = new sqlAuth(); // 得到sqlAuth来get username
+        SQLGame mysqlGame = new SQLGame();
+        SQLAuth mysqlAuth = new SQLAuth(); // 得到sqlAuth来get username
 
         if(!mysqlGame.gameExists(gameID)) // false
         {

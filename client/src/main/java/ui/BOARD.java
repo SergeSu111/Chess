@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 import static ui.EscapeSequences.*;
 
 
-public class board {
+public class BOARD {
 
     public static ChessBoard board = new ChessBoard();
     static  // 确保每次加载board前重置board

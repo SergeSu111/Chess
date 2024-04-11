@@ -10,8 +10,8 @@ import result.RegisterResult;
 import java.sql.SQLException;
 
 public class AuthService {
-    private AuthDAO authDAO = new sqlAuth();
-    private UserDAO userDAO = new sqlUser();
+    private AuthDAO authDAO = new SQLAuth();
+    private UserDAO userDAO = new SQLUser();
 
     public AuthService() throws DataAccessException {
     }

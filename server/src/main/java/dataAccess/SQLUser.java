@@ -10,9 +10,9 @@ import java.sql.SQLException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 //  create User table
-public class sqlUser implements UserDAO {
+public class SQLUser implements UserDAO {
 
-    public sqlUser() throws DataAccessException  // what is different between DataAccessException and ResponseException?
+    public SQLUser() throws DataAccessException  // what is different between DataAccessException and ResponseException?
     {
         configureDatabase();
     }

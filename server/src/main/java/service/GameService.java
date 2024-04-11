@@ -14,9 +14,9 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class GameService {
-    private final GameDAO gameDAO = new sqlGame();
+    private final GameDAO gameDAO = new SQLGame();
 
-    private final AuthDAO authDAO = new sqlAuth();
+    private final AuthDAO authDAO = new SQLAuth();
 
     public GameService() throws DataAccessException {
     }

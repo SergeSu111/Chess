@@ -7,9 +7,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
 
-public class sqlAuth  implements AuthDAO{
+public class SQLAuth  implements AuthDAO{
 
-    public sqlAuth() throws DataAccessException {
+    public SQLAuth() throws DataAccessException {
         configureDatabase();
     }
     @Override

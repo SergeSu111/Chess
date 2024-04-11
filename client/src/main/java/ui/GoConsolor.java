@@ -13,7 +13,7 @@ import java.io.IOException;
 
 
 public class GoConsolor {
-    private final serverFacade server = new serverFacade(8080);
+    private final ServerFacade server = new ServerFacade(8080);
     private boolean userAuthorized = false;
     static String userAuthToken;
     private boolean running = true;
