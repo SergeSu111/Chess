@@ -3,7 +3,8 @@ package dataAccessTests;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import dataAccess.sqlGame;
+import dataAccess.SQLGame;
+import dataAccess.SQLGame;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 import dataAccess.DatabaseManager;
@@ -13,7 +14,7 @@ import chess.ChessGame;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class SQLGameDAOTests {
-    private final sqlGame gameDAO = new sqlGame();
+    private final SQLGame gameDAO = new SQLGame();
 
     private final String defaultGame = new Gson().toJson(new ChessGame());
 

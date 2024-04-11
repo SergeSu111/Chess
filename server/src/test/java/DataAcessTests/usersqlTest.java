@@ -1,6 +1,7 @@
 package DataAcessTests;
 
-import dataAccess.sqlUser;
+import dataAccess.SQLUser;
+import dataAccess.SQLUser;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,7 +10,7 @@ import dataAccess.DataAccessException;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class SQLUserDAOTests {
-    private final sqlUser userDAO = new sqlUser();
+    private final SQLUser userDAO = new SQLUser();
 
     SQLUserDAOTests() throws DataAccessException {
     }

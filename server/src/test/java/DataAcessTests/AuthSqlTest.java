@@ -1,7 +1,7 @@
 package DataAcessTests;
 
 import com.google.gson.Gson;
-import dataAccess.sqlAuth;
+import dataAccess.SQLAuth;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 import java.util.UUID;
@@ -12,7 +12,7 @@ import chess.ChessGame;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class SQLAuthDAOTests {
-    private final sqlAuth authDAO = new sqlAuth();
+    private final SQLAuth authDAO = new SQLAuth();
 
     private String rossAuthToken;
 
