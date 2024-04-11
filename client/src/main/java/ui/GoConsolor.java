@@ -22,6 +22,8 @@ public class GoConsolor {
     private boolean inGame = false; // 确定有没有在game里
     private boolean LoggedInMenu = true;
 
+    private boolean inGameMenu = true;
+
     public void run() {
         while (this.running) {
             if (this.LoggedOutMenu) {
@@ -32,18 +34,23 @@ public class GoConsolor {
                 printLoggedInMenu();
                 this.LoggedInMenu = false;
             }
+            else if (this.inGameMenu)
+            {
+                printGameUIMenu(); // 如果inGameMenu 为 true 打印 正在游戏的board
+                this.inGameMenu = false; // 然后让这个条件为true  这样下次就不会再重复打印inGameMenu
+            }
 
             ArrayList<String> Input = new ArrayList<>();
             try
             {
-                Input = (ArrayList<String>) promptUserForInput();
+                Input = (ArrayList<String>) promptUserForInput(); // 将status打印 然后返回一个 带有空隙的list   // 每一个元素都是一个命令 用空格分割
             }
             catch (IOException ex)
             {
                 System.out.print("An error occurred. Please try again");
             }
 
-            parseCommands(Input);
+            parseCommands(Input); // 没问题的情况下 把这个input放入parseCommands里解析
         }
     }
 
@@ -76,7 +83,7 @@ public class GoConsolor {
         System.out.print(printString);
     }
 
-    private void GameUIMenu()
+    private void printGameUIMenu()
     {
         String printString = String.format("""
                 %s OPTIONS:
@@ -90,6 +97,7 @@ public class GoConsolor {
                 """, getUserAuthStatusAsString(this.userAuthorized, this.inGame));
             System.out.print(printString);
     }
+
     private Collection<String> promptUserForInput() throws IOException
     {
         System.out.print(getPrompt());
@@ -121,7 +129,7 @@ public class GoConsolor {
     private static Collection<String> getUserInput() throws IOException
     {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        return new ArrayList<>(List.of(reader.readLine().split(" ")));
+        return new ArrayList<>(List.of(reader.readLine().split(" ")));  // 每一个元素都是一个命令 用空格分割
     }
 
     private void parseCommands(ArrayList<String> userInput) {
@@ -129,8 +137,8 @@ public class GoConsolor {
         if (!userInput.isEmpty())
         {
             ArrayList<String> validCommands = new ArrayList<>(Arrays.asList("register", "login", "list", "create",
-                    "join", "observe", "logout", "quit", "help"));
-            String firstCommand = userInput.getFirst().toLowerCase();
+                    "join", "observe", "logout", "quit", "help, Redraw Chess Board, Leave, Make Move, Resign, HighLight")); // 把inGame的命令行补进来
+            String firstCommand = userInput.getFirst().toLowerCase(); // 得到第一个命令
             if (firstCommand.isEmpty())
             {
                 return;
@@ -142,42 +150,40 @@ public class GoConsolor {
             }
             ArrayList<String> userArguments;
             userArguments = userInput;
-            userArguments.removeFirst();
-            ArrayList<String> validate;
+            userArguments.removeFirst(); // 将第一个最重要的命令搞定以后 就把他删除 然后发送个人信息
+            ArrayList<String> validate; // 放入个人信息的数组
             // Unauthorized and authorized options
             try {
                 System.out.println("---------------------------------------------------------------------------------------------");
                 System.out.println(firstCommand);
                 boolean invalidInput = true;
-                if (!userAuthorized)
+                if (!userAuthorized)  // 证明是preLogin
                 {
                     switch (firstCommand) {
                         case "register" -> {
-                            System.out.print("Am I in command ");
+                            System.out.print("I am register");
                             validate = new ArrayList<>(Arrays.asList("str", "str", "str"));
-                            register(userArguments);
-
+                            register(userArguments); // 把个人信息放入register 函数
                         }
                         case "login" -> {
                             System.out.print("I am login");
-//                            validate = new ArrayList<>(Arrays.asList("str", "str"));
-
+                            validate = new ArrayList<>(Arrays.asList("str", "str"));
                             login(userArguments);
 
                         }
                     }
                 }
-                else
+                else // postLogin
                 {
                     switch (firstCommand) {
                         case "list" -> {
-                            if (userArguments.isEmpty())
+                            if (userArguments.isEmpty()) // 如果之说list不给任何信息
                             {
-                                list();
+                                list(); // 就call list
                             }
                             else
                             {
-                                invalidInput = false;
+                                invalidInput = false; // 否则的话 就是invalidInput 就变成false
                             }
                         }
                         case "create" -> {
