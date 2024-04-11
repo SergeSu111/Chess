@@ -8,7 +8,7 @@ import request.RegisterRequest;
 import result.ListGameInformation;
 import server.Server;
 import ui.ResponseException;
-import ui.serverfacade;
+import ui.ServerFacade;
 
 import java.util.ArrayList;
 
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class ServerFacadeTests {
 
     private static Server server;
-    private static serverfacade serverFacade;
+    private static ServerFacade serverFacade;
 
     private static final RegisterRequest sergeRequest = new RegisterRequest("Serge", "serge666", "sjh666@byu.edu");
     private static final LoginRequest sergeLoginRequest = new LoginRequest("Serge", "serge666");
@@ -27,7 +27,7 @@ public class ServerFacadeTests {
         server = new Server();
         var port = server.run(0);
         System.out.println("Started test HTTP server on " + port);
-        serverFacade = new serverfacade(port);
+        serverFacade = new ServerFacade(port);
     }
 
     @AfterAll

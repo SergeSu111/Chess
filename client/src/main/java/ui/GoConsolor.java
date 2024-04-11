@@ -12,7 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 
-public class GoConsolor {
+public class GoConsolor  {
     private final ServerFacade server = new ServerFacade(8080);
     private boolean userAuthorized = false;
     static String userAuthToken;
