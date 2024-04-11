@@ -143,8 +143,8 @@ public class WebScoketHandler {
         String username = theSqlAuth.getUserName(auth); // 得到了username
         GameData theGame = theSqlGame.getGame(gameID); // 得到了gameData
         ChessMove theMove = move.getMove(); // 得到了当前可以走的所有的路线
-        String STRGAME = theGame.game(); // 根据GameData得到了StrGame
-        ChessGame realGame = new Gson().fromJson(STRGAME, ChessGame.class); // 将strGame转变为realGame
+        String strGame = theGame.game(); // 根据GameData得到了StrGame
+        ChessGame realGame = new Gson().fromJson(strGame, ChessGame.class); // 将strGame转变为realGame
         ChessPiece startPiece = realGame.getBoard().getPiece(theMove.getStartPosition()); // 得到了这个棋子的起始位置
 
         if(realGame.getIsResigned()){
@@ -207,8 +207,8 @@ public class WebScoketHandler {
         SQLUser theSqlUser = new SQLUser();
         String username = theSqlAuth.getUserName(auth); // 得到了username
         GameData game = theSqlGame.getGame(gameID); // 得到了要离开的gameData
-        String STRINGGAME = game.game();
-        ChessGame realGame = new Gson().fromJson(STRINGGAME, ChessGame.class);
+        String strGame = game.game();
+        ChessGame realGame = new Gson().fromJson(strGame, ChessGame.class);
 
         ChessGame.TeamColor selfColor = null;
         if (game.whiteUsername().equals(username)) {
@@ -238,8 +238,8 @@ public class WebScoketHandler {
         SQLUser theSqlUser = new SQLUser();
         String username = theSqlAuth.getUserName(auth); // 得到username
         GameData game = theSqlGame.getGame(gameID);
-        String STRINGGAME = game.game();
-        ChessGame realGame = new Gson().fromJson(STRINGGAME, ChessGame.class);
+        String strGame = game.game();
+        ChessGame realGame = new Gson().fromJson(strGame, ChessGame.class);
 
         if(realGame.getIsResigned()){
             connectionManager.sendError(auth, new WSError("Game is over, cannot resign.")); // 否则的话则说颜色没有被鉴别

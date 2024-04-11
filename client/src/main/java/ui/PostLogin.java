@@ -8,7 +8,7 @@ import request.JoinGameRequest;
 import result.ListGameResult;
 
 import websocket.NotificationHandler;
-import websocket.webSocketFacade;
+import websocket.WebSocketFacade;
 
 import java.io.IOException;
 import java.util.*;
@@ -17,11 +17,11 @@ public class PostLogin
 {
     private Scanner scanner;
     private ServerFacade serverFacade;
-    private String Username;
+    private String username;
 
     private NotificationHandler notificationHandler;
 
-    private final webSocketFacade webSocketFacade = new webSocketFacade("http://localhost:8080");
+    private final WebSocketFacade webSocketFacade = new WebSocketFacade("http://localhost:8080");
     public PostLogin(Scanner scanner, ServerFacade server) throws ResponseException {
         this.scanner = new Scanner(System.in);
         this.serverFacade = server;

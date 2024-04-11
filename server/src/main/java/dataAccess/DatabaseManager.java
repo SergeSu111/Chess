@@ -43,15 +43,15 @@ public class DatabaseManager {
             case "Games" -> sqlStatement = "SELECT COUNT(*) FROM Games";
             default -> throw new DataAccessException("Invalid database requested.");
         }
-        int ROWS = 0;
+        int rows = 0;
         try (var statement = DatabaseManager.getConnection().prepareStatement(
                 sqlStatement, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
             var result = statement.executeQuery();
-            if (result.next()) { ROWS = result.getInt(1); }
+            if (result.next()) { rows = result.getInt(1); }
         } catch (SQLException ex) {
             throw new DataAccessException(ex.getMessage());
         }
-        return ROWS;
+        return rows;
     }
 
     public static void createDatabase() throws DataAccessException {

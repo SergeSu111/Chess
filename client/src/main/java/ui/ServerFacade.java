@@ -129,18 +129,6 @@ public class ServerFacade {
         throw new ResponseException("Server returned: " + http.getResponseCode() + " " + http.getResponseMessage());
     }
 
-//    private static <T> T getHTTPErrorResponseBody(HttpURLConnection http, Class<T> clazz) throws IOException {
-//        T responseBody = null;
-//        try (InputStream inputStream = http.getErrorStream()) {
-//            if (inputStream != null) {
-//                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-//                responseBody = new Gson().fromJson(inputStreamReader, clazz);
-//            }
-//        }
-//        return responseBody;
-//    }
-
-
     private static <T> T getHTTPResponseBody(HttpURLConnection http, Class<T> clazz) throws IOException {
         T responseBody;
         try (InputStream inputStream = http.getInputStream()) {

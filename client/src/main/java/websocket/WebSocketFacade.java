@@ -2,13 +2,10 @@ package websocket;
 import WebSocketMessages.serverMessages.ServerMessage;
 import WebSocketRequests.*;
 import WebSocketResponse.LoadGame;
-import WebSocketResponse.Notification;
 import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
-import com.sun.nio.sctp.NotificationHandler;
 import model.AuthData;
-import model.GameData;
 import ui.ResponseException;
 
 import javax.websocket.*;
@@ -16,11 +13,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class webSocketFacade extends Endpoint
+public class WebSocketFacade extends Endpoint
 {
     Session session;
     
-    public webSocketFacade(String url) throws ResponseException
+    public WebSocketFacade(String url) throws ResponseException
     {
         try
         {
@@ -98,8 +95,8 @@ public class webSocketFacade extends Endpoint
     {
         try
         {
-            Resign RESIGNCMD = new Resign(auth.authToken(), gameID);
-            this.session.getBasicRemote().sendText(new Gson().toJson(RESIGNCMD));
+            Resign resignCMD = new Resign(auth.authToken(), gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(resignCMD));
         }
         catch(IOException e)
         {

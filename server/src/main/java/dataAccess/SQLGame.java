@@ -13,7 +13,7 @@ import java.util.Random;
 public class SQLGame implements GameDAO{
 
     public SQLGame() throws DataAccessException {
-        configureDatabase();
+        configureSqlDatabase();
     }
     @Override
     public int createGame(String gameName) throws DataAccessException {
@@ -278,7 +278,7 @@ public class SQLGame implements GameDAO{
     };
 
 
-    public void configureDatabase() throws DataAccessException {
+    public void configureSqlDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) { // what is this createStatement?
@@ -287,7 +287,7 @@ public class SQLGame implements GameDAO{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException( String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException( String.format("Unable to configure GAME database: %s", ex.getMessage()));
         }
     }
 }

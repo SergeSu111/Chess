@@ -1,6 +1,3 @@
-import chess.*;
-import ui.GoConsolor;
-
 public class Main {
     private static final GoConsolor runner  = new GoConsolor();
     public static void main(String[] args) {

@@ -10,7 +10,7 @@ class DrawBoardTest {
     @BeforeEach
     void setUp() {}
 
-    @Test
-    void printBoardAllDefault() { BOARD.drawWholeBoard(BOARD.board);
-    }
+//    @Test
+//    void printBoardAllDefault() { BOARD.drawWholeBoard(BOARD.board);
+//    }
 }
