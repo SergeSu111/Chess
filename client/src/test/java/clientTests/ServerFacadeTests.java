@@ -159,8 +159,8 @@ public class ServerFacadeTests {
                 "xinyu99@gmail.com")).authToken();
         String sergeAuth = serverFacade.register(sergeRequest).authToken();
         int gameID = serverFacade.createGame(new CreateGameRequest("Game2")).gameID();
-        serverFacade.joinGame(new JoinGameRequest("WHITE", gameID), harperAuth);
-        serverFacade.joinGame(new JoinGameRequest("BLACK", gameID), sergeAuth);
+        serverFacade.joinGame(new JoinGameRequest("WHITE", gameID));
+        serverFacade.joinGame(new JoinGameRequest("BLACK", gameID));
         ListGameInformation muppetShowdownInfo = serverFacade.listGames().games().getFirst();
         Assertions.assertEquals(new ListGameInformation(gameID, "harper", "Serge", "Game2"), muppetShowdownInfo);
     }
@@ -172,7 +172,7 @@ public class ServerFacadeTests {
         String sergeAuth = serverFacade.register(sergeRequest).authToken();
         int gameID = serverFacade.createGame(new CreateGameRequest("Game4")).gameID();
         ResponseException exception = Assertions.assertThrows(ResponseException.class, () ->
-                serverFacade.joinGame(new JoinGameRequest("YELLOW", gameID), sergeAuth));
+                serverFacade.joinGame(new JoinGameRequest("YELLOW", gameID)));
         Assertions.assertEquals("Server returned: 400 Bad Request", exception.getMessage());
     }
 
