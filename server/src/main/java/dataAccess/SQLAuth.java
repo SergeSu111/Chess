@@ -10,7 +10,7 @@ import java.util.UUID;
 public class SQLAuth  implements AuthDAO{
 
     public SQLAuth() throws DataAccessException {
-        configureDatabase();
+        configureSqlDatabase();
     }
     @Override
     public void clear() throws DataAccessException
@@ -190,7 +190,8 @@ public class SQLAuth  implements AuthDAO{
     };
 
 
-    public void configureDatabase() throws DataAccessException {
+
+    public void configureSqlDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) { // what is this createStatement?
@@ -199,7 +200,7 @@ public class SQLAuth  implements AuthDAO{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException( String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException( String.format("Unable to configure Auth database: %s", ex.getMessage()));
         }
     }
 }

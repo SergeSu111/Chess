@@ -36,15 +36,15 @@ public class BOARD {
 
     //private static final String EMPTY = "   ";  //
 
-    public static void drawWholeBoard(ChessBoard board) {
-        /*System out 用于将文本输出到控制台, true代表每次使用print 或println的时候都会自动输出 没有缓冲, */
-        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-
-        out.print(ERASE_SCREEN); // 清屏
-        drawBoard( board, ChessGame.TeamColor.BLACK); // 先画棋子是black的board
-        drawEmptyRows(System.out, SeparateColor);
-        drawBoard(board, ChessGame.TeamColor.WHITE);
-    }
+//    public static void drawWholeBoard(ChessBoard board) {
+//        /*System out 用于将文本输出到控制台, true代表每次使用print 或println的时候都会自动输出 没有缓冲, */
+//        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+//
+//        out.print(ERASE_SCREEN); // 清屏
+//        drawBoard( board, ChessGame.TeamColor.BLACK); // 先画棋子是black的board
+//        drawEmptyRows(System.out, SeparateColor);
+//        drawBoard(board, ChessGame.TeamColor.WHITE);
+//    }
 
 
     public static void drawBoard(ChessBoard board, ChessGame.TeamColor callColor)
