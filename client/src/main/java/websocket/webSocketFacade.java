@@ -1,33 +1,31 @@
 package websocket;
+import WebSocketMessages.serverMessages.ServerMessage;
 import WebSocketRequests.*;
+import WebSocketResponse.LoadGame;
 import WebSocketResponse.Notification;
 import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import com.sun.nio.sctp.NotificationHandler;
 import model.AuthData;
+import model.GameData;
 import ui.ResponseException;
 
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.http.WebSocket;
 
 public class webSocketFacade extends Endpoint
 {
     Session session;
-    NotificationHandler notificationHandler;
-
-
-    public webSocketFacade(String url, websocket.NotificationHandler notificationHandler) throws ResponseException
+    
+    public webSocketFacade(String url) throws ResponseException
     {
         try
         {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/connect");
-            this.notificationHandler = (NotificationHandler) notificationHandler;
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
@@ -36,8 +34,17 @@ public class webSocketFacade extends Endpoint
                 @Override
                 public void onMessage(String message)
                 {
-                    Notification notification = new Gson().fromJson(message, Notification.class);
-                    notificationHandler.notify(notification);
+                    ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+                    switch (serverMessage.getServerMessageType())
+                    {
+                        case ERROR, NOTIFICATION -> System.out.println(serverMessage);
+                        case LOAD_GAME -> {
+                            LoadGame gameObj = new Gson().fromJson(message, LoadGame.class);
+                            ChessGame currentGame = gameObj.getGame();
+                            ChessGame game = gameObj.getGame();
+
+                        }
+                    }
                 }
 
             });
@@ -50,11 +57,11 @@ public class webSocketFacade extends Endpoint
     public void onOpen(Session session, EndpointConfig endpointConfig)
     {}
 
-    public void joinPlayer(AuthData auth, int gameID, ChessGame.TeamColor teamColor) throws ResponseException
+    public void joinPlayer(String auth, int gameID, ChessGame.TeamColor teamColor) throws ResponseException
     {
         try
         {
-            JoinPlayer joinPlayerCMD = new JoinPlayer(auth.authToken(), gameID, teamColor);
+            JoinPlayer joinPlayerCMD = new JoinPlayer(auth, gameID, teamColor);
             this.session.getBasicRemote().sendText(new Gson().toJson(joinPlayerCMD));
         }
         catch (IOException ex)
@@ -63,10 +70,10 @@ public class webSocketFacade extends Endpoint
         }
     }
 
-    public void joinObserver(AuthData auth, int gameID) throws ResponseException, IOException {
+    public void joinObserver(String auth, int gameID) throws ResponseException, IOException {
         try
         {
-            JoinObserver joinObserverCMD = new JoinObserver(auth.authToken(), gameID);
+            JoinObserver joinObserverCMD = new JoinObserver(auth, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(joinObserverCMD));
         }
         catch(IOException ex)
