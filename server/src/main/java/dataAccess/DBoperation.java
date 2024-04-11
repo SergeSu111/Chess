@@ -27,9 +27,6 @@ public class DBoperation {
         userData.clear(); // 将 user data 数据清空 clear是HashSet自己的function
     }
 
-//    public void clearGame() {
-//        gameData.clear(); // 将 game data 数据清空 clear 是HashSet自己的function
-//    }
 
     public UserData getUser(String arguments, UserData search) throws IllegalAccessException {
         switch (arguments) {
@@ -116,16 +113,6 @@ public class DBoperation {
         }
 
     }
-
-//    public int getNewGameId() {
-//        myNextId = myNextId + 1;
-//        return myNextId;
-//    }
-
-//    public HashSet <GameData> showAllGames() {
-//        return (gameData);
-//    }
-
     public void createGame(int gameId, String whiteUsername, String blackUsername, String gameName, String game) {
         gameData.add(new GameData(gameId, whiteUsername, blackUsername, gameName, game));
     }
