@@ -9,23 +9,21 @@ import result.CreateGameResult;
 import result.ListGameResult;
 import result.LoginResult;
 import result.RegisterResult;
-import ui.ResponseException;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.IOException;
-import java.lang.module.ResolutionException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 
-public class serverfacade {
+public class ServerFacade {
     private final int serverPort;
     private final String urlStemLocal;
 
-    public serverfacade(int serverPort) {
+    public ServerFacade(int serverPort) {
         this.serverPort = serverPort;
         urlStemLocal = "http://localhost:";
     }
