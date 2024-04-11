@@ -19,10 +19,10 @@ public class GoConsolor  {
     private boolean running = true;
     private boolean LOGGEDOUTMENU = true;
 
-    private boolean inGame = false; // 确定有没有在game里
+    private boolean inGame = true; // 确定有没有在game里
     private boolean LOGGEDINMENU = true;
 
-    private boolean inGameMenu = true;
+    // private boolean inGameMenu = true;
 
     public void run() {
         while (this.running) {
@@ -34,10 +34,10 @@ public class GoConsolor  {
                 printLoggedInMenu();
                 this.LOGGEDINMENU = false;
             }
-            else if (this.inGameMenu)
+            else if (this.inGame)
             {
                 PRINTGAMEUIMENU(); // 如果inGameMenu 为 true 打印 正在游戏的board
-                this.inGameMenu = false; // 然后让这个条件为true  这样下次就不会再重复打印inGameMenu
+                this.inGame = false; // 然后让这个条件为true  这样下次就不会再重复打印inGameMenu
             }
 
             ArrayList<String> INPUT = new ArrayList<>();
@@ -161,7 +161,7 @@ public class GoConsolor  {
                 {
                     switch (firstCommand) {
                         case "register" -> {
-                            System.out.print("I am register");
+                            //System.out.print("I am register");
                             validate = new ArrayList<>(Arrays.asList("str", "str", "str"));
                             register(userArguments); // 把个人信息放入register 函数
                         }
@@ -296,7 +296,7 @@ public class GoConsolor  {
     }
 
     private void register(ArrayList<String> userArgs) throws ResponseException {
-        System.out.print("Am I in register?");
+        //System.out.print("Am I in register?");
         RegisterResult rResponse = server.register( new RegisterRequest(userArgs.get(0), userArgs.get(1), userArgs.get(2)));
         System.out.print("Registered user " + rResponse.username() + ".\n");
         login(new ArrayList<>(Arrays.asList(userArgs.get(0), userArgs.get(1))));
@@ -311,21 +311,21 @@ public class GoConsolor  {
     }
 
     private void list() throws ResponseException {
-        ListGameResult response = server.listGames(this.userAuthToken);
+//        ListGameResult response = server.listGames(this.userAuthToken);
         System.out.print("\nCURRENT GAMES:\n");
-        System.out.print("    Game Name | Game ID | White Player Username | Black Player Username\n");
-        for(ListGameInformation gameInfo: response.games()) {
-            System.out.print("    " + gameInfo.gameName() + " | " +
-                    gameInfo.gameID() + " | " +
-                    gameInfo.whiteUsername() + " | " +
-                    gameInfo.blackUsername() + "\n");
-        }
-        System.out.print("\n");
+//        System.out.print("    Game Name | Game ID | White Player Username | Black Player Username\n");
+////        for(ListGameInformation gameInfo: response.games()) {
+//            System.out.print("    " + gameInfo.gameName() + " | " +
+//                    gameInfo.gameID() + " | " +
+//                    gameInfo.whiteUsername() + " | " +
+//                    gameInfo.blackUsername() + "\n");
+//        }
+//        System.out.print("\n");
     }
 
     private void create(ArrayList<String> userArgs) throws ResponseException {
-        CreateGameResult response = server.createGame(new CreateGameRequest(userArgs.getFirst()), this.userAuthToken);
-        System.out.print("New game \"" + userArgs.getFirst() + "\" created with ID: " + response.gameID() + "\n");
+//        CreateGameResult response = server.createGame(new CreateGameRequest(userArgs.getFirst()), this.userAuthToken);
+//        System.out.print("New game \"" + userArgs.getFirst() + "\" created with ID: " + response.gameID() + "\n");
     }
 
     private void join(ArrayList<String> userArgs) throws ResponseException {
@@ -339,7 +339,7 @@ public class GoConsolor  {
             color = null;
         }
         int gameID = Integer.parseInt(userArgs.get(0));
-        server.joinGame(new JoinGameRequest(color, gameID), this.userAuthToken);
+//        server.joinGame(new JoinGameRequest(color, gameID), this.userAuthToken);
         // Default board printing for phase 5
         //     Actual implementation will be done via websockets in phase 6
         System.out.print("GameID: " + gameID + "\n");
@@ -351,7 +351,7 @@ public class GoConsolor  {
     }
 
     private void logout() throws ResponseException {
-        server.logout(this.userAuthToken);
+//        server.logout(this.userAuthToken);
         setAuthorization(null);
         System.out.print("Logged out.\n");
     }

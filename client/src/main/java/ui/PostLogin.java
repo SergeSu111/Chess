@@ -1,13 +1,12 @@
 package ui;
 
 import chess.ChessGame;
-import model.GameData;
+
 import request.CreateGameRequest;
 import request.JoinGameRequest;
-import request.ListGameRequest;
+
 import result.ListGameResult;
-import server.Server;
-import server.webSocket.WebScoketHandler;
+
 import websocket.NotificationHandler;
 import websocket.webSocketFacade;
 

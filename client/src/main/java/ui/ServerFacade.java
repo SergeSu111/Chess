@@ -23,6 +23,7 @@ public class ServerFacade {
     private final int serverPort;
     private final String urlStemLocal;
 
+    public String authToken;
     public ServerFacade(int serverPort) {
         this.serverPort = serverPort;
         urlStemLocal = "http://localhost:";
@@ -47,17 +48,18 @@ public class ServerFacade {
             if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
             else { response = getHTTPResponseBody(connection, LoginResult.class); }  // response is null
         } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
+        authToken = response.authToken();
         return response;
     }
 
-    public void logout(String authToken) throws ResponseException {
+    public void logout() throws ResponseException {
         try {
             HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/session", "DELETE", "", authToken);
             if (!(hasGoodResponseCode(connection))) { throwResponseError(connection); }
         } catch (Exception ex) { throw new ResponseException(ex.getMessage()); }
     }
 
-    public ListGameResult listGames(String authToken) throws ResponseException {
+    public ListGameResult listGames() throws ResponseException {
         ListGameResult response;
         try {
             HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/game", "GET", "", authToken);
@@ -67,7 +69,7 @@ public class ServerFacade {
         return response;
     }
 
-    public CreateGameResult createGame(CreateGameRequest request, String authToken) throws ResponseException {
+    public CreateGameResult createGame(CreateGameRequest request) throws ResponseException {
         CreateGameResult response = null;
         try {
             String body = new Gson().toJson(request);
@@ -78,7 +80,7 @@ public class ServerFacade {
         return response;
     }
 
-    public void joinGame(JoinGameRequest request, String authToken) throws ResponseException {
+    public void joinGame(JoinGameRequest request) throws ResponseException {
         try {
             String body = new Gson().toJson(request);
             HttpURLConnection connection = makeHTTPRequest(serverPort, urlStemLocal, "/game", "PUT", body, authToken);
