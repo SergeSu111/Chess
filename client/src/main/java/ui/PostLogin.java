@@ -1,34 +1,26 @@
 package ui;
 
+
 import chess.ChessGame;
-
-import request.CreateGameRequest;
-import request.JoinGameRequest;
-
-import result.ListGameResult;
-
-import websocket.NotificationHandler;
+import dataAccess.DataAccessException;
+import model.GameData;
+import result.ListGameInformation;
 import websocket.WebSocketFacade;
 
 import java.io.IOException;
 import java.util.*;
 
-public class PostLogin
-{
+public class PostLogin {
     private Scanner scanner;
     private ServerFacade serverFacade;
-    private String username;
+    private WebSocketFacade webSocketFacade = new WebSocketFacade("http://localhost:8080");
 
-    private NotificationHandler notificationHandler;
-
-    private final WebSocketFacade webSocketFacade = new WebSocketFacade("http://localhost:8080");
     public PostLogin(Scanner scanner, ServerFacade server) throws ResponseException {
         this.scanner = new Scanner(System.in);
         this.serverFacade = server;
     }
-
-    public void run() throws ResponseException, IOException {
-        System.out.println("Welcome to your account.");
+    public void run() throws ResponseException, IOException, DataAccessException {
+        System.out.println("Welcome to the chess game.");
         System.out.println("""
                 create game
                 list games
@@ -38,141 +30,127 @@ public class PostLogin
                 quit
                 help
                 """);
-        while(true)
-        {
+        while(true) {
             System.out.print("play a game >>> " +"\n");
             String command = scanner.nextLine();
-            switch (command)
-            {
+            switch (command) {
                 case "help" -> help();
                 case "logout" -> logout();
                 case "create game" -> createGame();
-                case "list game" -> joinGame();
-                case "join game" -> joinGame();
+                case "list games" -> listGames();
+                case "join game"-> joinGame();
                 case "observe game" -> observeGame();
                 case "quit" -> quit();
                 default -> run();
             }
         }
     }
-    public void help() throws ResponseException, IOException {
-        System.out.println("Choose one of the options to start:");
+    public void help() throws ResponseException, IOException, DataAccessException {
+        // display text informing user actions
+        System.out.println("Choose on of the options to start:");
         run();
     }
 
-    public void logout() throws ResponseException
-    {
-        try
-        {
+    public void logout() throws ResponseException {
+        try{
             serverFacade.logout();
-            System.out.println("Successfully logged out.");
+            System.out.println("successfully logged out");
             PreLogin preLogin = new PreLogin(scanner, serverFacade);
             preLogin.run();
-        }
-        catch (ResponseException e)
-        {
+        } catch (ResponseException e){
             System.out.println(e.getMessage());
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
         }
     }
-
-    public void createGame() throws ResponseException, IOException {
-        try
-        {
-            System.out.println("New Game Name: ");
+    public void createGame() throws ResponseException, IOException, DataAccessException {
+        try {
+            System.out.print("New game Name: ");
             String gameName = scanner.nextLine();
-            serverFacade.createGame(new CreateGameRequest(gameName));
-            System.out.println("Successfully create game " + gameName);
-        }
-        catch (ResponseException e)
-        {
-            System.out.println(e.getMessage());
+            serverFacade.createGame(gameName);
+            System.out.print("successfully create game " + gameName);
+        } catch (ResponseException e) {
+            System.out.print(e.getMessage());
             help();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
         }
     }
-
-    public void listGames() throws ResponseException, IOException {
+    public void listGames() throws ResponseException, IOException, DataAccessException {
         int gameIndex = 1;
-        try
-        {
+        try {
             System.out.println("Games: ");
-            ListGameResult gameList = serverFacade.listGames();
-//            ListGameResult games = new ArrayList<>(Collections.singleton(gameList));
-            for (int i = 0; i < gameList.games().size(); i++)
-            {
-                System.out.println(gameIndex + i + ". " + gameList.games().get(i).gameName());
-                int gameID = gameList.games().get(i).gameID();
+            ArrayList<ListGameInformation> gamelist = serverFacade.listGames();
+            for (int i = 0; i < gamelist.size(); i++) {
+                System.out.println(gameIndex + i + ". " + gamelist.get(i).gameName());
+                int gameID = gamelist.get(i).gameID();
                 System.out.println("Game ID: " + gameID);
-                String blackUsername = gameList.games().get(i).blackUsername();
-                String whiteUsername = gameList.games().get(i).whiteUsername();
-                if (blackUsername != null)
-                {
+                String blackUsername = gamelist.get(i).blackUsername();
+                String whiteUsername = gamelist.get(i).whiteUsername();
+                if (blackUsername != null) {
                     System.out.println("black player: " + blackUsername);
                 }
-                if (whiteUsername != null)
-                {
-                    System.out.println("White player: " + whiteUsername);
+                if (whiteUsername != null) {
+                    System.out.println("white player: " + whiteUsername);
                 }
                 System.out.println("\n");
             }
-        }
-        catch(ResponseException e)
-        {
+            help();
+        } catch(ResponseException | IOException e){
+            System.out.println(e.getMessage());
+            help();
+        } catch (DataAccessException e) {
             System.out.println(e.getMessage());
             help();
         }
     }
-    public void joinGame() throws ResponseException, IOException {
-        ListGameResult gameList = serverFacade.listGames();
-        System.out.println("Enter the number of the game you want to play: ");
+    public void joinGame() throws ResponseException, IOException, DataAccessException {
+        ArrayList<ListGameInformation> gamelist = serverFacade.listGames();
+        System.out.println("enter the number of the game you want to play: ");
         int gameIndex = scanner.nextInt();
-        int gameID = gameList.games().get(gameIndex - 1).gameID();
-        System.out.println("Player color: ");
+        int gameID = gamelist.get(gameIndex - 1).gameID();
+        System.out.println("player color: ");
         String playerColor = scanner.next();
-        if (playerColor == null)
-        {
+        if (playerColor == null) {
             observeGame();
-        }
-        else
-        {
-            try
-            {
-                serverFacade.joinGame(new JoinGameRequest(playerColor, gameID));
+        } else {
+            try {
+                serverFacade.joinGame(gameID, playerColor);
                 System.out.println("successfully joined");
-
-                // websocket
-                if (playerColor.equalsIgnoreCase("White"))
-                {
-                    webSocketFacade.joinPlayer(serverFacade.authToken, gameID, ChessGame.TeamColor.WHITE);
-//                    gameUI.color =
+                //websocket connection
+                if (playerColor.equalsIgnoreCase("White")){
+                    webSocketFacade.joinPlayer(serverFacade.getAuthToken(),gameID, ChessGame.TeamColor.WHITE);}
+                else{
+                    webSocketFacade.joinPlayer(serverFacade.getAuthToken(),gameID, ChessGame.TeamColor.BLACK);
                 }
-                else
-                {
-                    webSocketFacade.joinPlayer(serverFacade.authToken, gameID, ChessGame.TeamColor.BLACK);
-                }
-//                GamePlay gamePlay = new GamePlay(scanner, serverFacade, playerColor, gameID);
-//                gamePlay.help();
+                GamePlay gamePlay = new GamePlay(serverFacade,playerColor,gameID);
+                GamePlay.playerColor = playerColor;
+                gamePlay.run();
 
-            }
-            catch (ResponseException e)
-            {
+            } catch (ResponseException e) {
                 System.out.println(e.getMessage());
                 help();
+            } catch (DataAccessException e) {
+                throw new RuntimeException(e);
             }
         }
     }
-
-    public void observeGame() throws ResponseException, IOException {
-        ListGameResult gameList = serverFacade.listGames();
-        System.out.println("Enter the number of the game you want to observe: ");
+    public void observeGame() throws ResponseException, IOException, DataAccessException {
+        ArrayList<ListGameInformation> gameList = serverFacade.listGames();
+        System.out.println("enter the number of the game you want to observe: ");
         int gameIndex = scanner.nextInt();
-        int gameID = gameList.games().get(gameIndex - 1).gameID();
-        webSocketFacade.joinObserver(serverFacade.authToken, gameID);
+        int gameID = gameList.get(gameIndex - 1).gameID();
+        webSocketFacade.joinObserver( serverFacade.getAuthToken(), gameID);
+        GamePlay gamePlay = new GamePlay(serverFacade, null, gameID);
+        gamePlay.help();
+
     }
-    public void quit()
-    {
+    public void quit(){
+        // exit the program
         System.exit(0);
         System.out.println("Exit");
     }
 
-
 }
+
+
