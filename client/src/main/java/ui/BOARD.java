@@ -6,78 +6,92 @@ import chess.ChessPiece;
 import chess.ChessPosition;
 
 import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 
 import static ui.EscapeSequences.*;
 
+import static ui.EscapeSequences.SET_BG_COLOR_DARK_GREY;
 
 public class BOARD {
-
-    public static ChessBoard board = new ChessBoard();
-    static  // 确保每次加载board前重置board
-    {
-        board.resetBoard();
+    public static void main(String[] args) {
+        drawGeneralBoard(new ChessBoard(), "White");
     }
 
-    public static ChessBoard getDefaultBoard()
-    {
-        return board;
-    }
+    public static void drawGeneralBoard(ChessBoard chessBoard, String teamColor) {
+        for (int row = 0; row < 10; row++) {
+            if (row == 0 || row == 9) {
+                //print out the top and bottom line headers
+                String[] header = new String[]{"  ", "a", "b", "c", "d", "e", "f", "g", "h"};
+                if (teamColor.equalsIgnoreCase("white")) {
+                    System.out.print(" \u2003 ");
+                    for (String letter : header) {
+                        System.out.print(SET_BG_COLOR_DARK_GREY + SET_TEXT_BOLD + letter);
+                        System.out.print(" \u2003");
+                    }
+                    System.out.print("\n");
+                } else if (teamColor.equalsIgnoreCase("black")) {
+                    System.out.print("    \u2003 ");
+                    for (int index = header.length - 1; index >= 0; index--) {
+                        System.out.print(SET_BG_COLOR_DARK_GREY + SET_TEXT_BOLD + header[index]);
+                        System.out.print(" \u2003");
+                    }
+                    System.out.print("\n");
+                }
+            } else {
+                for (int col = 0; col < 10; col++) {
+                    if (col == 0 || col == 9) {
+                        System.out.print(SET_BG_COLOR_DARK_GREY + " \u2003");
+                        // print the number on the side
+                        if (teamColor.equalsIgnoreCase("white")) {
+                            System.out.print(SET_TEXT_BOLD + (9 - row + " \u2003"));
+                        } else {
+                            System.out.print(SET_TEXT_BOLD + (row + " \u2003"));
+                        }
 
+                    } else {
+                        ChessPiece currentPiece;
+                        if (teamColor.equalsIgnoreCase("white")) {
+                            currentPiece = chessBoard.getPiece(new ChessPosition(9 - row, col));
+                        } else {
+                            currentPiece = chessBoard.getPiece(new ChessPosition(row, 9 - col));
+                        }
+                        String piece = "";
+                        // print the actual board
+                        if ((row + col) % 2 == 0) {
+                            System.out.print(SET_BG_COLOR_WHITE);
+                        } else {
+                            System.out.print(SET_BG_COLOR_BLACK);
+                        }
+                        if (currentPiece != null) {
+                            if (currentPiece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+                                System.out.print(SET_TEXT_BOLD);
+                                switch (currentPiece.getPieceType()) {
+                                    case KING -> piece = BLACK_KING;
+                                    case QUEEN -> piece = BLACK_QUEEN;
+                                    case BISHOP -> piece = BLACK_BISHOP;
+                                    case ROOK -> piece = BLACK_ROOK;
+                                    case KNIGHT -> piece = BLACK_KNIGHT;
+                                    case PAWN -> piece = BLACK_PAWN;
+                                }
+                            } else {
+                                switch (currentPiece.getPieceType()) {
+                                    case KING -> piece = WHITE_KING;
+                                    case QUEEN -> piece = WHITE_QUEEN;
+                                    case BISHOP -> piece = WHITE_BISHOP;
+                                    case ROOK -> piece = WHITE_ROOK;
+                                    case KNIGHT -> piece = WHITE_KNIGHT;
+                                    case PAWN -> piece = WHITE_PAWN;
 
-    private static final String boardSpaceBlackColor = SET_BG_COLOR_GREEN;
-    private static final String boardSpaceWhiteColor = SET_BG_COLOR_RED;
-    private static final String SeparateColor = RESET_BG_COLOR; // 分离两个board的中间颜色;
-    private static final String EdgeColor = SET_BG_COLOR_LIGHT_GREY; // 棋子四周的颜色
+                                }
+                            }
+                            System.out.print(piece);
 
-
-
-    private static void drawHeaders(PrintStream out, ChessGame.TeamColor callColor)
-    {
-        // 以下是设置title的整体背景颜色 和第一个letter前的空隙 以及设置颜色为黑色
-        // 并且设置两种情况自己的headers是什么
-        String [] headers;
-        out.print(EdgeColor); // board四周边缘的颜色
-        out.print(" \u2003 "); // 全角空格 目的是将title一开始有一些空隙
-        // 设置title颜色为黑色
-        out.print(SET_TEXT_COLOR_BLACK);
-        // 如果当前颜色是team color的白色的话
-        if(callColor == ChessGame.TeamColor.WHITE)
-        {
-            // header就是a b c d ..
-            headers = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
+                        } else {
+                            System.out.print(EMPTY);
+                        }
+                    }
+                }
+                System.out.print("\n");
+            }
         }
-        else    // 如果当前颜色是黑色的话
-        {
-            headers = new String[]{"h", "g", "f", "e", "d", "c", "b", "a"};
-        }
-
-
-        // 开始将header里每一个letter都根据间隙打印出来
-
-        // 循环每一个letter in headers
-        for (String letter: headers)
-        {
-            // call drawHeader;
-            drawLetterinSpace(out, letter);
-        }
-
-
-        // headers全部打印完以后开始重新设置空隙 背景颜色 等等
-        out.print(" \u2003 ");
-        out.print(RESET_BG_COLOR);
-        out.println(); // 换行 结束headers
-
     }
-
-    /*将标题里每一个小letter都隔开打印*/
-    private static void drawLetterinSpace(PrintStream out, String letter)
-    {
-        out.print("\u2006 "); // 1/6 空格
-        out.print(letter);
-        out.print("\u2006 "); // 1/6 空格 为下一个letter做准备
-    }
-
-
-
 }

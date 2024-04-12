@@ -193,11 +193,11 @@ public class SQLGame implements GameDAO{
         if (update != null)
         {
             delGame(update.gameID());
-            if (theColor.equals("BLACK"))
+            if (theColor.equalsIgnoreCase("black"))
             {
                 addGame(update.gameID(), update.whiteUsername(), username, update.gameName(), update.game());
             }
-            else if (theColor.equals("WHITE"))
+            else if (theColor.equalsIgnoreCase("white"))
             {
                 addGame(update.gameID(),username, update.blackUsername(), update.gameName(), update.game());
             }

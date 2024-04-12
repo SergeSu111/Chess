@@ -1,21 +1,25 @@
 package ui;
 
-import chess.ChessBoard;
+import chess.*;
+import dataAccess.DataAccessException;
 import websocket.WebSocketFacade;
 
 import java.io.IOException;
 import java.util.Scanner;
 
+import static java.lang.Integer.parseInt;
+
 public class GamePlay
 {
-    private String playerColor;
+    public static  String playerColor;
     private Scanner scanner;
     private int gameID;
     private ServerFacade serverFacade;
     private WebSocketFacade webSocketFacade = new WebSocketFacade("http://localhost:8080");
     public static ChessBoard board;
+    private ChessGame chessGame = new ChessGame();
 
-    public GamePlay(Scanner scanner, ServerFacade server, String playerColor, int gameID) throws ResponseException
+    public GamePlay(ServerFacade server, String playerColor, int gameID) throws ResponseException
     {
         this.scanner = new Scanner(System.in);
         this.serverFacade = server;
@@ -23,7 +27,7 @@ public class GamePlay
         this.playerColor = playerColor;
     }
 
-    public void run() throws ResponseException {
+    public void run() throws ResponseException, IOException, DataAccessException {
         System.out.println("Welcome to the game! Enjoy!");
         System.out.println("""
                 Help
@@ -35,7 +39,7 @@ public class GamePlay
                 """);
         while(true)
         {
-            System.out.print("Play a game >>>   ");
+            System.out.println("Play a game >>>   ");
             String cd = scanner.nextLine();
             switch (cd)
             {
@@ -50,18 +54,17 @@ public class GamePlay
         }
     }
 
-    public void help() throws ResponseException {
+    public void help() throws ResponseException, IOException, DataAccessException {
         System.out.println("Choose one of the options to start:");
         run();
     }
 
-    public void reDrawBoard() throws ResponseException
-    {
+    public void reDrawBoard() throws ResponseException, IOException, DataAccessException {
         BOARD.drawGeneralBoard(board, playerColor);
         this.run();
     }
 
-    public void leave() throws ResponseException, IOException {
+    public void leave() throws ResponseException, IOException, DataAccessException {
         System.out.println("You are leaving this game\n");
         webSocketFacade.leave(serverFacade.authToken, gameID);
         PostLogin postLogin = new PostLogin(scanner, serverFacade);
@@ -69,16 +72,52 @@ public class GamePlay
     }
 
     // not finished
-    public void makeMoves()
-    {
-        System.out.print("Tell me your start position.");
-        int startPosition = scanner.nextInt();
-        System.out.print("Tell me where you want to go.");
-        int endPosition = scanner.nextInt();
-        System.out.print("Do you want to promote any piece? If so, enter what piece you want to promote: ");
+    public void makeMoves() throws ResponseException, IOException, DataAccessException {
+       System.out.println("Please enter startPosition: [row][col], endPosition: [row][col]");
+       String[] answer = scanner.nextLine().toLowerCase().split(" ");
+       String[] startPosition = answer[0].split("");
+       // 得到起始位置
+       ChessPosition start = new ChessPosition(parseInt(startPosition[0]), parseInt(startPosition[1]));
+       String[] endPosition = answer[1].toLowerCase().split("");
+       ChessPosition end = new ChessPosition(parseInt(endPosition[0]), parseInt(endPosition[1]));
+       ChessMove move = new ChessMove(start, end, null); // 放入chessmove中
+        try
+        {
+            chessGame.makeMove(move); // 让游戏里的棋子移动
+        } catch (InvalidMoveException e) {
+            System.out.println(e.getMessage());
+        }
+        webSocketFacade.makeMove(serverFacade.authToken, gameID, move); // 放入webscoket来更新给别人
+        reDrawBoard(); //再重新画board
     }
 
+    public void resign() throws ResponseException, IOException, DataAccessException {
+        System.out.println("Are you sure you want to resign game? : YES/NO");
+        String answer = scanner.nextLine();
+        if (answer.equalsIgnoreCase("YES"))
+        {
+            try
+            {
+                webSocketFacade.resign(serverFacade.getAuthToken(), gameID); // 将投降告诉别人
+            } catch (ResponseException e) {
+                System.out.println(e.getMessage());
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+            System.out.println("Game Over. You lose this game.");
+            PostLogin postLogin = new PostLogin(scanner, serverFacade);
+            postLogin.help(); // 投降完回到postLogin界面
+        }
+        else
+        {
+           System.out.println("");
+        }
+    }
 
+    // need figure out later
+    public void highLightMoves() {
+
+    }
 
 
 }

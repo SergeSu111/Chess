@@ -2,10 +2,14 @@ package websocket;
 import WebSocketMessages.serverMessages.ServerMessage;
 import WebSocketRequests.*;
 import WebSocketResponse.LoadGame;
+import WebSocketResponse.Notification;
+import WebSocketResponse.WSError;
 import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import model.AuthData;
+import ui.BOARD;
+import ui.GamePlay;
 import ui.ResponseException;
 
 import javax.websocket.*;
@@ -16,7 +20,8 @@ import java.net.URISyntaxException;
 public class WebSocketFacade extends Endpoint
 {
     Session session;
-    
+    Notification notification;
+    WSError error;
     public WebSocketFacade(String url) throws ResponseException
     {
         try
@@ -32,13 +37,28 @@ public class WebSocketFacade extends Endpoint
                 public void onMessage(String message)
                 {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+                    if (serverMessage.getServerMessageType().equals(ServerMessage.ServerMessageType.NOTIFICATION))
+                    {
+                        notification = new Gson().fromJson(message, Notification.class); // 转变为notification class
+                    }
+                    else if (serverMessage.getServerMessageType().equals(ServerMessage.ServerMessageType.ERROR))
+                    {
+                        error = new Gson().fromJson(message,WSError.class);
+                    }
                     switch (serverMessage.getServerMessageType())
                     {
-                        case ERROR, NOTIFICATION -> System.out.println(serverMessage);
+                        case NOTIFICATION ->
+
+                                System.out.println(notification.getMessage());
+                        case ERROR ->
+                                System.out.println(error.getErrorMessage());
+
                         case LOAD_GAME -> {
                             LoadGame gameObj = new Gson().fromJson(message, LoadGame.class);
                             ChessGame currentGame = gameObj.getGame();
                             ChessGame game = gameObj.getGame();
+                            BOARD board = new BOARD();
+                            BOARD.drawGeneralBoard(game.getBoard(), GamePlay.playerColor);
 
                         }
                     }
@@ -79,10 +99,10 @@ public class WebSocketFacade extends Endpoint
         }
     }
 
-    public void leave (AuthData auth, int gameID) throws ResponseException, IOException {
+    public void leave (String auth, int gameID) throws ResponseException, IOException {
         try
         {
-            Leave leaveCMD = new Leave(auth.authToken(), gameID);
+            Leave leaveCMD = new Leave(auth, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(leaveCMD));
         }
         catch(IOException ex)
@@ -91,11 +111,11 @@ public class WebSocketFacade extends Endpoint
         }
     }
 
-    public void resign(AuthData auth, int gameID) throws ResponseException, IOException
+    public void resign(String auth, int gameID) throws ResponseException, IOException
     {
         try
         {
-            Resign resignCMD = new Resign(auth.authToken(), gameID);
+            Resign resignCMD = new Resign(auth, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(resignCMD));
         }
         catch(IOException e)
@@ -104,11 +124,11 @@ public class WebSocketFacade extends Endpoint
         }
     }
 
-    public void makeMove(AuthData auth, int gameID, ChessMove move) throws ResponseException
+    public void makeMove(String auth, int gameID, ChessMove move) throws ResponseException
     {
         try
         {
-            MakeMove makeMoveCMD = new MakeMove(auth.authToken(), gameID, move);
+            MakeMove makeMoveCMD = new MakeMove(auth, gameID, move);
             this.session.getBasicRemote().sendText(new Gson().toJson(makeMoveCMD));
         }
         catch (IOException E)

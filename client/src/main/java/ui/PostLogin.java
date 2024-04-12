@@ -60,7 +60,7 @@ public class PostLogin {
         } catch (ResponseException e){
             System.out.println(e.getMessage());
         } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+           System.out.println(e.getMessage());
         }
     }
     public void createGame() throws ResponseException, IOException, DataAccessException {
@@ -73,7 +73,8 @@ public class PostLogin {
             System.out.print(e.getMessage());
             help();
         } catch (DataAccessException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
+            help();
         }
     }
     public void listGames() throws ResponseException, IOException, DataAccessException {
