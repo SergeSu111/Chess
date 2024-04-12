@@ -5,6 +5,7 @@ import dataAccess.DataAccessException;
 import websocket.WebSocketFacade;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Scanner;
 
 import static java.lang.Integer.parseInt;
@@ -116,6 +117,13 @@ public class GamePlay
 
     // need figure out later
     public void highLightMoves() {
+        System.out.println("Enter highlight position: [row][col]");
+        String[] answer = scanner.nextLine().toLowerCase().split(" ");
+        String[] start = answer[0].split("");
+        ChessPosition startPosition = new ChessPosition(parseInt(start[0]), parseInt(start[1]));
+        Collection<ChessMove> potentialMoves = chessGame.validMoves(startPosition);
+        BOARD.highLightMoves(startPosition, board, playerColor, potentialMoves);
+
 
     }
 
