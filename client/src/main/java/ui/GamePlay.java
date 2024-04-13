@@ -13,12 +13,13 @@ import static java.lang.Integer.parseInt;
 public class GamePlay
 {
     public static  String playerColor;
+    public static WebSocketFacade WebSocketFacade;
     private Scanner scanner;
     private int gameID;
     private ServerFacade serverFacade;
-    private WebSocketFacade webSocketFacade = new WebSocketFacade("http://localhost:8080");
-    public static ChessBoard board;
-    private ChessGame chessGame = new ChessGame();
+    public static ChessGame chessGame;
+
+    private boolean Resigend = false;
 
     public GamePlay(ServerFacade server, String playerColor, int gameID) throws ResponseException
     {
@@ -46,7 +47,7 @@ public class GamePlay
             {
                 case "Help" -> help();
                 case "Redraw chess board" -> reDrawBoard();
-                case "Leave this game" -> leave();
+                case "leave" -> leave();
                 case "Make Move" -> makeMoves();
                 case "Resign" -> resign();
                 case "highLight Potential Moves" -> highLightMoves();
@@ -61,13 +62,13 @@ public class GamePlay
     }
 
     public void reDrawBoard() throws ResponseException, IOException, DataAccessException {
-        BOARD.drawGeneralBoard(board, playerColor);
+        BOARD.drawGeneralBoard(chessGame.getBoard(), playerColor);
         this.run();
     }
 
     public void leave() throws ResponseException, IOException, DataAccessException {
         System.out.println("You are leaving this game\n");
-        webSocketFacade.leave(serverFacade.authToken, gameID);
+        WebSocketFacade.leave(serverFacade.authToken, gameID);
         PostLogin postLogin = new PostLogin(scanner, serverFacade);
         postLogin.help(); // 回到游戏前help的界面
     }
@@ -88,26 +89,35 @@ public class GamePlay
         } catch (InvalidMoveException e) {
             System.out.println(e.getMessage());
         }
-        webSocketFacade.makeMove(serverFacade.authToken, gameID, move); // 放入webscoket来更新给别人
+        WebSocketFacade.makeMove(serverFacade.authToken, gameID, move); // 放入webscoket来更新给别人
         reDrawBoard(); //再重新画board
     }
 
     public void resign() throws ResponseException, IOException, DataAccessException {
+        if (Resigend)
+        {
+            System.out.println("You already resigned, you cannot surrender any more.");
+            this.run();
+        }
         System.out.println("Are you sure you want to resign game? : YES/NO");
         String answer = scanner.nextLine();
         if (answer.equalsIgnoreCase("YES"))
         {
             try
             {
-                webSocketFacade.resign(serverFacade.getAuthToken(), gameID); // 将投降告诉别人
+                WebSocketFacade.resign(serverFacade.getAuthToken(), gameID); // 将投降告诉别人
+                Resigend = true;
             } catch (ResponseException e) {
                 System.out.println(e.getMessage());
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
             System.out.println("Game Over. You lose this game.");
-            PostLogin postLogin = new PostLogin(scanner, serverFacade);
-            postLogin.help(); // 投降完回到postLogin界面
+//            PostLogin postLogin = new PostLogin(scanner, serverFacade);
+//            postLogin.help(); // 投降完回到postLogin界面
+
+            this.run();
+
         }
         else
         {
@@ -122,8 +132,7 @@ public class GamePlay
         String[] start = answer[0].split("");
         ChessPosition startPosition = new ChessPosition(parseInt(start[0]), parseInt(start[1]));
         Collection<ChessMove> potentialMoves = chessGame.validMoves(startPosition);
-        BOARD.highLightMoves(startPosition, board, playerColor, potentialMoves);
-
+        BOARD.highLightMoves(startPosition, chessGame.getBoard(), playerColor, potentialMoves);
 
     }
 
